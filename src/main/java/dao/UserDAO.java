@@ -1,0 +1,23 @@
+package dao;
+
+import dao.entity.UserDO;
+
+/**
+ * @author <a href="mailto:czy88840616@gmail.com">czy</a>
+ * @since 10-12-3 ионГ12:16
+ */
+public interface UserDAO {
+    /**
+     * Method getPersonDirectory ...
+     *
+     * @param hostName of type String
+     * @return String
+     */
+    UserDO getPersonInfo(String hostName);
+
+    boolean createNewUser(UserDO userDO);
+
+    boolean updateDir(Long userId, String newDir, String oldDir);
+
+    boolean updateConfig(Long userId, int newConfig, int srcConfig);
+}

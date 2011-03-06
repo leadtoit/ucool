@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+       default-autowire="byName">
+    <bean id="suffixDispatcher" class="common.SuffixDispatcher" />
+    <bean id="configCenter" class="common.ConfigCenter" />
+    <bean id="fileEditor" class="biz.file.FileEditor"/>
+    <bean id="switcher" class="common.Switcher"/>
+    <bean id="urlExecutor" class="web.url.UrlExecutor" />
+    <bean id="urlTools" class="common.tools.UrlTools"/>
+    <bean id="userDAO" class="dao.UserDAOImpl"/>
+    <bean id="dirSyncTools" class="common.tools.DirSyncTools"/>
+
+    <bean id="dispatchMapping" class="common.DispatchMapping">
+        <property name="mappingTable">
+            <map>
+                <entry key="assets" value-ref="assetsHandler" />
+                <entry key="png" value-ref="pngHandler" />
+                <entry key="htm" value-ref="jsonpHandler" />
+                <entry key="combo" value-ref="comboHandler" />
+                <entry key="other" value-ref="xmlHandler" />
+            </map>
+        </property>
+    </bean>
+
+    <bean id="assetsHandler" class="web.handler.impl.AssetsHandler"/>
+    <bean id="jsonpHandler" class="web.handler.impl.HtmHandler"/>
+    <bean id="pngHandler" class="web.handler.impl.PngHandler"/>
+    <bean id="comboHandler" class="web.handler.impl.ComboHandler"/>
+    <bean id="xmlHandler" class="web.handler.impl.OtherHandler"/>
+    <bean id="personConfigHandler" class="web.handler.impl.PersonConfigHandler"/>
+
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="org.sqlite.JDBC"/>
+        <property name="url" value="jdbc:sqlite:ucool.db"/>
+    </bean>
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+</beans>
