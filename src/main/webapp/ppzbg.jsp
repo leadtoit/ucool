@@ -69,6 +69,19 @@
             personConfig.setEnableAssets(!personConfig.isEnableAssets());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableAssets() ? "true" : "false";
+        } else if(pid.equalsIgnoreCase("enableLocalCombo")) {
+            if (!personConfig.personConfigValid()) {
+                out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
+                return;
+            }
+            //sync dir
+            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
+                out.print(callback + "(\'" + pid + "\',\'error\', \'directory is deleted\');");
+                return;
+            }
+            personConfig.setEnableLocalCombo(!personConfig.isEnableLocalCombo());
+            userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
+            tState = personConfig.isEnableLocalCombo() ? "true" : "false";
         } else if (pid.equalsIgnoreCase("bindDir")) {
             //sync subDir
             if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {

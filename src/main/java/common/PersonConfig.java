@@ -80,6 +80,19 @@ public class PersonConfig {
         this.userDO = userDO;
     }
 
+    public boolean isEnableLocalCombo() {
+        if(personConfigValid()) {
+            return this.userDO.isEnableLocalCombo();
+        } else {
+//            return configCenter.isEnableLocalCombo();
+            return false;
+        }
+    }
+
+    public void setEnableLocalCombo(boolean enableLocalCombo) {
+        this.userDO.setEnableLocalCombo(enableLocalCombo);
+    }
+
     /**
      * 判断是否是新人
      * 这里的新人有2种可能：

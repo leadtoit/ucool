@@ -83,4 +83,16 @@ public class UserDO {
             config = config & ~(1 << 2);
         }
     }
+
+    public boolean isEnableLocalCombo() {
+        return (config & 8) == 8;
+    }
+
+    public void setEnableLocalCombo(boolean enableLocalCombo) {
+        if (enableLocalCombo) {
+            config = config | 1 << 3;
+        } else {
+            config = config & ~(1 << 3);
+        }
+    }
 }

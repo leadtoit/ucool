@@ -158,6 +158,7 @@
             font-weight:normal;
             height: 32px;
             line-height: 32px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -245,19 +246,24 @@
             <div class="bd">
                 <table>
                     <tr>
-                        <th>DEBUG MODE：</th>
+                        <th>DEBUG 模式：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isUcoolAssetsDebug())%>" id="assetsdebugswitch"></a></td>
                         <td class="note">打开后切换所有js和css都显示源码</td>
                     </tr>
                     <tr>
-                        <th>BIND PRE-RELEASE ENV：</th>
+                        <th>绑定预发环境：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isPrepub())%>" id="bindPrepub"></a></td>
                         <td class="note">打开后切换到预发环境</td>
                     </tr>
                     <tr>
-                        <th>USE ASSETS：</th>
+                        <th>使用 Assets 目录：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableAssets())%>" id="enableAssets"></a></td>
                         <td class="note">打开后启用服务器上的assets目录中的文件</td>
+                    </tr>
+                    <tr>
+                        <th>启用本地combo：</th>
+                        <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
+                        <td class="note">根据根目录的配置文件可以将一个文件以combo的形式拆分</td>
                     </tr>
                     <%--<tr>--%>
                         <%--<th>RELEASE CACHE：</th>--%>
@@ -380,6 +386,7 @@
                 S.get('#assetsdebugswitch').className='';
                 S.get('#bindPrepub').className='';
                 S.get('#enableAssets').className='';
+                S.get('#enableLocalCombo').className='';
                 if(ConfigParser.isEnableDebug(config)) {
                     DOM.addClass('#assetsdebugswitch', 'switch-open');
                 } else {
@@ -395,6 +402,11 @@
                 } else {
                     DOM.addClass('#enableAssets', 'switch-close');
                 }
+                if(ConfigParser.isEnableLocalCombo(config)) {
+                    DOM.addClass('#enableLocalCombo', 'switch-open');
+                } else {
+                    DOM.addClass('#enableLocalCombo', 'switch-close');
+                }
             };
 
             var ConfigParser = {
@@ -406,6 +418,9 @@
                 },
                 isEnableAssets : function(config) {
                     return (config & 4) == 4;
+                },
+                isEnableLocalCombo : function(config) {
+                    return (config & 8) == 8;
                 }
             };
 
@@ -422,6 +437,9 @@
                     });
                     Event.on('#enableAssets', 'click', function(e) {
                         S.getScript("ppzbg.jsp?" + "pid=enableAssets&callback=UCOOL.Pz.change&t=" + new Date());
+                    });
+                    Event.on('#enableLocalCombo', 'click', function(e) {
+                        S.getScript("ppzbg.jsp?" + "pid=enableLocalCombo&callback=UCOOL.Pz.change&t=" + new Date());
                     });
                     Event.on('#root-bind', 'change', function(e) {
                         DOM.hide('#J_BoxSwitch');
