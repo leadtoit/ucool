@@ -23,7 +23,7 @@ public class UrlExecutor {
 
     private ConfigCenter configCenter;
 
-    private static String LOCAL_COMBO_CONFIG_NAME = "/combo.cfg";
+    private static String LOCAL_COMBO_CONFIG_NAME = "/combo.properties";
 
     public void setFileEditor(FileEditor fileEditor) {
         this.fileEditor = fileEditor;
@@ -49,43 +49,8 @@ public class UrlExecutor {
         if (findAssetsFile(filePath, personConfig)) {
             this.fileEditor.pushFileOutputStream(out, loadExistFileStream(filePath, "gbk", personConfig), filePath);
         } else {
-            //当用户目录配置了特殊需要反向combo的文件，需要特殊特殊处理
-            if(personConfig.isEnableLocalCombo()) {
-                //read properties
-                Properties p = new Properties();
-                String root = personConfig.getUcoolAssetsRoot();
-                StringBuilder sb = new StringBuilder();
-                sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(LOCAL_COMBO_CONFIG_NAME);
-                try {
-                    File comboFile = new File(sb.toString());
-                    if(comboFile.exists() && comboFile.canRead()) {
-                        FileReader fileReader = new FileReader(comboFile);
-                        p.load(fileReader);
-                        fileReader.close();
-                    }
-                } catch (IOException e) {
-                }
-                if(!p.isEmpty()) {
-                    //url replace
-                    boolean matchUrl = false;
-                    for (Map.Entry<Object, Object> objectObjectEntry : p.entrySet()) {
-                        if (((String) objectObjectEntry.getKey()).indexOf(filePath) != -1) {
-                            String newUrl = (String) objectObjectEntry.getValue();
-                            newUrl = newUrl.replace("{baseUrl}", requestInfo.getServerName());
-                            newUrl = "http://" + newUrl + UrlTools.getParam(realUrl);
-                            //简单校验，不能同一文件循环请求
-                            if (newUrl.indexOf((String) objectObjectEntry.getKey()) == -1) {
-                                realUrl = newUrl;
-                                matchUrl = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (matchUrl) {
-                        readUrlFile(realUrl, out);
-                        return;
-                    }
-                }
+            if(validateLocalCombo(requestInfo, out, personConfig)) {
+                return;
             }
             if (!readUrlFile(realUrl, out)) {
                 if (personConfig.isUcoolAssetsDebug()) {
@@ -106,9 +71,54 @@ public class UrlExecutor {
         if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
             this.fileEditor.pushFileOutputStream(out, loadExistFileStream(requestInfo.getFilePath(), "gbk", personConfig), requestInfo.getFilePath());
         } else {
+            if(validateLocalCombo(requestInfo, out, personConfig)) {
+                return;
+            }
             //最后的保障，如果缓存失败了，从线上取吧
             readUrlFile(requestInfo.getFullUrl(), out);
         }
+    }
+
+    private boolean validateLocalCombo(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
+        //当用户目录配置了特殊需要反向combo的文件，需要特殊特殊处理
+        if(personConfig.isEnableLocalCombo()) {
+            //read properties
+            Properties p = new Properties();
+            StringBuilder sb = new StringBuilder();
+            sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(LOCAL_COMBO_CONFIG_NAME);
+            try {
+                File comboFile = new File(sb.toString());
+                if(comboFile.exists() && comboFile.canRead()) {
+                    FileReader fileReader = new FileReader(comboFile);
+                    p.load(fileReader);
+                    fileReader.close();
+                }
+            } catch (IOException e) {
+            }
+            if(!p.isEmpty()) {
+                //url replace
+                boolean matchUrl = false;
+                for (Map.Entry<Object, Object> objectObjectEntry : p.entrySet()) {
+                    if (((String) objectObjectEntry.getKey()).indexOf(requestInfo.getFilePath()) != -1) {
+                        String newUrl = (String) objectObjectEntry.getValue();
+                        newUrl = newUrl.replace("{baseUrl}", requestInfo.getServerName());
+                        newUrl = "http://" + newUrl + UrlTools.getParam(requestInfo.getRealUrl());
+                        //简单校验，不能同一文件循环请求
+                        if (newUrl.indexOf((String) objectObjectEntry.getKey()) == -1) {
+                            requestInfo.setRealUrl(newUrl);
+                            matchUrl = true;
+                            break;
+                        }
+                    }
+                }
+                if (matchUrl) {
+                    out.println("/*ucool local combo matched:"+requestInfo.getFilePath()+ "*/");
+                    readUrlFile(requestInfo.getRealUrl(), out);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

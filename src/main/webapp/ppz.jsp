@@ -42,12 +42,34 @@
         }
         #header .version {
             position:absolute;
-            right: 0;
-            bottom:0;
             color:#996;
             font-size:14px;
+            left: 350px;
+            top: 50px;
         }
-        #header h1{
+        #header .new {
+            position:absolute;
+            right:0;
+            bottom:0;
+            color: #999966;
+        }
+        #header .new i {
+            width:16px;
+            height:16px;
+            background-color: #feab1b;
+            color: #fff;
+            font-style: normal;
+            display: inline-block;
+            text-align:center;
+            font-weight:bold;
+            margin-right: 5px;
+            font-size: 11px;
+            outline: none;
+            -moz-border-radius:8px;
+            -webkit-border-radius: 8px;
+            border-radius: 8px;
+        }
+        #header h1, #header h1 a{
             color: #54a700;
             font-size:42px;
             line-height:86px;
@@ -77,8 +99,7 @@
             padding-left:50px;
         }
         #content .box table {
-            width:760px;
-            font-size:14px;
+            width:850px;
             margin-top: 20px;
         }
         #content .box table th {
@@ -88,6 +109,7 @@
             line-height:32px;
             font-weight:normal;
             width:30%;
+            font-size: 14px;
         }
         #content .box table td {
             text-align:left;
@@ -153,12 +175,21 @@
             border: 1px solid #000000;
             width:150px;
         }
-        .title {
-            color: #666666;
-            font-weight:normal;
-            height: 32px;
-            line-height: 32px;
-            font-size: 14px;
+        .lab {
+            background-color: #0b0;
+            color:#fff;
+            display: inline-block;
+            text-align: center;
+            width: 25px;
+            font-size: 10px;
+            line-height: 12px;
+            -moz-border-radius:1px;
+            -webkit-border-radius:1px;
+            border-radius:1px;
+        }
+        .howtouse {
+            color: #f60;
+            margin: auto 5px;
         }
     </style>
 </head>
@@ -174,71 +205,81 @@
 <div id="page">
     <div id="header">
         <div class="top">
-            <h1>ucool config page</h1>
+            <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
             <a class="version" href="http://code.google.com/p/ucool">ucool-pro version：0.3 beta</a>
+            <a class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start"><i>?</i>What's new？</a>
         </div>
     </div>
     <div id="content">
         <div class="box">
             <div class="hd"><h3>INFO</h3></div>
             <div class="bd">
-                <p><span class="title">当前的机器名：</span><%=request.getRemoteHost()%></p>
-                <div id="dir">
-                    <label for="dir-bind" class="title">请选择一个绑定目录：</label>
-                    <select name="root-bind" id="root-bind" autocomplete="off">
-                        <%
-                            List<String> assetsSubDirs = fileEditor.getAssetsSubDirs();
-                            String curDirName = "";
-                            if (!personConfig.isNewUser()) {
-                                curDirName = personConfig.getUserDO().getName();
-                                if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
-                                    personConfig.getUserDO().setName("");
-                                    curDirName = "";
-                                }
-                            }
-                            String rootName = "", subName = "";
-                            if (!curDirName.isEmpty()) {
-                                String[] dirs = curDirName.split("/");
-                                if (dirs.length > 1) {
-                                    rootName = dirs[0];
-                                    subName = dirs[1];
-                                }
-                            }
-                            out.print("<option value='-1'>无绑定目录</option>");
-                            if (assetsSubDirs.size() > 0) {
-                                for (String assetsSubDir : assetsSubDirs) {
-                                    if (assetsSubDir.equals(rootName)) {
-                                        out.print("<option selected='selected' value=" + assetsSubDir + ">");
-                                    } else {
-                                        out.print("<option value=" + assetsSubDir + ">");
-                                    }
-                                    out.print(assetsSubDir);
-                                    out.print("</option>");
-                                }
-                            }
-                        %>
-                    </select>　/　
-                    <select name="dir-bind" id="dir-bind" autocomplete="off">
-                        <%
-                            List<String> subDirs = fileEditor.getAssetsSubDirs(rootName);
-                            out.print("<option value='-1'>无绑定子目录</option>");
-                            if (subDirs.size() > 0) {
-                                for (String subDir : subDirs) {
-                                    if (subDir.equals(subName)) {
-                                        out.print("<option selected='selected' value=" + subDir + ">");
-                                    } else {
-                                        out.print("<option value=" + subDir + ">");
-                                    }
-                                    out.print(subDir);
-                                    out.print("</option>");
-                                }
-                            }
-                        %>
-                    </select>
-
-                    <div id="message" style="display:none"><img
-                            src='http://img02.taobaocdn.com/tps/i2/T1JSdAXd0nXXXXXXXX-32-32.gif'/></div>
-                </div>
+                <table>
+                    <tr>
+                        <th>当前的机器名（唯一）：</th>
+                        <td><%=request.getRemoteHost()%>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>请选择一个绑定目录：</th>
+                        <td>
+                            <div id="dir">
+                                <select name="root-bind" id="root-bind" autocomplete="off">
+                                    <%
+                                        List<String> assetsSubDirs = fileEditor.getAssetsSubDirs();
+                                        String curDirName = "";
+                                        if (!personConfig.isNewUser()) {
+                                            curDirName = personConfig.getUserDO().getName();
+                                            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
+                                                personConfig.getUserDO().setName("");
+                                                curDirName = "";
+                                            }
+                                        }
+                                        String rootName = "", subName = "";
+                                        if (!curDirName.isEmpty()) {
+                                            String[] dirs = curDirName.split("/");
+                                            if (dirs.length > 1) {
+                                                rootName = dirs[0];
+                                                subName = dirs[1];
+                                            }
+                                        }
+                                        out.print("<option value='-1'>无绑定目录</option>");
+                                        if (assetsSubDirs.size() > 0) {
+                                            for (String assetsSubDir : assetsSubDirs) {
+                                                if (assetsSubDir.equals(rootName)) {
+                                                    out.print("<option selected='selected' value=" + assetsSubDir + ">");
+                                                } else {
+                                                    out.print("<option value=" + assetsSubDir + ">");
+                                                }
+                                                out.print(assetsSubDir);
+                                                out.print("</option>");
+                                            }
+                                        }
+                                    %>
+                                </select>　/　
+                                <select name="dir-bind" id="dir-bind" autocomplete="off">
+                                    <%
+                                        List<String> subDirs = fileEditor.getAssetsSubDirs(rootName);
+                                        out.print("<option value='-1'>无绑定子目录</option>");
+                                        if (subDirs.size() > 0) {
+                                            for (String subDir : subDirs) {
+                                                if (subDir.equals(subName)) {
+                                                    out.print("<option selected='selected' value=" + subDir + ">");
+                                                } else {
+                                                    out.print("<option value=" + subDir + ">");
+                                                }
+                                                out.print(subDir);
+                                                out.print("</option>");
+                                            }
+                                        }
+                                    %>
+                                </select>
+                                <div id="message" style="display:none"><img
+                                        src='http://img02.taobaocdn.com/tps/i2/T1JSdAXd0nXXXXXXXX-32-32.gif'/></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
         <div id="J_BoxSwitch" class="box switch <%=personConfig.personConfigValid()?"":"hidden"%>">
@@ -261,9 +302,9 @@
                         <td class="note">打开后启用服务器上的assets目录中的文件</td>
                     </tr>
                     <tr>
-                        <th>启用本地combo：</th>
+                        <th>启用本地combo：<sup class="lab">lab</sup></th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
-                        <td class="note">根据根目录的配置文件可以将一个文件以combo的形式拆分</td>
+                        <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo" class="howtouse">how to use?</a></td>
                     </tr>
                     <%--<tr>--%>
                         <%--<th>RELEASE CACHE：</th>--%>
