@@ -1,1 +1,8 @@
-we use another way to resove problem!
+ucool-pro是 ucool 的多人升级版本，致力于在前端和开发的交互方面提供给力的帮助。
+
+一些优势：
+1、实时代理css、js，让fiddler成为过去
+2、js debug快速定位，轻松调试
+3、无缝切换线上/预发环境，免去host绑定
+4、和开发连调，无需部署，实时修改，实时生效
+5、作为assets的备份，随时查看过去的assets

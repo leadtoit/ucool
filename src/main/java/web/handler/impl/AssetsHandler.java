@@ -3,6 +3,7 @@ package web.handler.impl;
 import common.*;
 import common.tools.HttpTools;
 import common.tools.UrlTools;
+import dao.entity.RequestInfo;
 import web.handler.Handler;
 import web.url.UrlExecutor;
 
@@ -100,7 +101,11 @@ public class AssetsHandler implements Handler {
         PrintWriter out = response.getWriter();
         //尝试debug下所有的直接走source，不走cache
         //线上缓存已经迁移至ucool-proxy
-        urlExecutor.doDebugUrlRule(filePath, realUrl, fullUrl, out, personConfig);
+        RequestInfo requestInfo = new RequestInfo(request);
+        requestInfo.setFilePath(filePath);
+        requestInfo.setRealUrl(realUrl);
+        requestInfo.setFullUrl(fullUrl);
+        urlExecutor.doDebugUrlRule(requestInfo, out, personConfig);
     }
 
     public String attachOper(String fullUrl, HttpServletRequest request) {

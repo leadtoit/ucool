@@ -60,8 +60,6 @@ public class FileEditor {
             file.getParentFile().mkdirs();
         }
         file.createNewFile();
-        FileWriter fw = new FileWriter(file);
-        fw.close();
     }
 
     /**

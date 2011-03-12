@@ -125,4 +125,8 @@ public class UrlTools {
         }
         return filePath;
     }
+
+    public static String getParam(String realUrl) {
+        return realUrl.substring(realUrl.lastIndexOf("?"));
+    }
 }

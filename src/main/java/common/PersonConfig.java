@@ -1,7 +1,9 @@
 package common;
 
-import common.tools.HttpTools;
 import dao.entity.UserDO;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>
@@ -72,6 +74,22 @@ public class PersonConfig {
         }
     }
 
+    /**
+     * 获取用户的根目录
+     * 只有绑定了的用户才会有返回
+     * @return
+     */
+    public String getUserRootDir() {
+        if(personConfigValid()) {
+            Pattern pat = Pattern.compile("^[^/]+");
+            Matcher mat = pat.matcher(userDO.getName());
+            if (mat.find()) {
+                 return "/" + mat.group();
+            }
+        }
+        return "/";
+    }
+
     public UserDO getUserDO() {
         return userDO;
     }
@@ -80,13 +98,12 @@ public class PersonConfig {
         this.userDO = userDO;
     }
 
+    /**
+     * 是否启用本地combo
+     * @return
+     */
     public boolean isEnableLocalCombo() {
-        if(personConfigValid()) {
-            return this.userDO.isEnableLocalCombo();
-        } else {
-//            return configCenter.isEnableLocalCombo();
-            return false;
-        }
+        return personConfigValid() && this.userDO.isEnableLocalCombo();
     }
 
     public void setEnableLocalCombo(boolean enableLocalCombo) {
@@ -106,24 +123,6 @@ public class PersonConfig {
 
     public void setNewUser(boolean newUser) {
         this.newUser = newUser;
-    }
-
-    /**
-     * 解析配置字符串
-     *
-     * @param configString of type String
-     */
-    public void parseConfigString(String configString) {
-        // set userDO
-        String[] configStrings = configString.split(HttpTools.filterSpecialChar(":"));
-        if(userDO == null) {
-            userDO = new UserDO();
-        }
-        userDO.setId(Long.valueOf(configStrings[0]));
-        userDO.setHostName(configStrings[1].equals("null") ? null:configStrings[1]);
-        userDO.setName(configStrings[2].equals("null") ? null:configStrings[2]);
-        userDO.setConfig(configStrings[3].equals("null") ? 5:Integer.parseInt(configStrings[3]));
-        this.setNewUser(configStrings[4].equals("true"));
     }
 
     /**

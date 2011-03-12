@@ -2,6 +2,7 @@ package web.handler.impl;
 
 import common.tools.HttpTools;
 import common.PersonConfig;
+import dao.entity.RequestInfo;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -77,7 +78,11 @@ public class ComboHandler extends AssetsHandler {
 
             //尝试debug下所有的直接走source，不走cache
             //线上缓存已经迁移至ucool-proxy
-            getUrlExecutor().doDebugUrlRule(singleFilePath, singleRealUrl, singleFullUrl, out, personConfig);
+            RequestInfo requestInfo = new RequestInfo(request);
+            requestInfo.setFilePath(singleFilePath);
+            requestInfo.setRealUrl(singleRealUrl);
+            requestInfo.setFullUrl(singleFullUrl);
+            getUrlExecutor().doDebugUrlRule(requestInfo, out, personConfig);
         }
 
     }
