@@ -206,7 +206,7 @@
     <div id="header">
         <div class="top">
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
-            <a class="version" href="http://code.google.com/p/ucool">ucool-pro version£º0.3 beta</a>
+            <a class="version" href="https://github.com/czy88840616/ucool">ucool-pro version£º0.3 beta</a>
             <a class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start"><i>?</i>What's new£¿</a>
         </div>
     </div>

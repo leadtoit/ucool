@@ -25,6 +25,10 @@ public class UrlExecutor {
 
     private static String LOCAL_COMBO_CONFIG_NAME = "/combo.properties";
 
+    private static String PERSON_CONFIG_NAME = "/my.properties";
+
+    private static String ENCODING_CORRECT = "my.encoding.list";
+
     public void setFileEditor(FileEditor fileEditor) {
         this.fileEditor = fileEditor;
     }
@@ -47,7 +51,7 @@ public class UrlExecutor {
         String realUrl = requestInfo.getRealUrl();
         String fullUrl = requestInfo.getFullUrl();
         if (findAssetsFile(filePath, personConfig)) {
-            this.fileEditor.pushFileOutputStream(out, loadExistFileStream(filePath, "gbk", personConfig), filePath);
+            this.fileEditor.pushFileOutputStream(out, loadExistFileStream(filePath, getConfigEncoding(requestInfo, personConfig), personConfig), filePath);
         } else {
             if(validateLocalCombo(requestInfo, out, personConfig)) {
                 return;
@@ -67,9 +71,10 @@ public class UrlExecutor {
         }
     }
 
+
     public void doDebugUrlRuleCopy(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
         if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
-            this.fileEditor.pushFileOutputStream(out, loadExistFileStream(requestInfo.getFilePath(), "gbk", personConfig), requestInfo.getFilePath());
+            this.fileEditor.pushFileOutputStream(out, loadExistFileStream(requestInfo.getFilePath(), getConfigEncoding(requestInfo, personConfig), personConfig), requestInfo.getFilePath());
         } else {
             if(validateLocalCombo(requestInfo, out, personConfig)) {
                 return;
@@ -77,6 +82,39 @@ public class UrlExecutor {
             //最后的保障，如果缓存失败了，从线上取吧
             readUrlFile(requestInfo.getFullUrl(), out);
         }
+    }
+
+        /**
+     * 根据当前用户的配置获取文件编码
+     *
+     * @param requestInfo
+     * @param personConfig
+     * @return
+     */
+    private String getConfigEncoding(RequestInfo requestInfo, PersonConfig personConfig) {
+        //read properties
+        Properties p = new Properties();
+        StringBuilder sb = new StringBuilder();
+        sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(PERSON_CONFIG_NAME);
+        try {
+            File comboFile = new File(sb.toString());
+            if(comboFile.exists() && comboFile.canRead()) {
+                FileReader fileReader = new FileReader(comboFile);
+                p.load(fileReader);
+                fileReader.close();
+            }
+        } catch (IOException e) {
+        }
+        if(!p.isEmpty()) {
+            String utfFiles = p.getProperty(ENCODING_CORRECT);
+            String[] utfLists = utfFiles.split(",");
+            for (String utfList : utfLists) {
+                if (requestInfo.getFilePath().indexOf(utfList) != -1) {
+                    return "utf-8";
+                }
+            }
+        }
+        return "gbk";
     }
 
     private boolean validateLocalCombo(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
