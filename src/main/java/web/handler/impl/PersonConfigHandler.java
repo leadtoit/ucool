@@ -42,7 +42,7 @@ public class PersonConfigHandler {
         String remoteHost = request.getRemoteHost();
         String querySring = request.getQueryString();
         String pcname = null;
-        if(querySring.indexOf("pcname") != -1) {
+        if(querySring != null && querySring.indexOf("pcname") != -1) {
             Matcher matc = Pattern.compile("(?<=pcname=)[^?&]+").matcher(querySring);
 
             if (matc.find()) {
