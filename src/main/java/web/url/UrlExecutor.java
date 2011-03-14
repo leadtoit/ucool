@@ -50,12 +50,12 @@ public class UrlExecutor {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
         String fullUrl = requestInfo.getFullUrl();
+        if (validateLocalCombo(requestInfo, out, personConfig)) {
+            return;
+        }
         if (findAssetsFile(filePath, personConfig)) {
             this.fileEditor.pushFileOutputStream(out, loadExistFileStream(filePath, getConfigEncoding(requestInfo, personConfig), personConfig), filePath);
         } else {
-            if(validateLocalCombo(requestInfo, out, personConfig)) {
-                return;
-            }
             if (!readUrlFile(realUrl, out)) {
                 if (personConfig.isUcoolAssetsDebug()) {
                     //debug mode下如果请求-min的源文件a.js，会出现请求a.source.js的情况，到这里处理
@@ -73,18 +73,18 @@ public class UrlExecutor {
 
 
     public void doDebugUrlRuleCopy(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
+        if (validateLocalCombo(requestInfo, out, personConfig)) {
+            return;
+        }
         if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
             this.fileEditor.pushFileOutputStream(out, loadExistFileStream(requestInfo.getFilePath(), getConfigEncoding(requestInfo, personConfig), personConfig), requestInfo.getFilePath());
         } else {
-            if(validateLocalCombo(requestInfo, out, personConfig)) {
-                return;
-            }
             //最后的保障，如果缓存失败了，从线上取吧
             readUrlFile(requestInfo.getFullUrl(), out);
         }
     }
 
-        /**
+    /**
      * 根据当前用户的配置获取文件编码
      *
      * @param requestInfo

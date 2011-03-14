@@ -187,7 +187,7 @@
             -webkit-border-radius:1px;
             border-radius:1px;
         }
-        .howtouse {
+        a {
             color: #f60;
             margin: auto 5px;
         }
@@ -206,7 +206,7 @@
     <div id="header">
         <div class="top">
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
-            <a class="version" href="https://github.com/czy88840616/ucool">ucool-pro version：0.3 beta</a>
+            <a class="version" href="https://github.com/czy88840616/ucool">ucool-pro version：0.3 beta2</a>
             <a class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start"><i>?</i>What's new？</a>
         </div>
     </div>
@@ -218,6 +218,7 @@
                     <tr>
                         <th>当前的机器名（唯一）：</th>
                         <td><%=request.getRemoteHost()%>
+                            （当此值为null或者不存在，请参考<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:open_ued_port">手动打开UDP 137端口</a>）
                         </td>
                     </tr>
                     <tr>
@@ -304,7 +305,7 @@
                     <tr>
                         <th>启用本地combo：<sup class="lab">lab</sup></th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
-                        <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo" class="howtouse">how to use?</a></td>
+                        <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo">how to use?</a></td>
                     </tr>
                     <%--<tr>--%>
                         <%--<th>RELEASE CACHE：</th>--%>
