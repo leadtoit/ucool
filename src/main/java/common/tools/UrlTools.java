@@ -127,6 +127,10 @@ public class UrlTools {
     }
 
     public static String getParam(String realUrl) {
-        return realUrl.substring(realUrl.lastIndexOf("?"));
+        int pos = realUrl.lastIndexOf("?");
+        if(pos != -1)
+            return realUrl.substring(realUrl.lastIndexOf("?"));
+        else
+            return "";
     }
 }

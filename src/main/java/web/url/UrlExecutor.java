@@ -150,6 +150,13 @@ public class UrlExecutor {
                     }
                 }
                 if (matchUrl) {
+                    String realUrl = requestInfo.getRealUrl();
+                    if(realUrl.indexOf("?") != -1) {
+                        realUrl += ("?pcname=" + personConfig.getUserDO().getHostName());
+                    } else {
+                        realUrl += ("&pcname=" + personConfig.getUserDO().getHostName());
+                    }
+                    requestInfo.setRealUrl(realUrl);
                     out.println("/*ucool local combo matched:"+requestInfo.getFilePath()+ "*/");
                     readUrlFile(requestInfo.getRealUrl(), out);
                     return true;

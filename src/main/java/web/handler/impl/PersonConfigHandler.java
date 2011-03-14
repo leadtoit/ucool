@@ -8,6 +8,8 @@ import dao.entity.UserDO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>
@@ -38,7 +40,20 @@ public class PersonConfigHandler {
     public PersonConfig doHandler(HttpServletRequest request)
             throws IOException, ServletException {
         String remoteHost = request.getRemoteHost();
-        if (remoteHost == null) {
+        String querySring = request.getQueryString();
+        String pcname = null;
+        if(querySring.indexOf("pcname") != -1) {
+            Matcher matc = Pattern.compile("(?<=pcname=)[^?&]+").matcher(querySring);
+
+            if (matc.find()) {
+                pcname = matc.group();
+            }
+        }
+
+        //本地combo二次请求的时候机器名只能这样带过来
+        if (pcname != null) {
+            remoteHost = pcname.toString();
+        } else if (remoteHost == null){
             remoteHost = request.getRemoteAddr();
         }
         UserDO personInfo = this.userDAO.getPersonInfo(remoteHost);
