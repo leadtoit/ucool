@@ -102,17 +102,21 @@ public class UrlExecutor {
         }
         if(!p.isEmpty()) {
             String whileList = p.getProperty(MyConfig.ENCODING_CORRECT_WHITE_LIST);
-            String[] gbkLists = whileList.split(",");
-            for (String gbkList : gbkLists) {
-                if (requestInfo.getFilePath().indexOf(gbkList) != -1) {
-                    return "gbk";
+            if(whileList != null && !whileList.isEmpty()) {
+                String[] gbkLists = whileList.split(",");
+                for (String gbkList : gbkLists) {
+                    if (requestInfo.getFilePath().indexOf(gbkList) != -1) {
+                        return "gbk";
+                    }
                 }
             }
             String utfFiles = p.getProperty(MyConfig.ENCODING_CORRECT);
-            String[] utfLists = utfFiles.split(",");
-            for (String utfList : utfLists) {
-                if (requestInfo.getFilePath().indexOf(utfList) != -1) {
-                    return "utf-8";
+            if(utfFiles != null && !utfFiles.isEmpty()) {
+                String[] utfLists = utfFiles.split(",");
+                for (String utfList : utfLists) {
+                    if (requestInfo.getFilePath().indexOf(utfList) != -1) {
+                        return "utf-8";
+                    }
                 }
             }
         }
