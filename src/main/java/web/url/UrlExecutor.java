@@ -2,6 +2,7 @@ package web.url;
 
 import biz.file.FileEditor;
 import common.ConfigCenter;
+import common.MyConfig;
 import common.PersonConfig;
 import common.tools.UrlTools;
 import dao.entity.RequestInfo;
@@ -22,12 +23,6 @@ public class UrlExecutor {
     private FileEditor fileEditor;
 
     private ConfigCenter configCenter;
-
-    private static String LOCAL_COMBO_CONFIG_NAME = "/combo.properties";
-
-    private static String PERSON_CONFIG_NAME = "/my.properties";
-
-    private static String ENCODING_CORRECT = "my.encoding.list";
 
     public void setFileEditor(FileEditor fileEditor) {
         this.fileEditor = fileEditor;
@@ -95,7 +90,7 @@ public class UrlExecutor {
         //read properties
         Properties p = new Properties();
         StringBuilder sb = new StringBuilder();
-        sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(PERSON_CONFIG_NAME);
+        sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(MyConfig.PERSON_CONFIG_NAME);
         try {
             File comboFile = new File(sb.toString());
             if(comboFile.exists() && comboFile.canRead()) {
@@ -106,7 +101,14 @@ public class UrlExecutor {
         } catch (IOException e) {
         }
         if(!p.isEmpty()) {
-            String utfFiles = p.getProperty(ENCODING_CORRECT);
+            String whileList = p.getProperty(MyConfig.ENCODING_CORRECT_WHITE_LIST);
+            String[] gbkLists = whileList.split(",");
+            for (String gbkList : gbkLists) {
+                if (requestInfo.getFilePath().indexOf(gbkList) != -1) {
+                    return "gbk";
+                }
+            }
+            String utfFiles = p.getProperty(MyConfig.ENCODING_CORRECT);
             String[] utfLists = utfFiles.split(",");
             for (String utfList : utfLists) {
                 if (requestInfo.getFilePath().indexOf(utfList) != -1) {
@@ -123,7 +125,7 @@ public class UrlExecutor {
             //read properties
             Properties p = new Properties();
             StringBuilder sb = new StringBuilder();
-            sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(LOCAL_COMBO_CONFIG_NAME);
+            sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
             try {
                 File comboFile = new File(sb.toString());
                 if(comboFile.exists() && comboFile.canRead()) {
