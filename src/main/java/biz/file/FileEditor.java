@@ -80,7 +80,7 @@ public class FileEditor {
             if(!skipCommet) {
                 out.println("/*ucool filePath=" + fileUrl + "*/");
             }
-            if(line.charAt(0) == 65279) {
+            if(line.length() > 0 && line.charAt(0) == 65279) {
                 line = line.substring(1);
             }
             out.println(line);
@@ -100,6 +100,7 @@ public class FileEditor {
             pushStream(out, in, filePath, false);
         } catch(Exception e) {
             //捕获所有异常，这里有可能缓存失败，所以取不到文件
+            System.out.println("file has exception" +  e);
         }
     }
 
