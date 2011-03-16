@@ -80,6 +80,9 @@ public class FileEditor {
             if(!skipCommet) {
                 out.println("/*ucool filePath=" + fileUrl + "*/");
             }
+            if(line.charAt(0) == 65279) {
+                line = line.substring(1);
+            }
             out.println(line);
             out.flush();
         }
