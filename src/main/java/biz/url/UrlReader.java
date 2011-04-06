@@ -1,7 +1,5 @@
 package biz.url;
 
-import common.ConfigCenter;
-
 import javax.servlet.ServletOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +26,7 @@ public class UrlReader {
             String first = new String(firstline, 0, n);
             if(first.equals("/*not found*/")) {
                 inputStream.close();
-                outputStream.close();
+//                outputStream.close();
                 return false;
             } else {
                 if (!skipCommet) {
@@ -44,7 +42,6 @@ public class UrlReader {
         }
         inputStream.close();
         outputStream.flush();
-        outputStream.close();
         return true;
     }
 }

@@ -8,6 +8,7 @@ import web.handler.Handler;
 import web.url.UrlExecutor;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -92,13 +93,12 @@ public class AssetsHandler implements Handler {
         realUrl = urlTools.urlFilter(realUrl, isOnline, personConfig);
         fullUrl = urlTools.urlFilter(fullUrl, isOnline, personConfig);
 
-        response.setCharacterEncoding("gbk");
         if(filePath.indexOf(".css") != -1) {
             response.setContentType("text/css");
         } else {
             response.setContentType("application/x-javascript");
         }
-        PrintWriter out = response.getWriter();
+        ServletOutputStream out = response.getOutputStream();
         //尝试debug下所有的直接走source，不走cache
         //线上缓存已经迁移至ucool-proxy
         RequestInfo requestInfo = new RequestInfo(request);

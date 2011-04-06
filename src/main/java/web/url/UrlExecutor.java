@@ -1,12 +1,14 @@
 package web.url;
 
 import biz.file.FileEditor;
+import biz.url.UrlReader;
 import common.ConfigCenter;
 import common.MyConfig;
 import common.PersonConfig;
 import common.tools.UrlTools;
 import dao.entity.RequestInfo;
 
+import javax.servlet.ServletOutputStream;
 import java.io.*;
 import java.net.URL;
 import java.util.Map;
@@ -24,6 +26,8 @@ public class UrlExecutor {
 
     private ConfigCenter configCenter;
 
+    private UrlReader urlReader;
+
     public void setFileEditor(FileEditor fileEditor) {
         this.fileEditor = fileEditor;
     }
@@ -32,16 +36,20 @@ public class UrlExecutor {
         this.configCenter = configCenter;
     }
 
+    public void setUrlReader(UrlReader urlReader) {
+        this.urlReader = urlReader;
+    }
+
     /**
      * 为debug模式特殊处理url请求，不走cache
      *
      * @param requestInfo
-     * @param out      of type PrintWriter
+     * @param out      of type ServletOutputStream
      * @param personConfig
      * @author zhangting
      * @since 10-10-29 上午9:51
      */
-    public void doDebugUrlRule(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
+    public void doDebugUrlRule(RequestInfo requestInfo, ServletOutputStream out, PersonConfig personConfig) {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
         String fullUrl = requestInfo.getFullUrl();
@@ -49,7 +57,12 @@ public class UrlExecutor {
             return;
         }
         if (findAssetsFile(filePath, personConfig)) {
-            this.fileEditor.pushFileOutputStream(out, loadExistFileStream(filePath, getConfigEncoding(requestInfo, personConfig), personConfig), filePath);
+            try {
+                this.urlReader.pushStream(out, loadExistFileStream(filePath, personConfig), filePath, false);
+            } catch (IOException e) {
+                //捕获所有异常，这里有可能缓存失败，所以取不到文件
+                System.out.println("file has exception" +  e);
+            }
         } else {
             if (!readUrlFile(realUrl, out)) {
                 if (personConfig.isUcoolAssetsDebug()) {
@@ -67,12 +80,17 @@ public class UrlExecutor {
     }
 
 
-    public void doDebugUrlRuleCopy(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
+    public void doDebugUrlRuleCopy(RequestInfo requestInfo, ServletOutputStream out, PersonConfig personConfig) {
         if (validateLocalCombo(requestInfo, out, personConfig)) {
             return;
         }
         if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
-            this.fileEditor.pushFileOutputStream(out, loadExistFileStream(requestInfo.getFilePath(), getConfigEncoding(requestInfo, personConfig), personConfig), requestInfo.getFilePath());
+            try {
+                this.urlReader.pushStream(out, loadExistFileStream(requestInfo.getFilePath(), personConfig), requestInfo.getFilePath(), false);
+            } catch (IOException e) {
+                //捕获所有异常，这里有可能缓存失败，所以取不到文件
+                System.out.println("file has exception" +  e);
+            }
         } else {
             //最后的保障，如果缓存失败了，从线上取吧
             readUrlFile(requestInfo.getFullUrl(), out);
@@ -123,8 +141,8 @@ public class UrlExecutor {
         return "gbk";
     }
 
-    private boolean validateLocalCombo(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
-        //当用户目录配置了特殊需要反向combo的文件，需要特殊特殊处理
+    private boolean validateLocalCombo(RequestInfo requestInfo, ServletOutputStream out, PersonConfig personConfig) {
+        //当用户目录配置了特殊需要反向combo的文件，需要特殊处理
         if(personConfig.isEnableLocalCombo()) {
             //read properties
             Properties p = new Properties();
@@ -163,7 +181,10 @@ public class UrlExecutor {
                         realUrl += ("&pcname=" + personConfig.getUserDO().getHostName());
                     }
                     requestInfo.setRealUrl(realUrl);
-                    out.println("/*ucool local combo matched:"+requestInfo.getFilePath()+ "*/");
+                    try {
+                        out.println("/*ucool local combo matched:"+requestInfo.getFilePath()+ "*/");
+                    } catch (IOException e) {
+                    }
                     readUrlFile(requestInfo.getRealUrl(), out);
                     return true;
                 }
@@ -214,21 +235,38 @@ public class UrlExecutor {
     }
 
     /**
+     * 返回新的文件流
+     *
+     *
+     * @param filePath of type String
+     * @param personConfig
+     * @return InputStreamReader
+     */
+    private InputStream loadExistFileStream(String filePath, PersonConfig personConfig) {
+        String root = personConfig.getUcoolAssetsRoot();
+        StringBuilder sb = new StringBuilder();
+        sb.append(configCenter.getWebRoot()).append(root).append(filePath);
+        try {
+            return new FileInputStream(sb.toString());
+        } catch (FileNotFoundException e) {
+
+        }
+        return null;
+    }
+
+    /**
      * Method readUrlFile ...
      *
      * @param fullUrl of type String
-     * @param out     of type PrintWriter
+     * @param out     of type ServletOutputStream
      * @return
      */
-    private boolean readUrlFile(String fullUrl, PrintWriter out) {
+    private boolean readUrlFile(String fullUrl, ServletOutputStream out) {
         try {
             URL url = new URL(fullUrl);
-            String encoding = "gbk";
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), encoding));
-            return fileEditor.pushStream(out, in, fullUrl, false);
+            return this.urlReader.pushStream(out, url.openStream(), fullUrl, false);
         } catch (Exception e) {
         }
-//        out.flush();
         return false;
     }
 }

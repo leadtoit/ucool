@@ -5,6 +5,7 @@ import common.PersonConfig;
 import dao.entity.RequestInfo;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -47,13 +48,12 @@ public class ComboHandler extends AssetsHandler {
         String pathPrefix = firstCut[0];    // e.g.:http://a.tbcdn.cn/p/
         String[] allFiles = firstCut[1].split(HttpTools.filterSpecialChar(","));
 
-        response.setCharacterEncoding("gbk");
         if (realUrl.indexOf(".css") != -1) {
             response.setContentType("text/css");
         } else {
             response.setContentType("application/x-javascript");
         }
-        PrintWriter out = response.getWriter();
+        ServletOutputStream out = response.getOutputStream();
 
         boolean isOnline = getConfigCenter().getUcoolOnlineDomain().indexOf(request.getServerName()) != -1;
         boolean isDebugMode = personConfig.isUcoolAssetsDebug() || HttpTools.isReferDebug(request);
