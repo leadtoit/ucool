@@ -1,6 +1,7 @@
 package biz.url;
 
 import javax.servlet.ServletOutputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -22,11 +23,11 @@ public class UrlReader {
     public boolean pushStream(ServletOutputStream outputStream, InputStream inputStream, String fileUrl, boolean skipCommet) throws IOException {
         int n;
         byte[] firstline = new byte[50];
-        if((n = inputStream.read(firstline)) >= 0) {
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+        if((n = bufferedInputStream.read(firstline)) >= 0) {
             String first = new String(firstline, 0, n);
             if(first.equals("/*not found*/")) {
-                inputStream.close();
-//                outputStream.close();
+                bufferedInputStream.close();
                 return false;
             } else {
                 if (!skipCommet) {
@@ -37,10 +38,10 @@ public class UrlReader {
         }
 
         byte[] buf = new byte[1024 * 64];
-        while ((n = inputStream.read(buf)) >= 0) {
+        while ((n = bufferedInputStream.read(buf)) >= 0) {
             outputStream.write(buf, 0, n);
         }
-        inputStream.close();
+        bufferedInputStream.close();
         outputStream.flush();
         return true;
     }
