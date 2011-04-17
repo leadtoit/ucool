@@ -28,6 +28,7 @@ public class UrlReader {
             String first = new String(firstline, 0, n);
             if(first.equals("/*not found*/")) {
                 bufferedInputStream.close();
+                outputStream.flush();
                 return false;
             } else {
                 if (!skipCommet) {
