@@ -308,7 +308,7 @@
                         <td class="note">打开后切换所有js和css都显示源码</td>
                     </tr>
                     <tr>
-                        <th>绑定预发环境：</th>
+                        <th>绑定预发环境（暂不可用）：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isPrepub())%>" id="bindPrepub"></a></td>
                         <td class="note">打开后切换到预发环境</td>
                     </tr>
