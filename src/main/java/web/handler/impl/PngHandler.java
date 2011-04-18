@@ -33,10 +33,20 @@ public class PngHandler implements Handler {
         } else {
             response.setContentType("image/x-icon");
         }
+        String env = "online";
+        if(request.getRequestURL().indexOf("assets.daily.taobao.net") != -1) {
+            env = "daily";
+        }
 
         BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());//Êä³ö»º³åÁ÷
+        String fullUrl = "http://"+ configCenter.getUcoolOnlineIp() + request.getRequestURI();
+        if(fullUrl.indexOf("?") != -1) {
+            fullUrl += "&env=" + env;
+        } else {
+            fullUrl += "?env=" + env;
+        }
         try {
-            URL url = new URL("http://"+ configCenter.getUcoolOnlineIp() + request.getRequestURI());
+            URL url = new URL(fullUrl);
             BufferedInputStream in = new BufferedInputStream(url.openStream());
             byte[] data = new byte[4096];
             int size = in.read(data);
