@@ -1,9 +1,15 @@
 package web.handler.impl;
 
+import biz.url.UrlReader;
 import common.ConfigCenter;
+import common.PersonConfig;
+import common.tools.UrlTools;
+import dao.entity.RequestInfo;
 import web.handler.Handler;
+import web.url.UrlExecutor;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
@@ -19,13 +25,35 @@ public class PngHandler implements Handler {
 
     private ConfigCenter configCenter;
 
+    private PersonConfigHandler personConfigHandler;
+
+    private UrlExecutor urlExecutor;
+
+    private UrlTools urlTools;
+
     public void setConfigCenter(ConfigCenter configCenter) {
         this.configCenter = configCenter;
     }
 
+    public void setPersonConfigHandler(PersonConfigHandler personConfigHandler) {
+        this.personConfigHandler = personConfigHandler;
+    }
+
+    public void setUrlExecutor(UrlExecutor urlExecutor) {
+        this.urlExecutor = urlExecutor;
+    }
+
+    public void setUrlTools(UrlTools urlTools) {
+        this.urlTools = urlTools;
+    }
+
     @Override
     public void doHandler(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        //临时处理下png
+        PersonConfig personConfig = personConfigHandler.doHandler(request);
+        String filePath = (String) request.getAttribute("filePath");
+        String realUrl = (String) request.getAttribute("realUrl");
+        boolean isOnline = configCenter.getUcoolOnlineDomain().indexOf(request.getServerName()) != -1;
+        //处理下png
         if(request.getRequestURI().indexOf("png") != -1) {
             response.setContentType("image/png");
         } else if(request.getRequestURI().indexOf("gif") != -1) {
@@ -38,29 +66,21 @@ public class PngHandler implements Handler {
             env = "daily";
         }
 
-        BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());//输出缓冲流
         String fullUrl = "http://"+ configCenter.getUcoolOnlineIp() + request.getRequestURI();
         if(fullUrl.indexOf("?") != -1) {
             fullUrl += "&env=" + env;
         } else {
             fullUrl += "?env=" + env;
         }
-        try {
-            URL url = new URL(fullUrl);
-            BufferedInputStream in = new BufferedInputStream(url.openStream());
-            byte[] data = new byte[4096];
-            int size = in.read(data);
-            while (size != -1) {
-                bos.write(data, 0, size);
-                size = in.read(data);
-            }
-            in.close();
-            bos.flush();//清空输出缓冲流
-            bos.close();
-            in.close();
-        } catch (Exception e) {
-//            bos.write(new Byte("file not find"));
-        }
-        bos.flush();
+        realUrl = urlTools.urlFilter(realUrl, isOnline, personConfig);
+        fullUrl = urlTools.urlFilter(fullUrl, isOnline, personConfig);
+        ServletOutputStream out = response.getOutputStream();
+        RequestInfo requestInfo = new RequestInfo(request);
+        requestInfo.setFilePath(filePath);
+        requestInfo.setRealUrl(realUrl);
+        requestInfo.setFullUrl(fullUrl);
+        requestInfo.setType("png");
+        urlExecutor.doDebugUrlRule(requestInfo, out, personConfig);
+
     }
 }

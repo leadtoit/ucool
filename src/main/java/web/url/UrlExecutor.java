@@ -58,13 +58,17 @@ public class UrlExecutor {
         }
         if (findAssetsFile(filePath, personConfig)) {
             try {
-                this.urlReader.pushStream(out, loadExistFileStream(filePath, personConfig), filePath, false);
+                this.urlReader.pushStream(out, loadExistFileStream(filePath, personConfig), filePath, !requestInfo.getType().equals("assets"));
             } catch (IOException e) {
                 //捕获所有异常，这里有可能缓存失败，所以取不到文件
                 System.out.println("file has exception" +  e);
             }
         } else {
-            if (!readUrlFile(realUrl, out)) {
+            if (!readUrlFile(requestInfo, realUrl, out)) {
+                // 图片不用重复请求
+                if(!requestInfo.getType().equals("assets")) {
+                    return;
+                }
                 if (personConfig.isUcoolAssetsDebug()) {
                     //debug mode下如果请求-min的源文件a.js，会出现请求a.source.js的情况，到这里处理
                     //如果到这里那就说明线上都没有改文件，即使返回压缩的文件也没问题，只要保证尽可能的命中cache
@@ -73,7 +77,7 @@ public class UrlExecutor {
                     doDebugUrlRuleCopy(requestInfo, out, personConfig);
                 } else {
                     //最后的保障，如果缓存失败了，从线上取吧
-                    readUrlFile(fullUrl, out);
+                    readUrlFile(requestInfo, fullUrl, out);
                 }
             }
         }
@@ -86,14 +90,14 @@ public class UrlExecutor {
         }
         if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
             try {
-                this.urlReader.pushStream(out, loadExistFileStream(requestInfo.getFilePath(), personConfig), requestInfo.getFilePath(), false);
+                this.urlReader.pushStream(out, loadExistFileStream(requestInfo.getFilePath(), personConfig), requestInfo.getFilePath(), !requestInfo.getType().equals("assets"));
             } catch (IOException e) {
                 //捕获所有异常，这里有可能缓存失败，所以取不到文件
                 System.out.println("file has exception" +  e);
             }
         } else {
             //最后的保障，如果缓存失败了，从线上取吧
-            readUrlFile(requestInfo.getFullUrl(), out);
+            readUrlFile(requestInfo, requestInfo.getFullUrl(), out);
         }
     }
 
@@ -185,7 +189,7 @@ public class UrlExecutor {
                         out.println("/*ucool local combo matched:"+requestInfo.getFilePath()+ "*/");
                     } catch (IOException e) {
                     }
-                    readUrlFile(requestInfo.getRealUrl(), out);
+                    readUrlFile(requestInfo, requestInfo.getRealUrl(), out);
                     return true;
                 }
             }
@@ -261,10 +265,10 @@ public class UrlExecutor {
      * @param out     of type ServletOutputStream
      * @return
      */
-    private boolean readUrlFile(String fullUrl, ServletOutputStream out) {
+    private boolean readUrlFile(RequestInfo requestInfo, String fullUrl, ServletOutputStream out) {
         try {
             URL url = new URL(fullUrl);
-            return this.urlReader.pushStream(out, url.openStream(), fullUrl, false);
+            return this.urlReader.pushStream(out, url.openStream(), fullUrl, !requestInfo.getType().equals("assets"));
         } catch (Exception e) {
         }
         return false;

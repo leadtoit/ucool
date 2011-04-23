@@ -16,6 +16,8 @@ public class RequestInfo {
     private String serverName;
     private String queryString;
 
+    private String type = "assets";
+
     public RequestInfo(HttpServletRequest request) {
         this.requestUrl = request.getRequestURI();
         this.serverName = request.getServerName();
@@ -68,5 +70,13 @@ public class RequestInfo {
 
     public void setQueryString(String queryString) {
         this.queryString = queryString;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
