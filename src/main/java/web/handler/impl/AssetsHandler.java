@@ -98,7 +98,7 @@ public class AssetsHandler implements Handler {
         } else {
             response.setContentType("application/x-javascript");
         }
-        ServletOutputStream out = response.getOutputStream();
+        PrintWriter out = response.getWriter();
         //尝试debug下所有的直接走source，不走cache
         //线上缓存已经迁移至ucool-proxy
         RequestInfo requestInfo = new RequestInfo(request);

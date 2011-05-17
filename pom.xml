@@ -4,7 +4,7 @@
     <groupId>com.taobao</groupId>
     <artifactId>ucool-pro</artifactId>
     <packaging>war</packaging>
-    <version>0.5</version>
+    <version>0.6</version>
     <name>ued cool tools pro</name>
     <url>http://code.google.com/p/ucool/</url>
     <dependencies>
@@ -36,6 +36,17 @@
             <artifactId>testng</artifactId>
             <version>5.9</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.cpdetector</groupId>
+            <artifactId>cpdetector</artifactId>
+            <version>1.0.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>apache-httpclient</groupId>
+          <artifactId>commons-httpclient</artifactId>
+          <version>3.1</version>
         </dependency>
     </dependencies>
     <build>

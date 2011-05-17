@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 
 /**
@@ -74,7 +75,7 @@ public class PngHandler implements Handler {
         }
         realUrl = urlTools.urlFilter(realUrl, isOnline, personConfig);
         fullUrl = urlTools.urlFilter(fullUrl, isOnline, personConfig);
-        ServletOutputStream out = response.getOutputStream();
+        PrintWriter out = response.getWriter();
         RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setFilePath(filePath);
         requestInfo.setRealUrl(realUrl);

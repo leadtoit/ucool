@@ -49,7 +49,7 @@ public class UrlExecutor {
      * @author zhangting
      * @since 10-10-29 上午9:51
      */
-    public void doDebugUrlRule(RequestInfo requestInfo, ServletOutputStream out, PersonConfig personConfig) {
+    public void doDebugUrlRule(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
         String fullUrl = requestInfo.getFullUrl();
@@ -84,7 +84,7 @@ public class UrlExecutor {
     }
 
 
-    public void doDebugUrlRuleCopy(RequestInfo requestInfo, ServletOutputStream out, PersonConfig personConfig) {
+    public void doDebugUrlRuleCopy(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
         if (validateLocalCombo(requestInfo, out, personConfig)) {
             return;
         }
@@ -145,7 +145,7 @@ public class UrlExecutor {
         return "gbk";
     }
 
-    private boolean validateLocalCombo(RequestInfo requestInfo, ServletOutputStream out, PersonConfig personConfig) {
+    private boolean validateLocalCombo(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
         //当用户目录配置了特殊需要反向combo的文件，需要特殊处理
         if(personConfig.isEnableLocalCombo()) {
             //read properties
@@ -187,7 +187,7 @@ public class UrlExecutor {
                     requestInfo.setRealUrl(realUrl);
                     try {
                         out.println("/*ucool local combo matched:"+requestInfo.getFilePath()+ "*/");
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                     }
                     readUrlFile(requestInfo, requestInfo.getRealUrl(), out);
                     return true;
@@ -265,7 +265,7 @@ public class UrlExecutor {
      * @param out     of type ServletOutputStream
      * @return
      */
-    private boolean readUrlFile(RequestInfo requestInfo, String fullUrl, ServletOutputStream out) {
+    private boolean readUrlFile(RequestInfo requestInfo, String fullUrl, PrintWriter out) {
         try {
             URL url = new URL(fullUrl);
             return this.urlReader.pushStream(out, url.openStream(), fullUrl, !requestInfo.getType().equals("assets"));

@@ -53,7 +53,7 @@ public class ComboHandler extends AssetsHandler {
         } else {
             response.setContentType("application/x-javascript");
         }
-        ServletOutputStream out = response.getOutputStream();
+        PrintWriter out = response.getWriter();
 
         boolean isOnline = getConfigCenter().getUcoolOnlineDomain().indexOf(request.getServerName()) != -1;
         boolean isDebugMode = personConfig.isUcoolAssetsDebug() || HttpTools.isReferDebug(request);
