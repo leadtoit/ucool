@@ -1,5 +1,6 @@
 package biz.url;
 
+import common.ConfigCenter;
 import common.tools.UrlTools;
 import dao.entity.RequestInfo;
 
@@ -16,8 +17,14 @@ public class UrlReader {
 
     private UrlTools urlTools;
 
+    private ConfigCenter configCenter;
+
     public void setUrlTools(UrlTools urlTools) {
         this.urlTools = urlTools;
+    }
+
+    public void setConfigCenter(ConfigCenter configCenter) {
+        this.configCenter = configCenter;
     }
 
     /**
@@ -67,7 +74,18 @@ public class UrlReader {
      */
     public boolean pushStream(RequestInfo requestInfo, HttpServletResponse response, InputStream stream) throws IOException {
         BufferedInputStream buff = new BufferedInputStream(stream);
-        String charset = urlTools.getCharset(buff);
+        String charset = null;
+        boolean findCharset = false;
+        for (String filterEncoding : configCenter.getUcoolAssetsEncodingCorrectStrings()) {
+            if(requestInfo.getRealUrl().indexOf(filterEncoding) != -1) {
+                charset = "utf-8";
+                findCharset = true;
+                break;
+            }
+        }
+        if(!findCharset) {
+            charset = urlTools.getCharset(buff);
+        }
         response.setCharacterEncoding("gbk");
         PrintWriter writer = response.getWriter();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(buff, charset));
@@ -78,7 +96,7 @@ public class UrlReader {
             buff.close();
             return false;
         } else {
-            if (!requestInfo.getType().equals("assets")) {
+            if (requestInfo.getType().equals("assets")) {
                 if(requestInfo.isLocalCombo()) {
                     writer.println("/*ucool local combo matched:" + requestInfo.getFilePath() + "*/");
                 }
