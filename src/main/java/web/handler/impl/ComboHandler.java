@@ -81,6 +81,7 @@ public class ComboHandler extends AssetsHandler {
             requestInfo.setFilePath(singleFilePath);
             requestInfo.setRealUrl(singleRealUrl);
             requestInfo.setFullUrl(singleFullUrl);
+            requestInfo.setUrlCombo(true);
             getUrlExecutor().doDebugUrlRule(requestInfo, response, personConfig);
         }
 

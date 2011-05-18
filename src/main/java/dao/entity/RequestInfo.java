@@ -18,6 +18,8 @@ public class RequestInfo {
 
     private String type = "assets";
 
+    private boolean isUrlCombo = false;
+
     private boolean isLocalCombo = false;
 
     public RequestInfo(HttpServletRequest request) {
@@ -88,5 +90,13 @@ public class RequestInfo {
 
     public void setLocalCombo(boolean localCombo) {
         isLocalCombo = localCombo;
+    }
+
+    public boolean isUrlCombo() {
+        return isUrlCombo;
+    }
+
+    public void setUrlCombo(boolean urlCombo) {
+        isUrlCombo = urlCombo;
     }
 }

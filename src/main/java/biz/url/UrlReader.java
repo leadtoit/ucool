@@ -86,7 +86,7 @@ public class UrlReader {
         if(!findCharset) {
             charset = urlTools.getCharset(buff);
         }
-        if(requestInfo.getRealUrl().indexOf("kissy.js") != -1) {
+        if(requestInfo.getRealUrl().indexOf("kissy.js") != -1 || requestInfo.getRealUrl().indexOf("seed.js") != -1) {
             response.setCharacterEncoding("gbk");
         } else if(requestInfo.getRealUrl().indexOf("/s/kissy/") != -1) {
 //            response.setCharacterEncoding("utf-8");
