@@ -86,7 +86,12 @@ public class UrlReader {
         if(!findCharset) {
             charset = urlTools.getCharset(buff);
         }
-        response.setCharacterEncoding("gbk");
+        if(requestInfo.getRealUrl().indexOf("/s/kissy/") != -1) {
+            response.setCharacterEncoding("gbk");
+        } else {
+//            response.setCharacterEncoding("utf-8");
+        }
+
         PrintWriter writer = response.getWriter();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(buff, charset));
         String firstLine = bufferedReader.readLine();
