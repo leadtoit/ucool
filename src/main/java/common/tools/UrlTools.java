@@ -7,6 +7,10 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>
@@ -139,13 +143,12 @@ public class UrlTools {
             return "";
     }
 
-    public String getCharset(InputStream inputStream) {
+    public String getCharset(BufferedInputStream bis) {
         String charset = "GBK";
         byte[] first3Bytes = new byte[3];
+        bis.mark(0);
         try {
             boolean checked = false;
-            BufferedInputStream bis = new BufferedInputStream(inputStream);
-            bis.mark(0);
             int read = bis.read(first3Bytes, 0, 3);
             if (read == -1) return charset;
             if (first3Bytes[0] == (byte) 0xFF && first3Bytes[1] == (byte) 0xFE) {
@@ -165,6 +168,7 @@ public class UrlTools {
 
                 while ((read = bis.read()) != -1) {
                     loc++;
+                    if(loc > 1000)break;
                     if (read >= 0xF0) break;
                     if (0x80 <= read && read <= 0xBF) // 单独出现BF以下的，也算是GBK
                         break;
@@ -187,10 +191,10 @@ public class UrlTools {
                 }
                 //System.out.println( loc + " " + Integer.toHexString( read ) );
             }
-
-            bis.close();
+//            bis.close();
+            bis.reset();
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         return charset;

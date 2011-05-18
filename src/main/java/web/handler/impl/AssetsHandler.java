@@ -98,14 +98,13 @@ public class AssetsHandler implements Handler {
         } else {
             response.setContentType("application/x-javascript");
         }
-        PrintWriter out = response.getWriter();
         //尝试debug下所有的直接走source，不走cache
         //线上缓存已经迁移至ucool-proxy
         RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setFilePath(filePath);
         requestInfo.setRealUrl(realUrl);
         requestInfo.setFullUrl(fullUrl);
-        urlExecutor.doDebugUrlRule(requestInfo, out, personConfig);
+        urlExecutor.doDebugUrlRule(requestInfo, response, personConfig);
     }
 
     public String attachOper(String fullUrl, HttpServletRequest request) {

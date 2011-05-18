@@ -39,7 +39,8 @@ public class PersonConfigHandler {
      */
     public PersonConfig doHandler(HttpServletRequest request)
             throws IOException, ServletException {
-        String remoteHost = request.getRemoteHost();
+        // 0.6版本后直接去取ip了
+        String remoteHost = request.getRemoteAddr();
         String querySring = request.getQueryString();
         String pcname = null;
         if(querySring != null && querySring.indexOf("pcname") != -1) {
@@ -53,9 +54,8 @@ public class PersonConfigHandler {
         //本地combo二次请求的时候机器名只能这样带过来
         if (pcname != null) {
             remoteHost = pcname.toString();
-        } else if (remoteHost == null){
-            remoteHost = request.getRemoteAddr();
         }
+        
         UserDO personInfo = this.userDAO.getPersonInfo(remoteHost);
         PersonConfig personConfig = new PersonConfig();
         personConfig.setConfigCenter(configCenter);

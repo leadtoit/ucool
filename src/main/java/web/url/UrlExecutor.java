@@ -9,12 +9,11 @@ import common.tools.UrlTools;
 import dao.entity.RequestInfo;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>
@@ -43,28 +42,29 @@ public class UrlExecutor {
     /**
      * 为debug模式特殊处理url请求，不走cache
      *
+     *
      * @param requestInfo
-     * @param out      of type ServletOutputStream
+     * @param response
      * @param personConfig
      * @author zhangting
      * @since 10-10-29 上午9:51
      */
-    public void doDebugUrlRule(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
+    public void doDebugUrlRule(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
-        String fullUrl = requestInfo.getFullUrl();
-        if (validateLocalCombo(requestInfo, out, personConfig)) {
+        if (validateLocalCombo(requestInfo, response, personConfig)) {
             return;
         }
         if (findAssetsFile(filePath, personConfig)) {
             try {
-                this.urlReader.pushStream(out, loadExistFileStream(filePath, personConfig), filePath, !requestInfo.getType().equals("assets"));
+                requestInfo.setRealUrl(requestInfo.getFilePath());
+                this.urlReader.pushStream(requestInfo, response, loadExistFileStream(filePath, personConfig));
             } catch (IOException e) {
                 //捕获所有异常，这里有可能缓存失败，所以取不到文件
                 System.out.println("file has exception" +  e);
             }
         } else {
-            if (!readUrlFile(requestInfo, realUrl, out)) {
+            if (!readUrlFile(requestInfo, response)) {
                 // 图片不用重复请求
                 if(!requestInfo.getType().equals("assets")) {
                     return;
@@ -74,30 +74,49 @@ public class UrlExecutor {
                     //如果到这里那就说明线上都没有改文件，即使返回压缩的文件也没问题，只要保证尽可能的命中cache
                     requestInfo.setFilePath(filePath.replace(".source", ""));
                     requestInfo.setRealUrl(realUrl.replace(".source", ""));
-                    doDebugUrlRuleCopy(requestInfo, out, personConfig);
+                    doDebugUrlRuleCopy(requestInfo, response, personConfig);
                 } else {
                     //最后的保障，如果缓存失败了，从线上取吧
-                    readUrlFile(requestInfo, fullUrl, out);
+                    requestInfo.setRealUrl(requestInfo.getFullUrl());
+                    readUrlFile(requestInfo, response);
                 }
             }
         }
     }
 
 
-    public void doDebugUrlRuleCopy(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
-        if (validateLocalCombo(requestInfo, out, personConfig)) {
+    public void doDebugUrlRuleCopy(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
+        if (validateLocalCombo(requestInfo, response, personConfig)) {
             return;
         }
         if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
             try {
-                this.urlReader.pushStream(out, loadExistFileStream(requestInfo.getFilePath(), personConfig), requestInfo.getFilePath(), !requestInfo.getType().equals("assets"));
+                requestInfo.setRealUrl(requestInfo.getFilePath());
+                this.urlReader.pushStream(requestInfo, response, loadExistFileStream(requestInfo.getFilePath(), personConfig));
             } catch (IOException e) {
                 //捕获所有异常，这里有可能缓存失败，所以取不到文件
                 System.out.println("file has exception" +  e);
             }
         } else {
             //最后的保障，如果缓存失败了，从线上取吧
-            readUrlFile(requestInfo, requestInfo.getFullUrl(), out);
+            requestInfo.setRealUrl(requestInfo.getFullUrl());
+            readUrlFile(requestInfo, response);
+        }
+    }
+
+    public void doDebugUrlRuleForPng(RequestInfo requestInfo, ServletOutputStream out, PersonConfig personConfig) {
+        String filePath = requestInfo.getFilePath();
+        String realUrl = requestInfo.getRealUrl();
+
+        if (findAssetsFile(filePath, personConfig)) {
+            try {
+                this.urlReader.pushStream(out, loadExistFileStream(filePath, personConfig), filePath, !requestInfo.getType().equals("assets"));
+            } catch (IOException e) {
+                //捕获所有异常，这里有可能缓存失败，所以取不到文件
+                System.out.println("file has exception" +  e);
+            }
+        } else {
+            readUrlFileForPng(requestInfo, realUrl, out);
         }
     }
 
@@ -108,6 +127,7 @@ public class UrlExecutor {
      * @param personConfig
      * @return
      */
+    @Deprecated
     private String getConfigEncoding(RequestInfo requestInfo, PersonConfig personConfig) {
         //read properties
         Properties p = new Properties();
@@ -145,7 +165,7 @@ public class UrlExecutor {
         return "gbk";
     }
 
-    private boolean validateLocalCombo(RequestInfo requestInfo, PrintWriter out, PersonConfig personConfig) {
+    private boolean validateLocalCombo(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
         //当用户目录配置了特殊需要反向combo的文件，需要特殊处理
         if(personConfig.isEnableLocalCombo()) {
             //read properties
@@ -185,11 +205,9 @@ public class UrlExecutor {
                         realUrl += ("&pcname=" + personConfig.getUserDO().getHostName());
                     }
                     requestInfo.setRealUrl(realUrl);
-                    try {
-                        out.println("/*ucool local combo matched:"+requestInfo.getFilePath()+ "*/");
-                    } catch (Exception e) {
-                    }
-                    readUrlFile(requestInfo, requestInfo.getRealUrl(), out);
+                    requestInfo.setLocalCombo(true);
+                    
+                    readUrlFile(requestInfo, response);
                     return true;
                 }
             }
@@ -261,11 +279,27 @@ public class UrlExecutor {
     /**
      * Method readUrlFile ...
      *
-     * @param fullUrl of type String
-     * @param out     of type ServletOutputStream
+     * @param requestInfo
+     * @param response
      * @return
      */
-    private boolean readUrlFile(RequestInfo requestInfo, String fullUrl, PrintWriter out) {
+    private boolean readUrlFile(RequestInfo requestInfo,  HttpServletResponse response) {
+        try {
+            URL url = new URL(requestInfo.getRealUrl());
+            return this.urlReader.pushStream(requestInfo, response, url.openStream());
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    /**
+     * 专为图片处理的方法
+     * @param requestInfo
+     * @param fullUrl
+     * @param out
+     * @return
+     */
+    private boolean readUrlFileForPng(RequestInfo requestInfo, String fullUrl, ServletOutputStream out) {
         try {
             URL url = new URL(fullUrl);
             return this.urlReader.pushStream(out, url.openStream(), fullUrl, !requestInfo.getType().equals("assets"));
@@ -273,4 +307,5 @@ public class UrlExecutor {
         }
         return false;
     }
+
 }

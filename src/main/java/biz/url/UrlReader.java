@@ -1,10 +1,12 @@
 package biz.url;
 
-import biz.v2.ResourceLoader;
 import common.tools.UrlTools;
+import dao.entity.RequestInfo;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>
@@ -57,33 +59,39 @@ public class UrlReader {
 
     /**
      * ×Ö·ûÁ÷¶ÁÈ¡
-     * 
-     * @param writer
+     *
+     * @param requestInfo
      * @param stream
-     * @param fileUrl
-     * @param skipCommet
      * @return
      * @throws IOException
      */
-    public boolean pushStream(PrintWriter writer, InputStream stream, String fileUrl, boolean skipCommet) throws IOException {
-        String charset = urlTools.getCharset(stream);
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream, charset));
+    public boolean pushStream(RequestInfo requestInfo, HttpServletResponse response, InputStream stream) throws IOException {
+        BufferedInputStream buff = new BufferedInputStream(stream);
+        String charset = urlTools.getCharset(buff);
+        response.setCharacterEncoding("gbk");
+        PrintWriter writer = response.getWriter();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(buff, charset));
         String firstLine = bufferedReader.readLine();
         if(firstLine == null || "/*not found*/".equals(firstLine)) {
             writer.flush();
             bufferedReader.close();
+            buff.close();
             return false;
         } else {
-            if (!skipCommet) {
-                writer.println("/*ucool filePath=" + fileUrl + "*/");
+            if (!requestInfo.getType().equals("assets")) {
+                if(requestInfo.isLocalCombo()) {
+                    writer.println("/*ucool local combo matched:" + requestInfo.getFilePath() + "*/");
+                }
+                writer.println("/*ucool filePath=" + requestInfo.getRealUrl() + "*/");
             }
-            writer.print(firstLine);
+            writer.println(firstLine);
             String line;
             while((line = bufferedReader.readLine()) != null) {
-                writer.print(line);
+                writer.println(line);
             }
             writer.flush();
             bufferedReader.close();
+            buff.close();
         }
         return true;
     }

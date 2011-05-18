@@ -19,11 +19,12 @@ public class HttpClientReader {
     public boolean loadUrl(String url, PrintWriter writer, boolean skipCommet) {
         HttpClient client = new HttpClient();
         GetMethod method = new GetMethod(url);
+        String a = null;
 
         try {
             client.executeMethod(method);
             if(method.getStatusCode() ==  200) {
-                String charset = urlTools.getCharset(method.getResponseBodyAsStream());
+                String charset = urlTools.getCharset(new BufferedInputStream(method.getResponseBodyAsStream()));
                 String content = new String(method.getResponseBody(), charset);
                 if("/*not found*/".equals(content)) {
                     method.releaseConnection();

@@ -18,6 +18,8 @@ public class RequestInfo {
 
     private String type = "assets";
 
+    private boolean isLocalCombo = false;
+
     public RequestInfo(HttpServletRequest request) {
         this.requestUrl = request.getRequestURI();
         this.serverName = request.getServerName();
@@ -78,5 +80,13 @@ public class RequestInfo {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public boolean isLocalCombo() {
+        return isLocalCombo;
+    }
+
+    public void setLocalCombo(boolean localCombo) {
+        isLocalCombo = localCombo;
     }
 }

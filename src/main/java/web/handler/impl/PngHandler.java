@@ -75,13 +75,13 @@ public class PngHandler implements Handler {
         }
         realUrl = urlTools.urlFilter(realUrl, isOnline, personConfig);
         fullUrl = urlTools.urlFilter(fullUrl, isOnline, personConfig);
-        PrintWriter out = response.getWriter();
+        ServletOutputStream out = response.getOutputStream();
         RequestInfo requestInfo = new RequestInfo(request);
         requestInfo.setFilePath(filePath);
         requestInfo.setRealUrl(realUrl);
         requestInfo.setFullUrl(fullUrl);
         requestInfo.setType("png");
-        urlExecutor.doDebugUrlRule(requestInfo, out, personConfig);
+        urlExecutor.doDebugUrlRuleForPng(requestInfo, out, personConfig);
 
     }
 }

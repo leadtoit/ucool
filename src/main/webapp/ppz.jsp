@@ -206,7 +206,7 @@
     <div id="header">
         <div class="top">
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
-            <a class="version" href="https://github.com/czy88840616/ucool">ucool-pro version：0.4</a>
+            <a class="version" href="https://github.com/czy88840616/ucool">ucool-pro version：0.6</a>
             <a class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start"><i>?</i>What's new？</a>
         </div>
     </div>
@@ -215,27 +215,12 @@
             <div class="hd"><h3>INFO</h3></div>
             <div class="bd">
                 <table>
-                    <%
-                        if(request.getRemoteHost() != null) {
-                    %>
                     <tr>
-                        <th>机器名（唯一）/ IP（可变）：</th>
-                        <td><%=request.getRemoteHost()%>
-                            （当前使用机器名作为用户唯一标识，如有重复，请手动在计算机属性中更换）
-                        </td>
-                    </tr>
-                    <%
-                        } else {
-                    %>
-                    <tr>
-                        <th>机器名（唯一）/ IP（可变）：</th>
+                        <th>IP：</th>
                         <td><%=request.getRemoteAddr()%>
-                            （当前使用ip作为用户唯一标识，由于ip可变，如需长期使用，请<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:open_ued_port">手动打开UDP 137端口</a>）
+                            （当前使用ip作为用户唯一标识，请注意ip变化）
                         </td>
                     </tr>
-                    <%
-                        }
-                    %>
                     <tr>
                         <th>请选择一个绑定目录：</th>
                         <td>

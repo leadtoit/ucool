@@ -53,7 +53,6 @@ public class ComboHandler extends AssetsHandler {
         } else {
             response.setContentType("application/x-javascript");
         }
-        PrintWriter out = response.getWriter();
 
         boolean isOnline = getConfigCenter().getUcoolOnlineDomain().indexOf(request.getServerName()) != -1;
         boolean isDebugMode = personConfig.isUcoolAssetsDebug() || HttpTools.isReferDebug(request);
@@ -82,7 +81,7 @@ public class ComboHandler extends AssetsHandler {
             requestInfo.setFilePath(singleFilePath);
             requestInfo.setRealUrl(singleRealUrl);
             requestInfo.setFullUrl(singleFullUrl);
-            getUrlExecutor().doDebugUrlRule(requestInfo, out, personConfig);
+            getUrlExecutor().doDebugUrlRule(requestInfo, response, personConfig);
         }
 
     }
