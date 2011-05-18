@@ -87,9 +87,9 @@ public class UrlReader {
             charset = urlTools.getCharset(buff);
         }
         if(requestInfo.getRealUrl().indexOf("/s/kissy/") != -1) {
-            response.setCharacterEncoding("gbk");
-        } else {
 //            response.setCharacterEncoding("utf-8");
+        } else {
+            response.setCharacterEncoding("gbk");
         }
 
         PrintWriter writer = response.getWriter();
