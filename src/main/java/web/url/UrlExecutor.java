@@ -55,9 +55,13 @@ public class UrlExecutor {
         // 本地映射不走服务器assets目录
         if(personConfig.isEnableLocalMapping() && requestInfo.getFilePath().startsWith(personConfig.getUserDO().getMappingPath())) {
             // 将ip替换为客户端的，并且将目录映射掉
-            realUrl = realUrl.replaceAll(requestInfo.getServerName(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            realUrl = realUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
             realUrl = realUrl.replaceAll(personConfig.getUserDO().getMappingPath(), "");
             requestInfo.setRealUrl(realUrl);
+            String fullUrl = requestInfo.getFullUrl();
+            fullUrl = fullUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            fullUrl = fullUrl.replaceAll(personConfig.getUserDO().getMappingPath(), "");
+            requestInfo.setFullUrl(fullUrl);
             //直接请求客户端
             if (!readUrlFile(requestInfo, response)) {
                 // 图片不用重复请求
