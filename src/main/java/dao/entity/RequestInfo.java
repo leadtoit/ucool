@@ -15,6 +15,7 @@ public class RequestInfo {
     private String requestUrl;
     private String serverName;
     private String queryString;
+    private String clientAddr;
 
     private String type = "assets";
 
@@ -26,6 +27,7 @@ public class RequestInfo {
         this.requestUrl = request.getRequestURI();
         this.serverName = request.getServerName();
         this.queryString = request.getQueryString();
+        this.clientAddr = request.getRemoteAddr();
     }
 
     public String getFilePath() {
@@ -98,5 +100,13 @@ public class RequestInfo {
 
     public void setUrlCombo(boolean urlCombo) {
         isUrlCombo = urlCombo;
+    }
+
+    public String getClientAddr() {
+        return clientAddr;
+    }
+
+    public void setClientAddr(String clientAddr) {
+        this.clientAddr = clientAddr;
     }
 }

@@ -52,21 +52,16 @@ public class UrlExecutor {
     public void doDebugUrlRule(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
-        if (validateLocalCombo(requestInfo, response, personConfig)) {
-            return;
-        }
-        if (findAssetsFile(filePath, personConfig)) {
-            try {
-                requestInfo.setRealUrl(requestInfo.getFilePath());
-                this.urlReader.pushStream(requestInfo, response, loadExistFileStream(filePath, personConfig));
-            } catch (IOException e) {
-                //捕获所有异常，这里有可能缓存失败，所以取不到文件
-                System.out.println("file has exception" +  e);
-            }
-        } else {
+        // 本地映射不走服务器assets目录
+        if(personConfig.isEnableLocalMapping() && requestInfo.getFilePath().startsWith(personConfig.getUserDO().getMappingPath())) {
+            // 将ip替换为客户端的，并且将目录映射掉
+            realUrl = realUrl.replaceAll(requestInfo.getServerName(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            realUrl = realUrl.replaceAll(personConfig.getUserDO().getMappingPath(), "");
+            requestInfo.setRealUrl(realUrl);
+            //直接请求客户端
             if (!readUrlFile(requestInfo, response)) {
                 // 图片不用重复请求
-                if(!requestInfo.getType().equals("assets")) {
+                if (!requestInfo.getType().equals("assets")) {
                     return;
                 }
                 if (personConfig.isUcoolAssetsDebug()) {
@@ -81,26 +76,62 @@ public class UrlExecutor {
                     readUrlFile(requestInfo, response);
                 }
             }
+        } else {
+            if (validateLocalCombo(requestInfo, response, personConfig)) {
+                return;
+            }
+            if (findAssetsFile(filePath, personConfig)) {
+                try {
+                    requestInfo.setRealUrl(requestInfo.getFilePath());
+                    this.urlReader.pushStream(requestInfo, response, loadExistFileStream(filePath, personConfig));
+                } catch (IOException e) {
+                    //捕获所有异常，这里有可能缓存失败，所以取不到文件
+                    System.out.println("file has exception" + e);
+                }
+            } else {
+                if (!readUrlFile(requestInfo, response)) {
+                    // 图片不用重复请求
+                    if (!requestInfo.getType().equals("assets")) {
+                        return;
+                    }
+                    if (personConfig.isUcoolAssetsDebug()) {
+                        //debug mode下如果请求-min的源文件a.js，会出现请求a.source.js的情况，到这里处理
+                        //如果到这里那就说明线上都没有改文件，即使返回压缩的文件也没问题，只要保证尽可能的命中cache
+                        requestInfo.setFilePath(filePath.replace(".source", ""));
+                        requestInfo.setRealUrl(realUrl.replace(".source", ""));
+                        doDebugUrlRuleCopy(requestInfo, response, personConfig);
+                    } else {
+                        //最后的保障，如果缓存失败了，从线上取吧
+                        requestInfo.setRealUrl(requestInfo.getFullUrl());
+                        readUrlFile(requestInfo, response);
+                    }
+                }
+            }
         }
     }
 
 
     public void doDebugUrlRuleCopy(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
-        if (validateLocalCombo(requestInfo, response, personConfig)) {
-            return;
-        }
-        if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
-            try {
-                requestInfo.setRealUrl(requestInfo.getFilePath());
-                this.urlReader.pushStream(requestInfo, response, loadExistFileStream(requestInfo.getFilePath(), personConfig));
-            } catch (IOException e) {
-                //捕获所有异常，这里有可能缓存失败，所以取不到文件
-                System.out.println("file has exception" +  e);
-            }
-        } else {
-            //最后的保障，如果缓存失败了，从线上取吧
+        if(personConfig.isEnableLocalMapping() && requestInfo.getFilePath().startsWith(personConfig.getUserDO().getMappingPath())) {
             requestInfo.setRealUrl(requestInfo.getFullUrl());
             readUrlFile(requestInfo, response);
+        } else {
+            if (validateLocalCombo(requestInfo, response, personConfig)) {
+                return;
+            }
+            if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
+                try {
+                    requestInfo.setRealUrl(requestInfo.getFilePath());
+                    this.urlReader.pushStream(requestInfo, response, loadExistFileStream(requestInfo.getFilePath(), personConfig));
+                } catch (IOException e) {
+                    //捕获所有异常，这里有可能缓存失败，所以取不到文件
+                    System.out.println("file has exception" + e);
+                }
+            } else {
+                //最后的保障，如果缓存失败了，从线上取吧
+                requestInfo.setRealUrl(requestInfo.getFullUrl());
+                readUrlFile(requestInfo, response);
+            }
         }
     }
 

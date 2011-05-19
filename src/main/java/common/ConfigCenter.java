@@ -82,9 +82,13 @@ public class ConfigCenter implements InitializingBean {
     //用于debug时纠正编码
     private String ucoolAssetsEncodingCorrect;
 
+    // ucool proxy的ip
     private String ucoolProxyIp;
 
     private String ucoolAssetsDirectoryPrefix;
+
+    // ucool的客户端代理端口
+    private String ucoolProxyClientPort;
 
     public String getWebRoot() {
         return webRoot;
@@ -277,6 +281,14 @@ public class ConfigCenter implements InitializingBean {
 
     public void setUcoolAssetsDirectoryPrefix(String ucoolAssetsDirectoryPrefix) {
         this.ucoolAssetsDirectoryPrefix = ucoolAssetsDirectoryPrefix;
+    }
+
+    public String getUcoolProxyClientPort() {
+        return ucoolProxyClientPort;
+    }
+
+    public void setUcoolProxyClientPort(String ucoolProxyClientPort) {
+        this.ucoolProxyClientPort = ucoolProxyClientPort;
     }
 
     /**
