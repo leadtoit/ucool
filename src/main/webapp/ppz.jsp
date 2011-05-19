@@ -132,8 +132,8 @@
             padding-left:0;
         }
         #content .box table td input {
-            width:50px;
-            height:25px;
+            width:330px;
+            height:18px;
         }
         .switch-open, .switch-close {
             background:url(http://img02.taobaocdn.com/tps/i2/T1zcFQXgxwXXXXXXXX-68-73.png) #f3f1e4 no-repeat 0 0;
@@ -191,6 +191,17 @@
             color: #f60;
             margin: auto 5px;
         }
+        .loading{
+            background:url(http://img02.taobaocdn.com/tps/i2/T1ob1cXlFsXXXXXXXX-16-16.gif) #f3f1e4 no-repeat 0 2px;
+        }
+        .complete {
+            background:url(http://img02.taobaocdn.com/tps/i2/T14gucXlFXXXXXXXXX-16-16.png) #f3f1e4 no-repeat 0 2px;
+        }
+        .status {
+            display: inline-block;
+            width:18px;
+            height:18px;
+        }
     </style>
 </head>
 <body>
@@ -216,7 +227,7 @@
             <div class="bd">
                 <table>
                     <tr>
-                        <th>IP：</th>
+                        <th>IP 标识：</th>
                         <td><%=request.getRemoteAddr()%>
                             （当前使用ip作为用户唯一标识，请注意ip变化）
                         </td>
@@ -225,7 +236,7 @@
                         <th>请选择一个绑定目录：</th>
                         <td>
                             <div id="dir">
-                                <select name="root-bind" id="root-bind" autocomplete="off">
+                                <select name="root-bind" id="root-bind" autocomplete="off" <%if(personConfig.isEnableLocalMapping())out.print("disabled");%>>
                                     <%
                                         List<String> assetsSubDirs = fileEditor.getAssetsSubDirs();
                                         String curDirName = "";
@@ -258,7 +269,7 @@
                                         }
                                     %>
                                 </select>　/　
-                                <select name="dir-bind" id="dir-bind" autocomplete="off">
+                                <select name="dir-bind" id="dir-bind" autocomplete="off" <%if(personConfig.isEnableLocalMapping())out.print("disabled");%>>
                                     <%
                                         List<String> subDirs = fileEditor.getAssetsSubDirs(rootName);
                                         out.print("<option value='-1'>无绑定子目录</option>");
@@ -275,18 +286,29 @@
                                         }
                                     %>
                                 </select>
-                                <div id="message" style="display:none"><img
-                                        src='http://img02.taobaocdn.com/tps/i2/T1JSdAXd0nXXXXXXXX-32-32.gif'/></div>
                             </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>映射请求路径：</th>
+                        <td>
+                            <div>
+                                <input type="text" id="bind-path"
+                                       value="<% if(personConfig.getUserDO().getMappingPath() == null){out.print("");}else{out.print(personConfig.getUserDO().getMappingPath());}%>"
+                                        <%if(!personConfig.isEnableLocalMapping())out.print("disabled");%>/>
+                                <span class="status" id="bind-path-status"></span>
+                            </div>
+                            <div id="message" style="display:none"><img
+                                        src='http://img02.taobaocdn.com/tps/i2/T1JSdAXd0nXXXXXXXX-32-32.gif'/></div>
                         </td>
                     </tr>
                 </table>
             </div>
         </div>
-        <div id="J_BoxSwitch" class="box switch <%=personConfig.personConfigValid()?"":"hidden"%>">
+        <div class="box switch">
             <div class="hd"><h3>SWITCH</h3></div>
             <div class="bd">
-                <table>
+                <table id="J_BoxSwitch" class="<%=personConfig.personConfigValid()?"":"hidden"%>">
                     <tr>
                         <th>DEBUG 模式：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isUcoolAssetsDebug())%>" id="assetsdebugswitch"></a></td>
@@ -298,12 +320,12 @@
                         <td class="note">打开后切换到预发环境</td>
                     </tr>
                     <tr>
-                        <th>使用 Assets 目录：</th>
+                        <th>使用服务器 Assets 目录：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableAssets())%>" id="enableAssets"></a></td>
                         <td class="note">打开后启用服务器上的assets目录中的文件</td>
                     </tr>
                     <tr>
-                        <th>启用本地combo：<sup class="lab">lab</sup></th>
+                        <th>启用本地combo：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
                         <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo">how to use?</a></td>
                     </tr>
@@ -313,45 +335,15 @@
                         <%--<td class="note"></td>--%>
                     <%--</tr>--%>
                 </table>
-            </div>
-        </div>
-        <%--
-        <div class="box">
-            <div class="hd"><h3>PROFILE</h3></div>
-            <div class="bd">
                 <table>
                     <tr>
-                        <th>DAILY DOMAIN：</th>
-                        <td><%=configCenter.getUcoolDailyDomain()%></td>
-                    </tr>
-                    <tr>
-                        <th>RELEASE DOMAIN：</th>
-                        <td><%=configCenter.getUcoolOnlineDomain()%></td>
-                    </tr>
-                    <tr>
-                        <th>DAILY IP：</th>
-                        <td><%=configCenter.getUcoolDailyIp()%></td>
-                    </tr>
-                    <tr>
-                        <th>RELEASE IP：</th>
-                        <td><%=configCenter.getUcoolOnlineIp()%></td>
-                    </tr>
-                    <tr>
-                        <th>PRE-RELEASE IP：</th>
-                        <td><%=configCenter.getUcoolPrepubIp()%></td>
-                    </tr>
-                    <tr class="separator"><td colspan="2"></td></tr>
-                    <tr>
-                        <th>COMBO SPLITTER：</th>
-                        <td><%=configCenter.getUcoolComboDecollator()%></td>
-                    </tr>
-                    <tr>
-                        <th>ASSETS ROOT DIR：</th>
-                        <td><%=configCenter.getUcoolAssetsRoot()%></td>
+                        <th>使用本地映射：<sup class="lab">lab</sup></th>
+                        <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalMapping())%>" id="enableLocalMapping"></a></td>
+                        <td class="note">通过<a href="#">本地工具</a>将请求代理到本机，代理整个目录，此开关和"服务器上的Assets目录"互斥</td>
                     </tr>
                 </table>
             </div>
-        </div>--%>
+        </div>
     </div>
     <div id="footer">
         <span class="help">(?) help</span>
@@ -370,9 +362,16 @@
 
         UCOOL.Pz = function() {
 
+            var bindPathRequest = false;
+
             var _change = function(pid, success, curState) {
                 if (success === 'ok') {
-                    _switchChange('#' + pid);
+                    _switchChange('#' + pid, curState);
+                }
+                if(pid === "enableLocalMapping") {
+                    DOM.get('#bind-path').disabled = (curState=="true" ? "" : true);
+                    DOM.get('#root-bind').disabled = (curState=="true" ? true : "");
+                    DOM.get('#dir-bind').disabled = (curState=="true" ? true : "");
                 }
             };
 
@@ -382,9 +381,14 @@
                 DOM.next(curParent).innerHTML = '在' + time + (success === 'ok' ? '清理成功' : '清理失败');
             };
 
-            var _switchChange = function(el) {
-                DOM.toggleClass(el, 'switch-close');
-                DOM.toggleClass(el, 'switch-open');
+            var _switchChange = function(el, curState) {
+                if(curState==="true") {
+                    DOM.removeClass(el, 'switch-close');
+                    DOM.addClass(el, 'switch-open');
+                } else {
+                    DOM.removeClass(el, 'switch-open');
+                    DOM.addClass(el, 'switch-close');
+                }
             };
 
             var _bindDir = function (pid, success, data) {
@@ -429,6 +433,7 @@
                 S.get('#bindPrepub').className='';
                 S.get('#enableAssets').className='';
                 S.get('#enableLocalCombo').className='';
+                S.get('#enableLocalCombo').className='';
                 if(ConfigParser.isEnableDebug(config)) {
                     DOM.addClass('#assetsdebugswitch', 'switch-open');
                 } else {
@@ -449,6 +454,11 @@
                 } else {
                     DOM.addClass('#enableLocalCombo', 'switch-close');
                 }
+                if(ConfigParser.isEnableLocalMapping(config)) {
+                    DOM.addClass('#enableLocalMapping', 'switch-open');
+                } else {
+                    DOM.addClass('#enableLocalMapping', 'switch-close');
+                }
             };
 
             var ConfigParser = {
@@ -463,7 +473,26 @@
                 },
                 isEnableLocalCombo : function(config) {
                     return (config & 8) == 8;
+                },
+                isEnableLocalMapping : function(config) {
+                    return (config & 16) == 16;
                 }
+            };
+
+            var _bindPath = function(fn) {
+                var bindPathEl = S.get('#bind-path');
+                bindPathRequest = false;
+                DOM.removeClass('#bind-path-status', 'complete');
+                DOM.addClass('#bind-path-status', 'loading');
+                DOM.show('#bind-path-status');
+                S.jsonp('ppzbg.jsp?pid=bindPath&mappingPath=' + bindPathEl.value, function(data){
+                    DOM.hide('#message');
+                    if(data.success === "true") {
+                        DOM.removeClass('#bind-path-status', 'loading');
+                        DOM.addClass('#bind-path-status', 'complete');
+                        fn && fn.call();
+                    }
+                });
             };
 
             return {
@@ -501,6 +530,18 @@
                         var selectRootEl = S.get('#root-bind');
                         var selectSubEl = S.get('#dir-bind');
                         S.getScript("ppzbg.jsp?" + "pid=bindDir&callback=UCOOL.Pz.bindDir&rootDir="+selectRootEl.options[selectRootEl.selectedIndex].value+"&subDir="+selectSubEl.options[selectSubEl.selectedIndex].value+"&t=" + new Date(), null);
+                    });
+                    Event.on('#bind-path', 'blur', function(e) {
+                        _bindPath(undefined);
+                    });
+                    Event.on('#bind-path', 'focus', function(e) {
+                        DOM.hide('#bind-path-status');
+                    });
+                    Event.on('#enableLocalMapping', 'click', function(e) {
+                        _bindPath(function(){
+                            // 先去绑定一次映射路径
+                            S.getScript("ppzbg.jsp?" + "pid=enableLocalMapping&callback=UCOOL.Pz.change&t=" + new Date());
+                        });
                     });
                 },
 

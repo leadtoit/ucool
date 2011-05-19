@@ -28,6 +28,7 @@ public class UserDAOImpl implements UserDAO, InitializingBean {
             user.setHostName((String) map.get("host_name"));
             user.setName((String)map.get("name"));
             user.setConfig((Integer) map.get("config"));
+            user.setMappingPath((String) map.get("mapping_path"));
         }
         return user;
     }
@@ -77,11 +78,35 @@ public class UserDAOImpl implements UserDAO, InitializingBean {
     }
 
     @Override
+    public boolean updateMappingPath(Long userId, String mappingPath, String srcMappingPath) {
+        if (mappingPath == srcMappingPath) {
+            //这里return true不知道会不会有什么问题
+            return true;
+        }
+        try {
+            String sql = "update user set mapping_path=? where id=? and mapping_path=?";
+            if(srcMappingPath == null) {
+                sql = "update user set mapping_path=? where id=? and mapping_path is null";
+                if (jdbcTemplate.update(sql, new Object[]{mappingPath, userId}) > 0) {
+                    return true;
+                }
+            } else {
+                if (jdbcTemplate.update(sql, new Object[]{mappingPath, userId, srcMappingPath}) > 0) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
+    }
+
+    @Override
     public void afterPropertiesSet() throws Exception {
         int userExist = jdbcTemplate.queryForInt("SELECT COUNT(*) FROM sqlite_master where type=\'table\' and name=?", new Object[]{"user"});
         //create table
         if(userExist == 0) {
-            jdbcTemplate.execute("CREATE TABLE \"user\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"host_name\" VARCHAR NOT NULL  UNIQUE , \"name\" VARCHAR NOT NULL , \"config\" INTEGER NOT NULL  DEFAULT 5)");
+            jdbcTemplate.execute("CREATE TABLE \"user\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"host_name\" VARCHAR NOT NULL  UNIQUE , \"name\" VARCHAR NOT NULL , \"config\" INTEGER NOT NULL  DEFAULT 5, \"mapping_path\" VARCHAR)");
             jdbcTemplate.execute("CREATE  INDEX \"main\".\"idx_hostname\" ON \"user\" (\"host_name\" ASC)");
         }
     }

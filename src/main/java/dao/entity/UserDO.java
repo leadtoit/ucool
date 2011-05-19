@@ -13,6 +13,11 @@ public class UserDO {
 
     private int config = 5;
 
+    /**
+     * Ó³ÉäÂ·¾¶
+     */
+    private String mappingPath;
+
 
     public Long getId() {
         return id;
@@ -46,6 +51,13 @@ public class UserDO {
         this.config = config;
     }
 
+    public String getMappingPath() {
+        return mappingPath;
+    }
+
+    public void setMappingPath(String mappingPath) {
+        this.mappingPath = mappingPath;
+    }
 
     public boolean isEnableDebug() {
         return (config & 1) == 1;
@@ -93,6 +105,18 @@ public class UserDO {
             config = config | 1 << 3;
         } else {
             config = config & ~(1 << 3);
+        }
+    }
+
+    public boolean isEnableLocalMapping() {
+        return (config & 16) == 16;
+    }
+
+    public void setEnableLocalMapping(boolean enableLocalMapping) {
+        if (enableLocalMapping) {
+            config = config | 1 << 4;
+        } else {
+            config = config & ~(1 << 4);
         }
     }
 }

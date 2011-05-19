@@ -25,6 +25,11 @@
     if (personConfig.personConfigValid()) {
         srcConfig = personConfig.getUserDO().getConfig();
     }
+
+    String srcMappingPath = null;
+    if (personConfig.getUserDO()!= null && !personConfig.isNewUser()) {
+        srcMappingPath = personConfig.getUserDO().getMappingPath();
+    }
     if (pid != null) {
         String tState = null;
         if (pid.equalsIgnoreCase("assetsdebugswitch")) {
@@ -69,6 +74,38 @@
             personConfig.setEnableAssets(!personConfig.isEnableAssets());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableAssets() ? "true" : "false";
+        } else if(pid.equalsIgnoreCase("bindPath")) {
+            String mappingPath = request.getParameter("mappingPath");
+            if(personConfig.isNewUser()) {
+                //create user
+                personConfig.getUserDO().setName("");
+                boolean op = userDAO.createNewUser(personConfig.getUserDO());
+                if (!op) {
+                    out.print(callback + "(" + "{\"pid\":\""+ pid + "\",\"success\":\"error\", \"message\":\"create user error\"}" + ")");
+                    return;
+                }
+            }
+            personConfig.getUserDO().setMappingPath(mappingPath);
+            //update
+            boolean op = userDAO.updateMappingPath(personConfig.getUserDO().getId(), personConfig.getUserDO().getMappingPath(), srcMappingPath);
+            tState = op ? "true" : "false";
+            out.print(callback + "(" + "{\"pid\":\""+ pid + "\",\"success\":\"" +tState+ "\"}" + ")");
+            return;
+        } else if (pid.equalsIgnoreCase("enableLocalMapping")) {
+            // 这个开关在js中保证必须会创建新用户
+            if (personConfig.getUserDO() == null || personConfig.isNewUser()) {
+                out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
+                return;
+            }
+            //sync dir
+            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
+                out.print(callback + "(\'" + pid + "\',\'error\', \'directory is deleted\');");
+                return;
+            }
+            srcConfig = personConfig.getUserDO().getConfig();
+            personConfig.setEnableLocalMapping(!personConfig.isEnableLocalMapping());
+            userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
+            tState = personConfig.isEnableLocalMapping() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("enableLocalCombo")) {
             if (!personConfig.personConfigValid()) {
                 out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");

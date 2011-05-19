@@ -20,4 +20,6 @@ public interface UserDAO {
     boolean updateDir(Long userId, String newDir, String oldDir);
 
     boolean updateConfig(Long userId, int newConfig, int srcConfig);
+
+    boolean updateMappingPath(Long id, String mappingPath, String srcMappingPath);
 }

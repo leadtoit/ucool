@@ -111,6 +111,18 @@ public class PersonConfig {
     }
 
     /**
+     * 是否启用本地映射
+     * @return
+     */
+    public boolean isEnableLocalMapping() {
+        return userDO!= null && !isNewUser() && this.userDO.isEnableLocalMapping();
+    }
+
+    public void setEnableLocalMapping(boolean enableLocalMapping) {
+        this.userDO.setEnableLocalMapping(enableLocalMapping);
+    }
+
+    /**
      * 判断是否是新人
      * 这里的新人有2种可能：
      * 1、真正的新人，没有任何目录的绑定
@@ -130,6 +142,7 @@ public class PersonConfig {
      *
      * @return the configString (type String) of this PersonConfig object.
      */
+    @Deprecated
     public String getConfigString() {
         // get userDO
         StringBuffer sb = new StringBuffer();
