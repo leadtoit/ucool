@@ -205,18 +205,22 @@
 <div id="page">
     <div id="header">
         <div class="top">
-            <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
-            <a class="version" href="https://github.com/czy88840616/ucool">ucool-pro version：0.6</a>
-            <a class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start"><i>?</i>What's new？</a>
+            <h1><a href="https://github.com/czy88840616/ucool">ucool config page</a></h1>
+            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" title="What's new?">ucool-pro version：0.6 <i>?</i></a>
+            <%--<a class="new" href=""><i>?</i>What's new？</a>--%>
         </div>
     </div>
     <div id="content">
+        <div class="box hidden">
+            <div class="hd"><h3>MESSAGE</h3></div>
+            <div class="bd">服务器将于2011-5-20日晚重启，届时将不可用，约为5分钟，同时升级版本为0.6，将直接采用ip标识用户，目录绑定将失效，请重新绑定，特此告知</div>
+        </div>
         <div class="box">
             <div class="hd"><h3>INFO</h3></div>
             <div class="bd">
                 <table>
                     <tr>
-                        <th>IP：</th>
+                        <th>用户 IP 标识：</th>
                         <td><%=request.getRemoteAddr()%>
                             （当前使用ip作为用户唯一标识，请注意ip变化）
                         </td>
@@ -354,7 +358,7 @@
         </div>--%>
     </div>
     <div id="footer">
-        <span class="help">(?) help</span>
+        <a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start"><span class="help">(?) help</span></a>
         <ul class="author">
             <li><a href="mailto:zhangting@taobao.com">开发：张挺(zhangting@taobao.com)</a></li>
             <li><a href="mailto:wuxuan@taobao.com">设计：悟玄(wuxuan@taobao.com)</a></li>
