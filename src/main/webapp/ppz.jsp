@@ -7,6 +7,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="web.handler.impl.PersonConfigHandler" %>
 <%@ page import="common.tools.DirSyncTools" %>
+<%@ page import="dao.UserDAO" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -212,22 +213,36 @@
     PersonConfig personConfig = personConfigHandler.doHandler(request);
     FileEditor fileEditor = (FileEditor) wac.getBean("fileEditor");
     DirSyncTools dirSyncTools = (DirSyncTools) wac.getBean("dirSyncTools");
+    UserDAO userDAO = (UserDAO) wac.getBean("userDAO");
+
+    if(personConfig.isNewUser()) {
+        boolean op = userDAO.createNewUser(personConfig.getUserDO());
+        if (op) {
+            //重新取一次
+            personConfig = personConfigHandler.doHandler(request);
+        }
+    }
 %>
 <div id="page">
     <div id="header">
         <div class="top">
+            <h1><a href="https://github.com/czy88840616/ucool">ucool config page</a></h1>
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
             <a class="version" href="https://github.com/czy88840616/ucool">ucool-pro version：0.6</a>
             <a class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start"><i>?</i>What's new？</a>
         </div>
     </div>
     <div id="content">
+        <div class="box hidden">
+            <div class="hd"><h3>MESSAGE</h3></div>
+            <div class="bd">服务器将于2011-5-20日晚重启，届时将不可用，约为5分钟，同时升级版本为0.6，将直接采用ip标识用户，目录绑定将失效，请重新绑定，特此告知</div>
+        </div>
         <div class="box">
             <div class="hd"><h3>INFO</h3></div>
             <div class="bd">
                 <table>
                     <tr>
-                        <th>IP 标识：</th>
+                        <th>用户 IP 标识：</th>
                         <td><%=request.getRemoteAddr()%>
                             （当前使用ip作为用户唯一标识，请注意ip变化）
                         </td>
@@ -319,13 +334,15 @@
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isPrepub())%>" id="bindPrepub"></a></td>
                         <td class="note">打开后切换到预发环境</td>
                     </tr>
+                </table>
+                <table id="J_BoxSwitch" class="<%=personConfig.personConfigValid()?"":"hidden"%>">
                     <tr>
                         <th>使用服务器 Assets 目录：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableAssets())%>" id="enableAssets"></a></td>
                         <td class="note">打开后启用服务器上的assets目录中的文件</td>
                     </tr>
                     <tr>
-                        <th>启用本地combo：</th>
+                        <th>启用手动combo：<sup class="lab">lab</sup></th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
                         <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo">how to use?</a></td>
                     </tr>
@@ -346,7 +363,7 @@
         </div>
     </div>
     <div id="footer">
-        <span class="help">(?) help</span>
+        <a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start"><span class="help">(?) help</span></a>
         <ul class="author">
             <li><a href="mailto:zhangting@taobao.com">开发：张挺(zhangting@taobao.com)</a></li>
             <li><a href="mailto:wuxuan@taobao.com">设计：悟玄(wuxuan@taobao.com)</a></li>
