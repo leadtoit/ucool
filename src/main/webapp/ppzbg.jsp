@@ -21,22 +21,22 @@
     DirSyncTools dirSyncTools = (DirSyncTools) wac.getBean("dirSyncTools");
 
     PersonConfig personConfig = personConfigHandler.doHandler(request);
-    int srcConfig = 5;
-    if (personConfig.personConfigValid()) {
-        srcConfig = personConfig.getUserDO().getConfig();
+
+    if(personConfig.isNewUser()) {
+        boolean op = userDAO.createNewUser(personConfig.getUserDO());
+        if (!op) {
+            out.print(callback + "(\'" + pid + "\',\'error\', \'create user error\');");
+            return;
+        } else {
+            //重新取一次
+            personConfig = personConfigHandler.doHandler(request);
+        }
     }
+    int srcConfig = personConfig.getUserDO().getConfig();
+
     if (pid != null) {
         String tState = null;
         if (pid.equalsIgnoreCase("assetsdebugswitch")) {
-            if (!personConfig.personConfigValid()) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
-                return;
-            }
-            //sync dir
-            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'directory is deleted\');");
-                return;
-            }
             personConfig.setUcoolAssetsDebug(!personConfig.isUcoolAssetsDebug());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isUcoolAssetsDebug() ? "true" : "false";
@@ -44,15 +44,6 @@
             fileEditor.removeDirectory(configCenter.getWebRoot() + personConfig.getUcoolCacheRoot());
             tState = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒").format(new Date());
         } else if (pid.equalsIgnoreCase("bindPrepub")) {
-            if (!personConfig.personConfigValid()) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
-                return;
-            }
-            //sync dir
-            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'directory is deleted\');");
-                return;
-            }
             personConfig.setPrepub(!personConfig.isPrepub());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isPrepub() ? "true" : "false";

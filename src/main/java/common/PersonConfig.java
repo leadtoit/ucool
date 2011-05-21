@@ -23,7 +23,7 @@ public class PersonConfig {
     private boolean newUser = false;
 
     public boolean isUcoolAssetsDebug() {
-        if(personConfigValid()) {
+        if(!isNewUser()) {
             return this.userDO.isEnableDebug();
         } else {
             return configCenter.isUcoolAssetsDebug();
@@ -35,7 +35,7 @@ public class PersonConfig {
     }
 
     public boolean isPrepub() {
-        if(personConfigValid()) {
+        if(!isNewUser()) {
             return this.userDO.isEnablePrepub();
         } else {
             return configCenter.isPrepub();

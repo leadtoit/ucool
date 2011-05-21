@@ -7,6 +7,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="web.handler.impl.PersonConfigHandler" %>
 <%@ page import="common.tools.DirSyncTools" %>
+<%@ page import="dao.UserDAO" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -201,12 +202,21 @@
     PersonConfig personConfig = personConfigHandler.doHandler(request);
     FileEditor fileEditor = (FileEditor) wac.getBean("fileEditor");
     DirSyncTools dirSyncTools = (DirSyncTools) wac.getBean("dirSyncTools");
+    UserDAO userDAO = (UserDAO) wac.getBean("userDAO");
+
+    if(personConfig.isNewUser()) {
+        boolean op = userDAO.createNewUser(personConfig.getUserDO());
+        if (op) {
+            //重新取一次
+            personConfig = personConfigHandler.doHandler(request);
+        }
+    }
 %>
 <div id="page">
     <div id="header">
         <div class="top">
             <h1><a href="https://github.com/czy88840616/ucool">ucool config page</a></h1>
-            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" title="What's new?">ucool-pro version：0.6 <i>?</i></a>
+            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" title="What's new?">ucool-pro version：0.6.1 <i>?</i></a>
             <%--<a class="new" href=""><i>?</i>What's new？</a>--%>
         </div>
     </div>
@@ -287,7 +297,7 @@
                 </table>
             </div>
         </div>
-        <div id="J_BoxSwitch" class="box switch <%=personConfig.personConfigValid()?"":"hidden"%>">
+        <div class="box switch">
             <div class="hd"><h3>SWITCH</h3></div>
             <div class="bd">
                 <table>
@@ -301,8 +311,10 @@
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isPrepub())%>" id="bindPrepub"></a></td>
                         <td class="note">打开后切换到预发环境</td>
                     </tr>
+                </table>
+                <table id="J_BoxSwitch" class="<%=personConfig.personConfigValid()?"":"hidden"%>">
                     <tr>
-                        <th>使用 Assets 目录：</th>
+                        <th>使用服务器 Assets 目录：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableAssets())%>" id="enableAssets"></a></td>
                         <td class="note">打开后启用服务器上的assets目录中的文件</td>
                     </tr>
@@ -319,43 +331,6 @@
                 </table>
             </div>
         </div>
-        <%--
-        <div class="box">
-            <div class="hd"><h3>PROFILE</h3></div>
-            <div class="bd">
-                <table>
-                    <tr>
-                        <th>DAILY DOMAIN：</th>
-                        <td><%=configCenter.getUcoolDailyDomain()%></td>
-                    </tr>
-                    <tr>
-                        <th>RELEASE DOMAIN：</th>
-                        <td><%=configCenter.getUcoolOnlineDomain()%></td>
-                    </tr>
-                    <tr>
-                        <th>DAILY IP：</th>
-                        <td><%=configCenter.getUcoolDailyIp()%></td>
-                    </tr>
-                    <tr>
-                        <th>RELEASE IP：</th>
-                        <td><%=configCenter.getUcoolOnlineIp()%></td>
-                    </tr>
-                    <tr>
-                        <th>PRE-RELEASE IP：</th>
-                        <td><%=configCenter.getUcoolPrepubIp()%></td>
-                    </tr>
-                    <tr class="separator"><td colspan="2"></td></tr>
-                    <tr>
-                        <th>COMBO SPLITTER：</th>
-                        <td><%=configCenter.getUcoolComboDecollator()%></td>
-                    </tr>
-                    <tr>
-                        <th>ASSETS ROOT DIR：</th>
-                        <td><%=configCenter.getUcoolAssetsRoot()%></td>
-                    </tr>
-                </table>
-            </div>
-        </div>--%>
     </div>
     <div id="footer">
         <a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start"><span class="help">(?) help</span></a>
