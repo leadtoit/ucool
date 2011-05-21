@@ -66,12 +66,25 @@
             tState = personConfig.isEnableAssets() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("bindPath")) {
             String mappingPath = request.getParameter("mappingPath");
-            if(!mappingPath.startsWith("/")) {
-                mappingPath = "/" + mappingPath;
+            String[] mappingPaths = mappingPath.split(";");
+            StringBuilder paths = new StringBuilder();
+            // 取得当前的映射路径
+            for (String mp : mappingPaths) {
+                if(mp.equals("/")) {
+                    paths.append(mp).append(";");
+                    continue;
+                }
+                if(!mp.startsWith("/")) {
+                    mp = "/" + mp;
+                }
+                if(mp.endsWith("/")) {
+                    mp = mp.substring(0, mp.length()-1);
+                }
+                paths.append(mp).append(";");
             }
-            if(mappingPath.endsWith("/")) {
-                mappingPath = mappingPath.substring(mappingPath.length()-1);
-            }
+
+            mappingPath = paths.toString();
+
             if(personConfig.isNewUser()) {
                 //create user
                 personConfig.getUserDO().setName("");
