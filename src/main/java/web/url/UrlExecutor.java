@@ -52,14 +52,16 @@ public class UrlExecutor {
     public void doDebugUrlRule(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
-        // 本地映射不走服务器assets目录
-        String[] mappingPaths = personConfig.getUserDO().getMappingPath().split(";");
         String curMappingPath = null;
-        // 取得当前的映射路径
-        for (String mappingPath : mappingPaths) {
-            if(requestInfo.getFilePath().startsWith(mappingPath)){
-                curMappingPath = mappingPath;
-                break;
+        if(!personConfig.getUserDO().getMappingPath().equals("")) {
+            // 本地映射不走服务器assets目录
+            String[] mappingPaths = personConfig.getUserDO().getMappingPath().split(";");
+            // 取得当前的映射路径
+            for (String mappingPath : mappingPaths) {
+                if(requestInfo.getFilePath().startsWith(mappingPath)){
+                    curMappingPath = mappingPath;
+                    break;
+                }
             }
         }
         if(personConfig.isEnableLocalMapping() && curMappingPath != null) {
