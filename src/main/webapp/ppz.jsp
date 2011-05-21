@@ -319,7 +319,7 @@
                         <td class="note">打开后启用服务器上的assets目录中的文件</td>
                     </tr>
                     <tr>
-                        <th>启用本地combo：<sup class="lab">lab</sup></th>
+                        <th>启用手动combo：<sup class="lab">lab</sup></th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
                         <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo">how to use?</a></td>
                     </tr>
