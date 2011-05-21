@@ -53,14 +53,23 @@ public class UrlExecutor {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
         // 本地映射不走服务器assets目录
-        if(personConfig.isEnableLocalMapping() && requestInfo.getFilePath().startsWith(personConfig.getUserDO().getMappingPath())) {
+        String[] mappingPaths = personConfig.getUserDO().getMappingPath().split(";");
+        String curMappingPath = null;
+        // 取得当前的映射路径
+        for (String mappingPath : mappingPaths) {
+            if(requestInfo.getFilePath().startsWith(mappingPath)){
+                curMappingPath = mappingPath;
+                break;
+            }
+        }
+        if(personConfig.isEnableLocalMapping() && curMappingPath != null) {
             // 将ip替换为客户端的，并且将目录映射掉
             realUrl = realUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
-            realUrl = realUrl.replaceAll(personConfig.getUserDO().getMappingPath(), "");
+            realUrl = realUrl.replaceAll(curMappingPath, "");
             requestInfo.setRealUrl(realUrl);
             String fullUrl = requestInfo.getFullUrl();
             fullUrl = fullUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
-            fullUrl = fullUrl.replaceAll(personConfig.getUserDO().getMappingPath(), "");
+            fullUrl = fullUrl.replaceAll(curMappingPath, "");
             requestInfo.setFullUrl(fullUrl);
             //直接请求客户端
             if (!readUrlFile(requestInfo, response)) {

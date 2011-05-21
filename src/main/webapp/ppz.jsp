@@ -226,10 +226,8 @@
 <div id="page">
     <div id="header">
         <div class="top">
-            <h1><a href="https://github.com/czy88840616/ucool">ucool config page</a></h1>
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
-            <a class="version" href="https://github.com/czy88840616/ucool">ucool-pro version：0.6</a>
-            <a class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start"><i>?</i>What's new？</a>
+            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start">ucool-pro version：0.7 <i>?</i></a>
         </div>
     </div>
     <div id="content">
@@ -323,7 +321,7 @@
         <div class="box switch">
             <div class="hd"><h3>SWITCH</h3></div>
             <div class="bd">
-                <table id="J_BoxSwitch" class="<%=personConfig.personConfigValid()?"":"hidden"%>">
+                <table>
                     <tr>
                         <th>DEBUG 模式：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isUcoolAssetsDebug())%>" id="assetsdebugswitch"></a></td>
@@ -333,6 +331,11 @@
                         <th>绑定预发环境：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isPrepub())%>" id="bindPrepub"></a></td>
                         <td class="note">打开后切换到预发环境</td>
+                    </tr>
+                    <tr>
+                        <th>本地目录映射：<sup class="lab">lab</sup></th>
+                        <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalMapping())%>" id="enableLocalMapping"></a></td>
+                        <td class="note">通过<a href="#">本地工具</a>将请求代理到本机，代理整个目录，此开关和"服务器上的Assets目录"互斥</td>
                     </tr>
                 </table>
                 <table id="J_BoxSwitch" class="<%=personConfig.personConfigValid()?"":"hidden"%>">
@@ -351,13 +354,6 @@
                         <%--<td class="op"><input type="button" value="CLEAR" id="cleanOnlineCache"/></td>--%>
                         <%--<td class="note"></td>--%>
                     <%--</tr>--%>
-                </table>
-                <table>
-                    <tr>
-                        <th>使用本地映射：<sup class="lab">lab</sup></th>
-                        <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalMapping())%>" id="enableLocalMapping"></a></td>
-                        <td class="note">通过<a href="#">本地工具</a>将请求代理到本机，代理整个目录，此开关和"服务器上的Assets目录"互斥</td>
-                    </tr>
                 </table>
             </div>
         </div>

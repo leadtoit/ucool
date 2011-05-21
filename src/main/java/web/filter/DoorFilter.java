@@ -21,6 +21,8 @@ public class DoorFilter implements Filter {
 
     private ConfigCenter configCenter;
 
+    private String myIp;
+
     public void setConfigCenter(ConfigCenter configCenter) {
         this.configCenter = configCenter;
     }
@@ -66,7 +68,7 @@ public class DoorFilter implements Filter {
 
             String myip = getMyIp();
             if(myip != null) {
-                configCenter.setUcoolProxyIp(myip);
+                this.myIp = myip;
             }
         }
     }
@@ -94,7 +96,7 @@ public class DoorFilter implements Filter {
      */
     private boolean filterDomain(HttpServletRequest request) {
         String url = request.getRequestURL().toString();
-        if(url.indexOf(configCenter.getUcoolProxyIp()) != -1) {
+        if(url.indexOf(this.myIp) != -1) {
             return false;
         }
         return true;

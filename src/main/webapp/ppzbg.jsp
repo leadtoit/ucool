@@ -34,10 +34,7 @@
     }
 
 
-    String srcMappingPath = null;
-    if (personConfig.getUserDO()!= null && !personConfig.isNewUser()) {
-        srcMappingPath = personConfig.getUserDO().getMappingPath();
-    }
+    String srcMappingPath = personConfig.getUserDO().getMappingPath();
 
     int srcConfig = personConfig.getUserDO().getConfig();
 
@@ -69,6 +66,12 @@
             tState = personConfig.isEnableAssets() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("bindPath")) {
             String mappingPath = request.getParameter("mappingPath");
+            if(!mappingPath.startsWith("/")) {
+                mappingPath = "/" + mappingPath;
+            }
+            if(mappingPath.endsWith("/")) {
+                mappingPath = mappingPath.substring(mappingPath.length()-1);
+            }
             if(personConfig.isNewUser()) {
                 //create user
                 personConfig.getUserDO().setName("");
