@@ -299,6 +299,7 @@
                                         }
                                     %>
                                 </select>
+                                <span class="status loading" id="message" style="display: none"></span>
                             </div>
                         </td>
                     </tr>
@@ -311,8 +312,6 @@
                                         <%if(!personConfig.isEnableLocalMapping())out.print("disabled");%>/>
                                 <span class="status" id="bind-path-status"></span>
                             </div>
-                            <div id="message" style="display:none"><img
-                                        src='http://img02.taobaocdn.com/tps/i2/T1JSdAXd0nXXXXXXXX-32-32.gif'/></div>
                         </td>
                     </tr>
                 </table>
@@ -345,7 +344,7 @@
                         <td class="note">打开后启用服务器上的assets目录中的文件</td>
                     </tr>
                     <tr>
-                        <th>启用手动combo：<sup class="lab">lab</sup></th>
+                        <th>启用手动combo：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
                         <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo">how to use?</a></td>
                     </tr>
@@ -411,6 +410,9 @@
                     if(data !== 'cancel') {
                         DOM.show('#J_BoxSwitch');
                         _updateConfig(data);
+                    } else {
+                        //取消要把子目录置位
+                        
                     }
                 } else {
                     DOM.hide('#J_BoxSwitch');
