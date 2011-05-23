@@ -53,7 +53,7 @@ public class UrlExecutor {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
         String curMappingPath = null;
-        if(!personConfig.getUserDO().getMappingPath().equals("")) {
+        if(personConfig.getUserDO().getMappingPath() != null && !"".equals(personConfig.getUserDO().getMappingPath())) {
             // 本地映射不走服务器assets目录
             String[] mappingPaths = personConfig.getUserDO().getMappingPath().split(";");
             // 取得当前的映射路径

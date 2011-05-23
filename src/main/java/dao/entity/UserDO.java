@@ -16,7 +16,7 @@ public class UserDO {
     /**
      * Ó³ÉäÂ·¾¶
      */
-    private String mappingPath;
+    private String mappingPath = "";
 
 
     public Long getId() {
