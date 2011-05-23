@@ -9,7 +9,7 @@ public class UserDO {
 
     private String hostName;
 
-    private String name;
+    private String name = "";
 
     private int config = 5;
 
