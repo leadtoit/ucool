@@ -70,6 +70,7 @@ public class PersonConfigHandler {
             if(personInfo != null) {
                 userCache.put(remoteHost, personInfo);
                 request.getSession().setAttribute(request.getSession().getId(), remoteHost);
+                System.out.println("map has size:" + userCache.size());
             }
         }
 
