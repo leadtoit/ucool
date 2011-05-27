@@ -32,6 +32,9 @@ public class PersonConfigHandler {
         this.userDAO = userDAO;
     }
 
+    public Map<String, UserDO> getUserCache() {
+        return userCache;
+    }
 
     /**
      * Method doHandler ...
@@ -66,9 +69,10 @@ public class PersonConfigHandler {
             personInfo = this.userDAO.getPersonInfo(remoteHost);
             if(personInfo != null) {
                 userCache.put(remoteHost, personInfo);
+                request.getSession().setAttribute(request.getSession().getId(), remoteHost);
             }
         }
-        
+
         //构造个人配置
         PersonConfig personConfig = new PersonConfig();
         personConfig.setConfigCenter(configCenter);
