@@ -8,6 +8,8 @@ import dao.entity.UserDO;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,6 +22,8 @@ public class PersonConfigHandler {
 
     private ConfigCenter configCenter;
 
+    private Map<String, UserDO> userCache = new HashMap<String, UserDO>();
+
     public void setConfigCenter(ConfigCenter configCenter) {
         this.configCenter = configCenter;
     }
@@ -28,6 +32,9 @@ public class PersonConfigHandler {
         this.userDAO = userDAO;
     }
 
+    public Map<String, UserDO> getUserCache() {
+        return userCache;
+    }
 
     /**
      * Method doHandler ...
@@ -55,8 +62,19 @@ public class PersonConfigHandler {
         if (pcname != null) {
             remoteHost = pcname.toString();
         }
-        
-        UserDO personInfo = this.userDAO.getPersonInfo(remoteHost);
+
+        // get user from cache
+        UserDO personInfo = userCache.get(remoteHost);
+        if(personInfo == null) {
+            personInfo = this.userDAO.getPersonInfo(remoteHost);
+            if(personInfo != null) {
+                userCache.put(remoteHost, personInfo);
+                request.getSession().setAttribute(request.getSession().getId(), remoteHost);
+                System.out.println("map has size:" + userCache.size());
+            }
+        }
+
+        //构造个人配置
         PersonConfig personConfig = new PersonConfig();
         personConfig.setConfigCenter(configCenter);
         if (personInfo != null) {
