@@ -4,7 +4,7 @@
     <groupId>com.taobao</groupId>
     <artifactId>ucool-pro</artifactId>
     <packaging>war</packaging>
-    <version>0.7.1</version>
+    <version>0.8</version>
     <name>ued cool tools pro</name>
     <url>http://code.google.com/p/ucool/</url>
     <dependencies>
@@ -48,6 +48,11 @@
           <artifactId>commons-httpclient</artifactId>
           <version>3.1</version>
           <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.2.3</version>
         </dependency>
     </dependencies>
     <build>
