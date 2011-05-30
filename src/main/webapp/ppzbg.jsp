@@ -8,7 +8,6 @@
 <%@ page import="web.handler.impl.PersonConfigHandler" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="common.tools.DirSyncTools" %>
 <%@ page import="java.util.List" %>
 <%
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(this.getServletContext());
@@ -18,7 +17,6 @@
     UserDAO userDAO = (UserDAO) wac.getBean("userDAO");
     String pid = request.getParameter("pid");
     String callback = request.getParameter("callback");
-    DirSyncTools dirSyncTools = (DirSyncTools) wac.getBean("dirSyncTools");
 
     PersonConfig personConfig = personConfigHandler.doHandler(request);
 
@@ -56,11 +54,7 @@
                 out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
                 return;
             }
-            //sync dir
-            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'directory is deleted\');");
-                return;
-            }
+
             personConfig.setEnableAssets(!personConfig.isEnableAssets());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableAssets() ? "true" : "false";
@@ -108,11 +102,7 @@
                 out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
                 return;
             }
-            //sync dir
-            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'directory is deleted\');");
-                return;
-            }
+
             srcConfig = personConfig.getUserDO().getConfig();
             personConfig.setEnableLocalMapping(!personConfig.isEnableLocalMapping());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
@@ -122,20 +112,11 @@
                 out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
                 return;
             }
-            //sync dir
-            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'directory is deleted\');");
-                return;
-            }
+
             personConfig.setEnableLocalCombo(!personConfig.isEnableLocalCombo());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableLocalCombo() ? "true" : "false";
         } else if (pid.equalsIgnoreCase("bindDir")) {
-            //sync subDir
-            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'directory is deleted\');");
-                return;
-            }
             String rootDir = request.getParameter("rootDir");
             String subDir = request.getParameter("subDir");
 
