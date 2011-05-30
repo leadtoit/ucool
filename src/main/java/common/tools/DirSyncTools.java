@@ -11,6 +11,7 @@ import dao.UserDAO;
  * Time: ионГ11:14
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class DirSyncTools {
 
     private FileEditor fileEditor;
