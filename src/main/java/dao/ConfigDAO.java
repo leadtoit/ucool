@@ -1,4 +1,6 @@
-package dao.entity;
+package dao;
+
+import dao.entity.ConfigDO;
 
 /**
  * Created by IntelliJ IDEA.

@@ -1,5 +1,6 @@
-package dao.entity;
+package dao;
 
+import dao.entity.ConfigDO;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
