@@ -334,7 +334,7 @@
                     <tr>
                         <th>本地目录映射：<sup class="lab">lab</sup></th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalMapping())%>" id="enableLocalMapping"></a></td>
-                        <td class="note">通过<a href="#">本地工具</a>将请求代理到本机，代理整个目录，此开关和"服务器上的Assets目录"互斥</td>
+                        <td class="note">通过<a href="#">本地工具</a>将请求代理到本机，代理整个目录，此开关和"服务器上的Assets目录"开关互斥</td>
                     </tr>
                 </table>
                 <table id="J_BoxSwitch" class="<%=personConfig.personConfigValid()?"":"hidden"%>">
@@ -510,23 +510,22 @@
                 });
             };
 
+            var eventHandler = {
+                assetsdebugswitch:"assetsdebugswitch",
+                bindPrepub:"bindPrepub",
+                enableAssets:"enableAssets",
+                enableLocalCombo:"enableLocalCombo"
+            };
+
             return {
                 init:function() {
-                    Event.on('#assetsdebugswitch', 'click', function(e) {
-                        S.getScript("ppzbg.jsp?" + "pid=assetsdebugswitch&callback=UCOOL.Pz.change&t=" + new Date());
-                    });
-                    Event.on('#cleanOnlineCache', 'click', function(e) {
-                        S.getScript("ppzbg.jsp?" + "pid=cleanOnlineCache&callback=UCOOL.Pz.doOnce&t=" + new Date());
-                    });
-                    Event.on('#bindPrepub', 'click', function(e) {
-                        S.getScript("ppzbg.jsp?" + "pid=bindPrepub&callback=UCOOL.Pz.change&t=" + new Date());
-                    });
-                    Event.on('#enableAssets', 'click', function(e) {
-                        S.getScript("ppzbg.jsp?" + "pid=enableAssets&callback=UCOOL.Pz.change&t=" + new Date());
-                    });
-                    Event.on('#enableLocalCombo', 'click', function(e) {
-                        S.getScript("ppzbg.jsp?" + "pid=enableLocalCombo&callback=UCOOL.Pz.change&t=" + new Date());
-                    });
+                    for (var eventEL in eventHandler) {
+                        var eventTarget = eventHandler[eventEL];
+                        Event.on('#'+eventEL, 'click', function(e) {
+                            S.getScript("ppzbg.jsp?" + "pid=" + eventTarget + "&callback=UCOOL.Pz.change&t=" + new Date());
+                        });
+                    }
+
                     Event.on('#root-bind', 'change', function(e) {
                         DOM.hide('#J_BoxSwitch');
                         DOM.show('#message');
