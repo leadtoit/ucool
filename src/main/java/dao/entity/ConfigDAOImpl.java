@@ -37,23 +37,33 @@ public class ConfigDAOImpl implements ConfigDAO, InitializingBean {
 
     @Override
     public boolean addConfig(ConfigDO configDO) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        String sql = "insert into config (alias, name, config, mapping_path) values (?,?,?,?)";
+        try {
+            if (this.jdbcTemplate.update(sql, new Object[]{configDO.getAlias(), configDO.getName(), configDO.getConfig(), configDO.getMappingPath()}) > 0) {
+                ConfigDO existConfigDO = getConfigByName(configDO.getAlias());
+                configDO.setId(existConfigDO.getId());
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
     }
 
     @Override
     public boolean updateConfig(ConfigDO configDO) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        String sql = "update config set name=?, config=?, mapping_path=? where id=? and alias=?";
+        try {
+            this.jdbcTemplate.update(sql, new Object[]{configDO.getName(), configDO.getConfig(), configDO.getMappingPath(), configDO.getId(), configDO.getAlias()});
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        int userExist = jdbcTemplate.queryForInt("SELECT COUNT(*) FROM sqlite_master where type=\'table\' and name=?", new Object[]{"user"});
-        //create table
-        if(userExist == 0) {
-            jdbcTemplate.execute("CREATE TABLE \"user\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"host_name\" VARCHAR NOT NULL  UNIQUE , \"name\" VARCHAR NOT NULL , \"config\" INTEGER NOT NULL  DEFAULT 5, \"mapping_path\" VARCHAR)");
-            jdbcTemplate.execute("CREATE  INDEX \"main\".\"idx_hostname\" ON \"user\" (\"host_name\" ASC)");
-        }
-
         int configExist = jdbcTemplate.queryForInt("SELECT COUNT(*) FROM sqlite_master where type=\'table\' and name=?", new Object[]{"config"});
         //create table
         if(configExist == 0) {
