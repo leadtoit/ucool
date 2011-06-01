@@ -603,58 +603,27 @@
                         });
                     });
 
-
-                    KISSY.getScript("http://yiminghe.github.com/kissy-dpl/base/build/css/loading.css", function(){
-                        //最简单好用的！
-//                        var node = document.createElement("div");
-//                        node.innerHTML = '<div class="loading" style="width:1000px;height:600px;"> '
-//                                + '<i class="icon"></i> '
-//                                + '<div class="mask"></div> '
-//                                + '</div>';
-                        KISSY.use('ua,event,node,overlay', function(S, UA, Event, Node, O) {
-//                            popup = new O.Popup({
-//                                        content: node,
-//                                        width: 1000,
-//                                        height: 600,
-//                                        elStyle:{
-//                                            position:UA.ie == 6 ? "absolute" : "fixed"
-//                                        },
-//                                        align: {
-//                                            points: ['cc', 'cc']
-//                                        },
-//                                        effect: {
-//                                            effect:"fade",
-//                                            duration:0.5
-//                                        }
-//                                    });
-
-                            var ipadMsg = document.createElement("div");
-                            ipadMsg.innerHTML = '<div class="msg-ipad"">保存成功</div>';
-                            ipadStatus = new O.Popup({
-                                        content: ipadMsg,
-                                        width: 120,
-                                        height: 120,
-                                        elStyle:{
-                                            position:UA.ie == 6 ? "absolute" : "fixed"
-                                        },
-                                        align: {
-                                            points: ['cc', 'cc']
-                                        },
-                                        effect: {
-                                            effect:"fade",
-                                            duration:0.5
-                                        }
-                                    });
-//                            Node.one('').on('click', function() {
-//                                popup.show();
-//                                S.later(function(){
-//                                    popup.hide();
-//                                }, 3000);
-//                            });
-                            Event.on("#saveConfig", "click", function(e) {
-                                e.halt();
-                                S.getScript("ppzbg.jsp?" + "pid=saveConfig&callback=UCOOL.Pz.saveConfig&t=" + new Date());
-                            });
+                    KISSY.use('ua,event,node,overlay', function(S, UA, Event, Node, O) {
+                        var ipadMsg = document.createElement("div");
+                        ipadMsg.innerHTML = '<div class="msg-ipad"">保存成功</div>';
+                        ipadStatus = new O.Popup({
+                                    content: ipadMsg,
+                                    width: 120,
+                                    height: 120,
+                                    elStyle:{
+                                        position:UA.ie == 6 ? "absolute" : "fixed"
+                                    },
+                                    align: {
+                                        points: ['cc', 'cc']
+                                    },
+                                    effect: {
+                                        effect:"fade",
+                                        duration:0.5
+                                    }
+                                });
+                        Event.on("#saveConfig", "click", function(e) {
+                            e.halt();
+                            S.getScript("ppzbg.jsp?" + "pid=saveConfig&callback=UCOOL.Pz.saveConfig&t=" + new Date());
                         });
                     });
                 },
