@@ -9,12 +9,17 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.List" %>
+<%@ page import="dao.ConfigDAO" %>
+<%@ page import="net.sf.json.util.JSONUtils" %>
+<%@ page import="net.sf.json.JSONObject" %>
+<%@ page import="dao.entity.ConfigDO" %>
 <%
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(this.getServletContext());
     ConfigCenter configCenter = (ConfigCenter) wac.getBean("configCenter");
     FileEditor fileEditor = (FileEditor) wac.getBean("fileEditor");
     PersonConfigHandler personConfigHandler = (PersonConfigHandler) wac.getBean("personConfigHandler");
     UserDAO userDAO = (UserDAO) wac.getBean("userDAO");
+    ConfigDAO configDAO = (ConfigDAO) wac.getBean("configDAO");
     String pid = request.getParameter("pid");
     String callback = request.getParameter("callback");
 
@@ -50,7 +55,7 @@
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isPrepub() ? "true" : "false";
         } else if (pid.equalsIgnoreCase("enableAssets")) {
-            if (!personConfig.personConfigValid()) {
+            if (!personConfig.isAdvanced()) {
                 out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
                 return;
             }
@@ -108,7 +113,7 @@
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableLocalMapping() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("enableLocalCombo")) {
-            if (!personConfig.personConfigValid()) {
+            if (!personConfig.isAdvanced()) {
                 out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
                 return;
             }
@@ -184,6 +189,24 @@
                 sb.deleteCharAt(sb.length()-1);
             }
             tState = sb.toString();
+        } else if("saveConfig".endsWith(pid)) {
+            String configString = request.getParameter("configString");
+            JSONObject jsonObject = new JSONObject();
+            ConfigDO configDO = new ConfigDO();
+            configDO.setAlias((String) jsonObject.get("alias"));
+            configDO.setConfig((Integer)jsonObject.get("config"));
+            configDO.setName((String)jsonObject.get("name"));
+            configDO.setMappingPath((String)jsonObject.get("mapping_path"));
+
+            ConfigDO tempConfig = configDAO.getConfigByName(configDO.getAlias());
+            if(tempConfig == null) {
+                configDAO.addConfig(configDO);
+            } else {
+                configDO.setId(tempConfig.getId());
+                configDAO.updateConfig(configDO);
+            }
+        } else if("loadConfig".endsWith(pid)) {
+            
         }
 
         if (callback != null) {

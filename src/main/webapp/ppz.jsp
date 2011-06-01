@@ -15,8 +15,9 @@
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="kiben" content="no-cache">
     <title>ucool个人配置页</title>
-    <script type="text/javascript" src="http://a.tbcdn.cn/s/kissy/1.1.6/kissy-min.js"></script>
-    <link rel="stylesheet" href="http://a.tbcdn.cn/s/kissy/1.1.6/cssbase/base-min.css" />
+    <link rel="shortcut icon" href="http://www.taobao.com/favicon2.ico" type="image/x-icon" />
+    <script type="text/javascript" src="http://assets.taobaocdn.com/s/kissy/1.2.0/kissy-min.js"></script>
+    <link rel="stylesheet" href="http://assets.taobaocdn.com/s/kissy/1.1.6/cssbase/base-min.css" />
     <style type="text/css">
         body{
             background-color:#f3f1e4;
@@ -192,16 +193,44 @@
             color: #f60;
             margin: auto 5px;
         }
-        .loading{
+        .load{
             background:url(http://img02.taobaocdn.com/tps/i2/T1ob1cXlFsXXXXXXXX-16-16.gif) #f3f1e4 no-repeat 0 2px;
         }
         .complete {
             background:url(http://img02.taobaocdn.com/tps/i2/T14gucXlFXXXXXXXXX-16-16.png) #f3f1e4 no-repeat 0 2px;
         }
+        .config-del,.config-save,.config-load{
+            background:url(http://img03.taobaocdn.com/tps/i3/T1aDGdXexmXXXXXXXX-16-52.png) no-repeat 0 0 transparent;
+            display: inline-block;
+            width:18px;
+            height:18px;
+            line-height: 18px;
+            text-indent: -9999px;
+        }
+        .config-del {
+            background-position: 0 -18px;
+        }
+        .config-save {
+            background-position: 0 -36px;
+        }
         .status {
             display: inline-block;
             width:18px;
             height:18px;
+        }
+        .msg-ipad {
+            width:120px;
+            height:120px;
+            display: inline-block;
+            opacity: 0.6;
+            position:absolute;
+            z-index: 9999;
+            background-color: #000;
+            border-radius: 10px;
+            color:#fff;
+            text-align: center;
+            line-height: 120px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -227,7 +256,7 @@
     <div id="header">
         <div class="top">
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
-            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start">ucool-pro version：0.8 <i>?</i></a>
+            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" title="what's new?">ucool-pro version：0.8 <i>?</i></a>
         </div>
     </div>
     <div id="content">
@@ -243,6 +272,9 @@
                         <th>用户 IP 标识：</th>
                         <td><%=request.getRemoteAddr()%>
                             （当前使用ip作为用户唯一标识，请注意ip变化）
+                            <a class="config-save" href="#" title="保存配置" id="saveConfig">保存配置</a>
+                            <a class="config-load" href="#" title="加载配置" id="loadConfig">加载配置</a>
+                            <a class="config-del" href="#" title="删除配置" id="delConfig">删除配置</a>
                         </td>
                     </tr>
                     <tr>
@@ -299,7 +331,7 @@
                                         }
                                     %>
                                 </select>
-                                <span class="status loading" id="message" style="display: none"></span>
+                                <span class="status load" id="message" style="display: none"></span>
                             </div>
                         </td>
                     </tr>
@@ -337,7 +369,7 @@
                         <td class="note">通过<a href="#">本地工具</a>将请求代理到本机，代理整个目录，此开关和"服务器上的Assets目录"开关互斥</td>
                     </tr>
                 </table>
-                <table id="J_BoxSwitch" class="<%=personConfig.personConfigValid()?"":"hidden"%>">
+                <table id="J_BoxSwitch" class="<%=personConfig.isAdvanced()?"":"hidden"%>">
                     <tr>
                         <th>使用服务器 Assets 目录：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableAssets())%>" id="enableAssets"></a></td>
@@ -374,7 +406,7 @@
 
         UCOOL.Pz = function() {
 
-            var bindPathRequest = false;
+            var bindPathRequest = false, popup, ipadStatus;
 
             var _change = function(pid, success, curState) {
                 if (success === 'ok') {
@@ -498,16 +530,27 @@
                 var bindPathEl = S.get('#bind-path');
                 bindPathRequest = false;
                 DOM.removeClass('#bind-path-status', 'complete');
-                DOM.addClass('#bind-path-status', 'loading');
+                DOM.addClass('#bind-path-status', 'load');
                 DOM.show('#bind-path-status');
                 S.jsonp('ppzbg.jsp?pid=bindPath&mappingPath=' + bindPathEl.value, function(data){
                     DOM.hide('#message');
                     if(data.success === "true") {
-                        DOM.removeClass('#bind-path-status', 'loading');
+                        DOM.removeClass('#bind-path-status', 'load');
                         DOM.addClass('#bind-path-status', 'complete');
                         fn && fn.call();
                     }
                 });
+            };
+
+            var _saveConfig = function(pid, success, data){
+                if(success=='ok') {
+                    ipadStatus.show();
+                    S.later(function(){
+                        ipadStatus.hide();
+                    }, 1500);
+                } else {
+                
+                }
             };
 
             var eventHandler = {
@@ -521,9 +564,11 @@
                 init:function() {
                     for (var eventEL in eventHandler) {
                         var eventTarget = eventHandler[eventEL];
-                        Event.on('#'+eventEL, 'click', function(e) {
-                            S.getScript("ppzbg.jsp?" + "pid=" + eventTarget + "&callback=UCOOL.Pz.change&t=" + new Date());
-                        });
+                        Event.on('#'+eventEL, 'click', function(eventTarget) {
+                            return function(e){
+                                S.getScript("ppzbg.jsp?" + "pid=" + eventTarget + "&callback=UCOOL.Pz.change&t=" + new Date());
+                            };
+                        }(eventTarget));
                     }
 
                     Event.on('#root-bind', 'change', function(e) {
@@ -557,6 +602,61 @@
                             S.getScript("ppzbg.jsp?" + "pid=enableLocalMapping&callback=UCOOL.Pz.change&t=" + new Date());
                         });
                     });
+
+
+                    KISSY.getScript("http://yiminghe.github.com/kissy-dpl/base/build/css/loading.css", function(){
+                        //最简单好用的！
+//                        var node = document.createElement("div");
+//                        node.innerHTML = '<div class="loading" style="width:1000px;height:600px;"> '
+//                                + '<i class="icon"></i> '
+//                                + '<div class="mask"></div> '
+//                                + '</div>';
+                        KISSY.use('ua,event,node,overlay', function(S, UA, Event, Node, O) {
+//                            popup = new O.Popup({
+//                                        content: node,
+//                                        width: 1000,
+//                                        height: 600,
+//                                        elStyle:{
+//                                            position:UA.ie == 6 ? "absolute" : "fixed"
+//                                        },
+//                                        align: {
+//                                            points: ['cc', 'cc']
+//                                        },
+//                                        effect: {
+//                                            effect:"fade",
+//                                            duration:0.5
+//                                        }
+//                                    });
+
+                            var ipadMsg = document.createElement("div");
+                            ipadMsg.innerHTML = '<div class="msg-ipad"">保存成功</div>';
+                            ipadStatus = new O.Popup({
+                                        content: ipadMsg,
+                                        width: 120,
+                                        height: 120,
+                                        elStyle:{
+                                            position:UA.ie == 6 ? "absolute" : "fixed"
+                                        },
+                                        align: {
+                                            points: ['cc', 'cc']
+                                        },
+                                        effect: {
+                                            effect:"fade",
+                                            duration:0.5
+                                        }
+                                    });
+//                            Node.one('').on('click', function() {
+//                                popup.show();
+//                                S.later(function(){
+//                                    popup.hide();
+//                                }, 3000);
+//                            });
+                            Event.on("#saveConfig", "click", function(e) {
+                                e.halt();
+                                S.getScript("ppzbg.jsp?" + "pid=saveConfig&callback=UCOOL.Pz.saveConfig&t=" + new Date());
+                            });
+                        });
+                    });
                 },
 
                 change:function(pid, success, curState) {
@@ -570,6 +670,9 @@
                 },
                 loadSub:function(pid, success, data) {
                     _loadSub(pid, success, data);
+                },
+                saveConfig:function(pid, success, data){
+                    _saveConfig(pid, success, data);
                 }
             }
         }();

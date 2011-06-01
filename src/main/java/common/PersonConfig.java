@@ -47,7 +47,7 @@ public class PersonConfig {
     }
 
     public boolean isEnableAssets() {
-        if(personConfigValid()) {
+        if(isAdvanced()) {
             return this.userDO.isEnableAssets();
         } else {
             return configCenter.isEnableAssets();
@@ -59,7 +59,7 @@ public class PersonConfig {
     }
 
     public String getUcoolCacheRoot() {
-        if(personConfigValid()) {
+        if(isAdvanced()) {
             return userDO.getName() + "/" + configCenter.getUcoolCacheRoot();
         } else {
             return configCenter.getUcoolCacheRoot();
@@ -67,7 +67,7 @@ public class PersonConfig {
     }
 
     public String getUcoolAssetsRoot() {
-        if(personConfigValid()) {
+        if(isAdvanced()) {
             return configCenter.getUcoolAssetsRoot() + "/" + userDO.getName();
         } else {
             return configCenter.getUcoolAssetsRoot();
@@ -80,7 +80,7 @@ public class PersonConfig {
      * @return
      */
     public String getUserRootDir() {
-        if(personConfigValid()) {
+        if(isAdvanced()) {
             Pattern pat = Pattern.compile("^[^/]+");
             Matcher mat = pat.matcher(userDO.getName());
             if (mat.find()) {
@@ -103,7 +103,7 @@ public class PersonConfig {
      * @return
      */
     public boolean isEnableLocalCombo() {
-        return personConfigValid() && this.userDO.isEnableLocalCombo();
+        return isAdvanced() && this.userDO.isEnableLocalCombo();
     }
 
     public void setEnableLocalCombo(boolean enableLocalCombo) {
@@ -158,8 +158,19 @@ public class PersonConfig {
      * 是否满足个人配置的校验，后期相当重要的方法，所有取值前都要走一遍
      * 
      * @return boolean
+     * @deprecated 
      */
+    @Deprecated
     public boolean personConfigValid() {
         return userDO!= null && !isNewUser() && userDO.getName()!= null && !userDO.getName().isEmpty();
     }
+
+    /**
+     * 是否能使用高级功能
+     * @return
+     */
+    public boolean isAdvanced() {
+        return userDO!= null && !isNewUser() && userDO.getName()!= null && !userDO.getName().isEmpty();
+    }
+
 }
