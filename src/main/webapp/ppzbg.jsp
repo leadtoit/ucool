@@ -193,10 +193,10 @@
             String configString = request.getParameter("configString");
             JSONObject jsonObject = new JSONObject();
             ConfigDO configDO = new ConfigDO();
-            configDO.setAlias((String) jsonObject.get("alias"));
-            configDO.setConfig((Integer)jsonObject.get("config"));
-            configDO.setName((String)jsonObject.get("name"));
-            configDO.setMappingPath((String)jsonObject.get("mapping_path"));
+            configDO.setAlias(jsonObject.getString("alias"));
+            configDO.setConfig(jsonObject.getInt("config"));
+            configDO.setName(jsonObject.getString("name"));
+            configDO.setMappingPath(jsonObject.getString("mapping_path"));
 
             ConfigDO tempConfig = configDAO.getConfigByName(configDO.getAlias());
             if(tempConfig == null) {
