@@ -223,11 +223,11 @@
             width:120px;
             height:120px;
             display: inline-block;
-            opacity: 0.6;
+            opacity: 0.5;
             position:absolute;
             z-index: 9999;
             background-color: #000;
-            border-radius: 10px;
+            border-radius: 5px;
             color:#fff;
             text-align: center;
             line-height: 120px;
@@ -273,6 +273,11 @@
                         <th>用户 IP 标识：</th>
                         <td><%=request.getRemoteAddr()%>
                             （当前使用ip作为用户唯一标识，请注意ip变化）
+                        </td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td>
                             <a class="config-save" href="#" title="保存配置" id="saveConfig">保存配置</a>
                             <a class="config-load" href="#" title="加载配置" id="loadConfig">加载配置</a>
                             <a class="config-del" href="#" title="删除配置" id="delConfig">删除配置</a>
