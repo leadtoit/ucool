@@ -10,6 +10,7 @@
     <bean id="urlExecutor" class="web.url.UrlExecutor" />
     <bean id="urlTools" class="common.tools.UrlTools"/>
     <bean id="userDAO" class="dao.UserDAOImpl"/>
+    <bean id="configDAO" class="dao.ConfigDAOImpl"/>
     <bean id="dirSyncTools" class="common.tools.DirSyncTools"/>
     <bean id="urlReader" class="biz.url.UrlReader"/>
 

@@ -1,6 +1,8 @@
 package dao.entity;
 
 /**
+ * ≈‰÷√DO
+ *
  * Created by IntelliJ IDEA.
  * User: czy-dell
  * Date: 11-5-30
