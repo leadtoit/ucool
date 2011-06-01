@@ -190,13 +190,12 @@
             }
             tState = sb.toString();
         } else if("saveConfig".endsWith(pid)) {
-            String configString = request.getParameter("configString");
-            JSONObject jsonObject = new JSONObject();
+            String alias = request.getParameter("alias");
             ConfigDO configDO = new ConfigDO();
-            configDO.setAlias(jsonObject.getString("alias"));
-            configDO.setConfig(jsonObject.getInt("config"));
-            configDO.setName(jsonObject.getString("name"));
-            configDO.setMappingPath(jsonObject.getString("mapping_path"));
+            configDO.setAlias(alias);
+            configDO.setConfig(personConfig.getUserDO().getConfig());
+            configDO.setName(personConfig.getUserDO().getName());
+            configDO.setMappingPath(personConfig.getUserDO().getMappingPath());
 
             ConfigDO tempConfig = configDAO.getConfigByName(configDO.getAlias());
             if(tempConfig == null) {
@@ -206,7 +205,9 @@
                 configDAO.updateConfig(configDO);
             }
         } else if("loadConfig".endsWith(pid)) {
-            
+            String alias = request.getParameter("alias");
+            ConfigDO tempConfig = configDAO.getConfigByName(alias);
+            out.print(callback + "(\'" + pid + "\',\'ok\', \'" + tempConfig + "\');");
         }
 
         if (callback != null) {
