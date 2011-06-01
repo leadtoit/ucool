@@ -8,6 +8,7 @@
 <%@ page import="web.handler.impl.PersonConfigHandler" %>
 <%@ page import="common.tools.DirSyncTools" %>
 <%@ page import="dao.UserDAO" %>
+<%@ page import="net.sf.json.JSONObject" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -260,6 +261,7 @@
         </div>
     </div>
     <div id="content">
+        <input type="hidden" value="<%=JSONObject.fromObject(personConfig.getUserDO()) %>" id="personConfig">
         <div class="box hidden">
             <div class="hd"><h3>MESSAGE</h3></div>
             <div class="bd">服务器将于2011-5-20日晚重启，届时将不可用，约为5分钟，同时升级版本为0.6，将直接采用ip标识用户，目录绑定将失效，请重新绑定，特此告知</div>
@@ -400,7 +402,8 @@
 <script type="text/javascript">
     KISSY.ready(function(S) {
         var Event = S.Event,
-        DOM = S.DOM;
+        DOM = S.DOM,
+        JSON = S.JSON;
         S.app('UCOOL');
         S.namespace('Pz');
 
