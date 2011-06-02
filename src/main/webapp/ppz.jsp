@@ -192,7 +192,7 @@
             color: #f60;
             margin: auto 5px;
         }
-        .loading{
+        .load {
             background:url(http://img02.taobaocdn.com/tps/i2/T1ob1cXlFsXXXXXXXX-16-16.gif) #f3f1e4 no-repeat 0 2px;
         }
         .complete {
@@ -203,6 +203,9 @@
             width:18px;
             height:18px;
         }
+        .loading {position:absolute;z-index:10000;}
+        .loading .mask{left:0;top:0;width:100%;height:100%;background:url(http://yiminghe.github.com/kissy-dpl/base/build/img/bg-transparent.png);_background:#000;_filter:alpha(opacity=20);}
+        .loading .icon{position:absolute;width:220px;height:19px;left:50%;top:50%;margin:-19px 0 0 -110px;padding-top:18px;font-style:normal;text-align:center;background:url(http://yiminghe.github.com/kissy-dpl/base/build/img//loading.gif) no-repeat;}
     </style>
 </head>
 <body>
@@ -299,7 +302,7 @@
                                         }
                                     %>
                                 </select>
-                                <span class="status loading" id="message" style="display: none"></span>
+                                <span class="status load" id="message" style="display: none"></span>
                             </div>
                         </td>
                     </tr>
@@ -309,7 +312,7 @@
                             <div>
                                 <input type="text" id="bind-path"
                                        value="<% if(personConfig.getUserDO().getMappingPath() == null){out.print("");}else{out.print(personConfig.getUserDO().getMappingPath());}%>"
-                                        <%if(!personConfig.isEnableLocalMapping())out.print("disabled");%>/>
+                                        disabaled />
                                 <span class="status" id="bind-path-status"></span>
                             </div>
                         </td>
@@ -374,7 +377,11 @@
 
         UCOOL.Pz = function() {
 
-            var bindPathRequest = false;
+            var bindPathRequest = false, mappingPopup;
+
+            var mappingChecksTemplate;
+
+            var mappingJSON = <%=JSONObject.fromObject()%>;
 
             var _change = function(pid, success, curState) {
                 if (success === 'ok') {
@@ -498,12 +505,12 @@
                 var bindPathEl = S.get('#bind-path');
                 bindPathRequest = false;
                 DOM.removeClass('#bind-path-status', 'complete');
-                DOM.addClass('#bind-path-status', 'loading');
+                DOM.addClass('#bind-path-status', 'load');
                 DOM.show('#bind-path-status');
                 S.jsonp('ppzbg.jsp?pid=bindPath&mappingPath=' + bindPathEl.value, function(data){
                     DOM.hide('#message');
                     if(data.success === "true") {
-                        DOM.removeClass('#bind-path-status', 'loading');
+                        DOM.removeClass('#bind-path-status', 'load');
                         DOM.addClass('#bind-path-status', 'complete');
                         fn && fn.call();
                     }
@@ -546,17 +553,45 @@
                         var selectSubEl = S.get('#dir-bind');
                         S.getScript("ppzbg.jsp?" + "pid=bindDir&callback=UCOOL.Pz.bindDir&rootDir="+selectRootEl.options[selectRootEl.selectedIndex].value+"&subDir="+selectSubEl.options[selectSubEl.selectedIndex].value+"&t=" + new Date(), null);
                     });
-                    Event.on('#bind-path', 'blur', function(e) {
-                        _bindPath(undefined);
-                    });
-                    Event.on('#bind-path', 'focus', function(e) {
-                        DOM.hide('#bind-path-status');
-                    });
+
                     Event.on('#enableLocalMapping', 'click', function(e) {
                         _bindPath(function(){
                             // 先去绑定一次映射路径
                             S.getScript("ppzbg.jsp?" + "pid=enableLocalMapping&callback=UCOOL.Pz.change&t=" + new Date());
                         });
+                    });
+
+                    KISSY.use('ua,overlay, template', function(S, UA, O, T) {
+                        Event.on('#bind-path', 'blur', function(e) {
+//                            _bindPath(undefined);
+                        });
+                        Event.on('#bind-path', 'focus', function(e) {
+                            mappingPopup.show();
+//                            DOM.hide('#bind-path-status');
+                        });
+
+                        mappingChecksTemplate = T('{{#each }}{{/each}}');
+                        
+                        var mappingSelect = document.createElement("div");
+                        mappingSelect.innerHTML = '<div class="loading" style="width:1000px;height:600px;"> '
+                                + '<div class="mask"></div> '
+                                + '<i class="icon">加载中，请稍候…</i> '
+                                + '</div>';
+                        mappingPopup = new O.Popup({
+                                    content: mappingSelect,
+                                    width: 1000,
+                                    height: 600,
+                                    elStyle:{
+                                        position:UA.ie == 6 ? "absolute" : "fixed"
+                                    },
+                                    align: {
+                                        points: ['cc', 'cc']
+                                    },
+                                    effect: {
+                                        effect:"fade",
+                                        duration:0.5
+                                    }
+                                });
                     });
                 },
 
