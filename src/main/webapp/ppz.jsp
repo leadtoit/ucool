@@ -8,6 +8,7 @@
 <%@ page import="web.handler.impl.PersonConfigHandler" %>
 <%@ page import="common.tools.DirSyncTools" %>
 <%@ page import="dao.UserDAO" %>
+<%@ page import="net.sf.json.JSONObject" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -206,6 +207,23 @@
         .loading {position:absolute;z-index:10000;}
         .loading .mask{left:0;top:0;width:100%;height:100%;background:url(http://yiminghe.github.com/kissy-dpl/base/build/img/bg-transparent.png);_background:#000;_filter:alpha(opacity=20);}
         .loading .icon{position:absolute;width:220px;height:19px;left:50%;top:50%;margin:-19px 0 0 -110px;padding-top:18px;font-style:normal;text-align:center;background:url(http://yiminghe.github.com/kissy-dpl/base/build/img//loading.gif) no-repeat;}
+        .loading .check-box{
+            position: absolute;
+            width: 330px;
+            left: 50%;
+            top: 50%;
+            background-color: #FFF;
+            padding: 10px;
+            margin-left: -165px;
+        }
+        .loading li {
+            height: 24px;
+            line-height: 24px;
+        }
+        .loading input {
+            vertical-align: middle;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -371,7 +389,8 @@
 <script type="text/javascript">
     KISSY.ready(function(S) {
         var Event = S.Event,
-        DOM = S.DOM;
+        DOM = S.DOM,
+        JSON = S.JSON;
         S.app('UCOOL');
         S.namespace('Pz');
 
@@ -381,7 +400,7 @@
 
             var mappingChecksTemplate;
 
-            var mappingJSON = <%=JSONObject.fromObject()%>;
+            var mappingJSON = JSON.parse('<%=personConfig.getUserDO().getMappingPath()%>') || {mappings:[]};
 
             var _change = function(pid, success, curState) {
                 if (success === 'ok') {
@@ -570,16 +589,17 @@
 //                            DOM.hide('#bind-path-status');
                         });
 
-                        mappingChecksTemplate = T('{{#each }}{{/each}}');
+                        mappingChecksTemplate = T('<ul id="mapping-check" class="checks">{{#each mappings}}<li><input type="checkbox" />' +
+                                '<label for="">{{_ks_value.path}}</label></li>{{/each}}<li>ÃÌº”£∫<input type="text" /></li></ul>');
                         
                         var mappingSelect = document.createElement("div");
-                        mappingSelect.innerHTML = '<div class="loading" style="width:1000px;height:600px;"> '
-                                + '<div class="mask"></div> '
-                                + '<i class="icon">º”‘ÿ÷–£¨«Î…‘∫Ú°≠</i> '
-                                + '</div>';
+                        mappingSelect.innerHTML = '<div class="loading" style="width:950px;height:600px;"> '
+                                + '<div class="mask"></div><div class="check-box"> '
+                                + mappingChecksTemplate.render(mappingJSON)
+                                + '</div></div>';
                         mappingPopup = new O.Popup({
                                     content: mappingSelect,
-                                    width: 1000,
+                                    width: 950,
                                     height: 600,
                                     elStyle:{
                                         position:UA.ie == 6 ? "absolute" : "fixed"
