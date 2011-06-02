@@ -15,7 +15,7 @@
     <meta http-equiv="Expires" content="0">
     <meta http-equiv="kiben" content="no-cache">
     <title>ucool∏ˆ»À≈‰÷√“≥</title>
-    <script type="text/javascript" src="http://a.tbcdn.cn/s/kissy/1.1.6/kissy-min.js"></script>
+    <script type="text/javascript" src="http://a.tbcdn.cn/s/kissy/1.2.0/kissy-min.js"></script>
     <link rel="stylesheet" href="http://a.tbcdn.cn/s/kissy/1.1.6/cssbase/base-min.css" />
     <style type="text/css">
         body{
@@ -227,7 +227,7 @@
     <div id="header">
         <div class="top">
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
-            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start">ucool-pro version£∫0.7.1 <i>?</i></a>
+            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start">ucool-pro version£∫0.8 <i>?</i></a>
         </div>
     </div>
     <div id="content">
