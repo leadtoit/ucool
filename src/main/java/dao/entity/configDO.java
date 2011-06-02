@@ -23,6 +23,8 @@ public class ConfigDO {
      */
     private String mappingPath = "";
 
+    private String ip = "127.0.0.1";
+
     public Long getId() {
         return id;
     }
@@ -61,5 +63,13 @@ public class ConfigDO {
 
     public void setMappingPath(String mappingPath) {
         this.mappingPath = mappingPath;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
     }
 }

@@ -278,6 +278,7 @@
                     <tr>
                         <th></th>
                         <td>
+                            <input type="text">
                             <a class="config-save" href="#" title="±£¥Ê≈‰÷√" id="saveConfig">±£¥Ê≈‰÷√</a>
                             <a class="config-load" href="#" title="º”‘ÿ≈‰÷√" id="loadConfig">º”‘ÿ≈‰÷√</a>
                             <a class="config-del" href="#" title="…æ≥˝≈‰÷√" id="delConfig">…æ≥˝≈‰÷√</a>
@@ -630,7 +631,8 @@
                                 });
                         Event.on("#saveConfig", "click", function(e) {
                             e.halt();
-                            S.getScript("ppzbg.jsp?" + "pid=saveConfig&alias=xxxxx&callback=UCOOL.Pz.saveConfig&t=" + new Date());
+                            
+//                            S.getScript("ppzbg.jsp?" + "pid=saveConfig&alias=xxxxx&callback=UCOOL.Pz.saveConfig&t=" + new Date());
                         });
                     });
                 },

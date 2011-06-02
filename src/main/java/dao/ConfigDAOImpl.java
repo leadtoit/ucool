@@ -32,15 +32,17 @@ public class ConfigDAOImpl implements ConfigDAO, InitializingBean {
             config.setName((String)map.get("name"));
             config.setConfig((Integer) map.get("config"));
             config.setMappingPath((String) map.get("mapping_path"));
+            config.setIp((String)map.get("ip"));
         }
         return config;
     }
 
     @Override
     public boolean addConfig(ConfigDO configDO) {
-        String sql = "insert into config (alias, name, config, mapping_path) values (?,?,?,?)";
+        String sql = "insert into config (alias, name, config, mapping_path, ip) values (?,?,?,?,?)";
         try {
-            if (this.jdbcTemplate.update(sql, new Object[]{configDO.getAlias(), configDO.getName(), configDO.getConfig(), configDO.getMappingPath()}) > 0) {
+            if (this.jdbcTemplate.update(sql, new Object[]{configDO.getAlias(), configDO.getName(),
+                    configDO.getConfig(), configDO.getMappingPath(), configDO.getIp()}) > 0) {
                 ConfigDO existConfigDO = getConfigByName(configDO.getAlias());
                 configDO.setId(existConfigDO.getId());
                 return true;
@@ -53,9 +55,10 @@ public class ConfigDAOImpl implements ConfigDAO, InitializingBean {
 
     @Override
     public boolean updateConfig(ConfigDO configDO) {
-        String sql = "update config set name=?, config=?, mapping_path=? where id=? and alias=?";
+        String sql = "update config set name=?, config=?, mapping_path=?, ip=? where id=? and alias=?";
         try {
-            this.jdbcTemplate.update(sql, new Object[]{configDO.getName(), configDO.getConfig(), configDO.getMappingPath(), configDO.getId(), configDO.getAlias()});
+            this.jdbcTemplate.update(sql, new Object[]{configDO.getName(), configDO.getConfig(),
+                    configDO.getMappingPath(), configDO.getIp(), configDO.getId(), configDO.getAlias()});
             return true;
         } catch (Exception e) {
             System.out.println(e);
@@ -68,7 +71,8 @@ public class ConfigDAOImpl implements ConfigDAO, InitializingBean {
         int configExist = jdbcTemplate.queryForInt("SELECT COUNT(*) FROM sqlite_master where type=\'table\' and name=?", new Object[]{"config"});
         //create table
         if(configExist == 0) {
-            jdbcTemplate.execute("CREATE TABLE \"config\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"alias\" VARCHAR NOT NULL  UNIQUE , \"name\" VARCHAR NOT NULL , \"config\" INTEGER NOT NULL  DEFAULT 5, \"mapping_path\" VARCHAR, \"ip\" VARCHAR )");
+            jdbcTemplate.execute("CREATE TABLE \"config\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL ," +
+                    " \"alias\" VARCHAR NOT NULL  UNIQUE , \"name\" VARCHAR NOT NULL , \"config\" INTEGER NOT NULL  DEFAULT 5, \"mapping_path\" VARCHAR, \"ip\" VARCHAR )");
             jdbcTemplate.execute("CREATE  INDEX \"main\".\"idx_alias\" ON \"config\" (\"alias\" ASC)");
         }
     }

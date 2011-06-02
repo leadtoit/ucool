@@ -196,6 +196,7 @@
             configDO.setConfig(personConfig.getUserDO().getConfig());
             configDO.setName(personConfig.getUserDO().getName());
             configDO.setMappingPath(personConfig.getUserDO().getMappingPath());
+            configDO.setIp(personConfig.getUserDO().getHostName());
 
             ConfigDO tempConfig = configDAO.getConfigByName(configDO.getAlias());
             if(tempConfig == null) {
