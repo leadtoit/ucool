@@ -194,19 +194,19 @@
             color: #f60;
             margin: auto 5px;
         }
-        .load{
+        .load {
             background:url(http://img02.taobaocdn.com/tps/i2/T1ob1cXlFsXXXXXXXX-16-16.gif) #f3f1e4 no-repeat 0 2px;
         }
-        .complete {
-            background:url(http://img03.taobaocdn.com/tps/i3/T1qYaeXk0iXXXXXXXX-16-70.png) no-repeat 0 -52px transparent;
-        }
-        .config-del,.config-save,.config-load{
-            background:url(http://img03.taobaocdn.com/tps/i3/T1qYaeXk0iXXXXXXXX-16-70.png) no-repeat 0 0 transparent;
+        .complete, .config-del,.config-save,.config-load{
+            background:url(http://img02.taobaocdn.com/tps/i2/T1RdKeXkVXXXXXXXXX-16-124.png) no-repeat 0 0 transparent;
             display: inline-block;
             width:18px;
             height:18px;
             line-height: 18px;
             text-indent: -9999px;
+        }
+        .complete {
+            background-position: 0 -52px;
         }
         .config-del {
             background-position: 0 -18px;
@@ -219,6 +219,7 @@
             width:18px;
             height:18px;
         }
+
         .msg-ipad {
             width:120px;
             height:120px;
@@ -232,6 +233,26 @@
             text-align: center;
             line-height: 120px;
             font-weight: bold;
+        }
+        .loading {position:absolute;z-index:10000;}
+        .loading .mask{left:0;top:0;width:100%;height:100%;background:url(http://yiminghe.github.com/kissy-dpl/base/build/img/bg-transparent.png);_background:#000;_filter:alpha(opacity=20);}
+        .loading .icon{position:absolute;width:220px;height:19px;left:50%;top:50%;margin:-19px 0 0 -110px;padding-top:18px;font-style:normal;text-align:center;background:url(http://yiminghe.github.com/kissy-dpl/base/build/img//loading.gif) no-repeat;}
+        .loading .check-box{
+            position: absolute;
+            width: 330px;
+            left: 50%;
+            top: 50%;
+            background-color: #FFF;
+            padding: 10px;
+            margin-left: -165px;
+        }
+        .loading li {
+            height: 24px;
+            line-height: 24px;
+        }
+        .loading input {
+            vertical-align: middle;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -348,7 +369,7 @@
                             <div>
                                 <input type="text" id="bind-path"
                                        value="<% if(personConfig.getUserDO().getMappingPath() == null){out.print("");}else{out.print(personConfig.getUserDO().getMappingPath());}%>"
-                                        <%if(!personConfig.isEnableLocalMapping())out.print("disabled");%>/>
+                                        disabaled />
                                 <span class="status" id="bind-path-status"></span>
                             </div>
                         </td>
@@ -414,7 +435,11 @@
 
         UCOOL.Pz = function() {
 
-            var bindPathRequest = false, popup, ipadStatus;
+            var bindPathRequest = false, mappingPopup, ipadStatus;
+
+            var mappingChecksTemplate;
+
+            var mappingJSON = JSON.parse('<%=personConfig.getUserDO().getMappingPath()%>') || {mappings:[]};
 
             var _change = function(pid, success, curState) {
                 if (success === 'ok') {
@@ -598,12 +623,7 @@
                         var selectSubEl = S.get('#dir-bind');
                         S.getScript("ppzbg.jsp?" + "pid=bindDir&callback=UCOOL.Pz.bindDir&rootDir="+selectRootEl.options[selectRootEl.selectedIndex].value+"&subDir="+selectSubEl.options[selectSubEl.selectedIndex].value+"&t=" + new Date(), null);
                     });
-                    Event.on('#bind-path', 'blur', function(e) {
-                        _bindPath(undefined);
-                    });
-                    Event.on('#bind-path', 'focus', function(e) {
-                        DOM.hide('#bind-path-status');
-                    });
+
                     Event.on('#enableLocalMapping', 'click', function(e) {
                         _bindPath(function(){
                             // 先去绑定一次映射路径
@@ -611,13 +631,47 @@
                         });
                     });
 
-                    KISSY.use('ua,event,node,overlay', function(S, UA, Event, Node, O) {
-                        var ipadMsg = document.createElement("div");
+
+                    KISSY.use('ua,overlay, template', function(S, UA, O, T) {
+
+                    var ipadMsg = document.createElement("div");
                         ipadMsg.innerHTML = '<div class="msg-ipad"">保存成功</div>';
                         ipadStatus = new O.Popup({
                                     content: ipadMsg,
                                     width: 120,
                                     height: 120,
+                                    elStyle:{
+                                        position:UA.ie == 6 ? "absolute" : "fixed"
+                                    },
+                                    align: {
+                                        points: ['cc', 'cc']
+                                    },
+                                    effect: {
+                                        effect:"fade",
+                                        duration:0.5
+                                    }
+                                });
+                                
+                        Event.on('#bind-path', 'blur', function(e) {
+//                            _bindPath(undefined);
+                        });
+                        Event.on('#bind-path', 'focus', function(e) {
+                            mappingPopup.show();
+//                            DOM.hide('#bind-path-status');
+                        });
+
+                        mappingChecksTemplate = T('<ul id="mapping-check" class="checks">{{#each mappings}}<li><input type="checkbox" />' +
+                                '<label for="">{{_ks_value.path}}</label></li>{{/each}}<li>添加：<input type="text" /></li></ul>');
+                        
+                        var mappingSelect = document.createElement("div");
+                        mappingSelect.innerHTML = '<div class="loading" style="width:950px;height:600px;"> '
+                                + '<div class="mask"></div><div class="check-box"> '
+                                + mappingChecksTemplate.render(mappingJSON)
+                                + '</div></div>';
+                        mappingPopup = new O.Popup({
+                                    content: mappingSelect,
+                                    width: 950,
+                                    height: 600,
                                     elStyle:{
                                         position:UA.ie == 6 ? "absolute" : "fixed"
                                     },
