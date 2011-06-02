@@ -205,14 +205,14 @@
             line-height: 18px;
             text-indent: -9999px;
         }
-        .complete {
-            background-position: 0 -52px;
-        }
         .config-del {
             background-position: 0 -18px;
         }
         .config-save {
             background-position: 0 -36px;
+        }
+        .complete {
+            background-position: 0 -52px;
         }
         .status {
             display: inline-block;
