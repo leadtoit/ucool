@@ -198,10 +198,10 @@
             background:url(http://img02.taobaocdn.com/tps/i2/T1ob1cXlFsXXXXXXXX-16-16.gif) #f3f1e4 no-repeat 0 2px;
         }
         .complete {
-            background:url(http://img02.taobaocdn.com/tps/i2/T14gucXlFXXXXXXXXX-16-16.png) #f3f1e4 no-repeat 0 2px;
+            background:url(http://img03.taobaocdn.com/tps/i3/T1qYaeXk0iXXXXXXXX-16-70.png) no-repeat 0 -52px transparent;
         }
         .config-del,.config-save,.config-load{
-            background:url(http://img03.taobaocdn.com/tps/i3/T1aDGdXexmXXXXXXXX-16-52.png) no-repeat 0 0 transparent;
+            background:url(http://img03.taobaocdn.com/tps/i3/T1qYaeXk0iXXXXXXXX-16-70.png) no-repeat 0 0 transparent;
             display: inline-block;
             width:18px;
             height:18px;
@@ -310,9 +310,9 @@
                                         if (assetsSubDirs.size() > 0) {
                                             for (String assetsSubDir : assetsSubDirs) {
                                                 if (assetsSubDir.equals(rootName)) {
-                                                    out.print("<option selected='selected' value=" + assetsSubDir + ">");
+                                                    out.print("<option selected value=\"" + assetsSubDir + "\">");
                                                 } else {
-                                                    out.print("<option value=" + assetsSubDir + ">");
+                                                    out.print("<option value=\"" + assetsSubDir + "\">");
                                                 }
                                                 out.print(assetsSubDir);
                                                 out.print("</option>");

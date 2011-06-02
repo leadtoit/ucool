@@ -68,7 +68,7 @@ public class ConfigDAOImpl implements ConfigDAO, InitializingBean {
         int configExist = jdbcTemplate.queryForInt("SELECT COUNT(*) FROM sqlite_master where type=\'table\' and name=?", new Object[]{"config"});
         //create table
         if(configExist == 0) {
-            jdbcTemplate.execute("CREATE TABLE \"config\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"alias\" VARCHAR NOT NULL  UNIQUE , \"name\" VARCHAR NOT NULL , \"config\" INTEGER NOT NULL  DEFAULT 5, \"mapping_path\" VARCHAR)");
+            jdbcTemplate.execute("CREATE TABLE \"config\" (\"id\" INTEGER PRIMARY KEY  AUTOINCREMENT  NOT NULL , \"alias\" VARCHAR NOT NULL  UNIQUE , \"name\" VARCHAR NOT NULL , \"config\" INTEGER NOT NULL  DEFAULT 5, \"mapping_path\" VARCHAR, \"ip\" VARCHAR )");
             jdbcTemplate.execute("CREATE  INDEX \"main\".\"idx_alias\" ON \"config\" (\"alias\" ASC)");
         }
     }
