@@ -197,7 +197,7 @@
         .load {
             background:url(http://img02.taobaocdn.com/tps/i2/T1ob1cXlFsXXXXXXXX-16-16.gif) #f3f1e4 no-repeat 0 2px;
         }
-        .complete, .config-del,.config-save,.config-load{
+        .icon-success, .icon-del,.icon-save,.icon-load, .icon-add, .icon-cancel, .icon-ok {
             background:url(http://img02.taobaocdn.com/tps/i2/T1RdKeXkVXXXXXXXXX-16-124.png) no-repeat 0 0 transparent;
             display: inline-block;
             width:18px;
@@ -205,14 +205,23 @@
             line-height: 18px;
             text-indent: -9999px;
         }
-        .config-del {
+        .icon-del {
             background-position: 0 -18px;
         }
-        .config-save {
+        .icon-save {
             background-position: 0 -36px;
         }
-        .complete {
+        .icon-success {
             background-position: 0 -52px;
+        }
+        .icon-add {
+            background-position: 0 -70px;
+        }
+        .icon-cancel {
+            background-position: 0 -88px;
+        }
+        .icon-ok {
+            background-position: 0 -106px;
         }
         .status {
             display: inline-block;
@@ -239,12 +248,12 @@
         .loading .icon{position:absolute;width:220px;height:19px;left:50%;top:50%;margin:-19px 0 0 -110px;padding-top:18px;font-style:normal;text-align:center;background:url(http://yiminghe.github.com/kissy-dpl/base/build/img//loading.gif) no-repeat;}
         .loading .check-box{
             position: absolute;
-            width: 330px;
+            width: 360px;
             left: 50%;
             top: 50%;
             background-color: #FFF;
             padding: 10px;
-            margin-left: -165px;
+            margin-left: -180px;
         }
         .loading li {
             height: 24px;
@@ -300,9 +309,9 @@
                         <th></th>
                         <td>
                             <input type="text">
-                            <a class="config-save" href="#" title="±£¥Ê≈‰÷√" id="saveConfig">±£¥Ê≈‰÷√</a>
-                            <a class="config-load" href="#" title="º”‘ÿ≈‰÷√" id="loadConfig">º”‘ÿ≈‰÷√</a>
-                            <a class="config-del" href="#" title="…æ≥˝≈‰÷√" id="delConfig">…æ≥˝≈‰÷√</a>
+                            <a class="icon-save" href="#" title="±£¥Ê≈‰÷√" id="saveConfig">±£¥Ê≈‰÷√</a>
+                            <a class="icon-load" href="#" title="º”‘ÿ≈‰÷√" id="loadConfig">º”‘ÿ≈‰÷√</a>
+                            <a class="icon-del" href="#" title="…æ≥˝≈‰÷√" id="delConfig">…æ≥˝≈‰÷√</a>
                         </td>
                     </tr>
                     <tr>
@@ -562,14 +571,14 @@
             var _bindPath = function(fn) {
                 var bindPathEl = S.get('#bind-path');
                 bindPathRequest = false;
-                DOM.removeClass('#bind-path-status', 'complete');
+                DOM.removeClass('#bind-path-status', 'icon-success');
                 DOM.addClass('#bind-path-status', 'load');
                 DOM.show('#bind-path-status');
                 S.jsonp('ppzbg.jsp?pid=bindPath&mappingPath=' + bindPathEl.value, function(data){
                     DOM.hide('#message');
                     if(data.success === "true") {
                         DOM.removeClass('#bind-path-status', 'load');
-                        DOM.addClass('#bind-path-status', 'complete');
+                        DOM.addClass('#bind-path-status', 'icon-success');
                         fn && fn.call();
                     }
                 });
@@ -657,11 +666,27 @@
                         });
                         Event.on('#bind-path', 'focus', function(e) {
                             mappingPopup.show();
+                            //bind pupup event
+                            Event.on(['#addMappingOK', '#addMappingCancel'], 'click', function(e){
+                                e.halt();
+                                if(e.target.id==='addMappingOK') {
+                                    //save mapping
+                                }
+                                mappingPopup.hide();
+                            });
+
+                            Event.on('#mappingAdd', 'click', function(e){
+                                e.halt();
+                                alert(e.target.parentNode.childrens[0].value);
+                            });
+
 //                            DOM.hide('#bind-path-status');
                         });
 
-                        mappingChecksTemplate = T('<ul id="mapping-check" class="checks">{{#each mappings}}<li><input type="checkbox" />' +
-                                '<label for="">{{_ks_value.path}}</label></li>{{/each}}<li>ÃÌº”£∫<input type="text" /></li></ul>');
+                        mappingChecksTemplate = T('<h3 class="{{#if mappings.length==0}} hidden {{/if}}">“—±£¥Ê£∫</h3><ul id="mapping-check" class="checks {{#if mappings.length==0}} hidden {{/if}}">{{#each mappings}}<li><input type="checkbox" />' +
+                                '<label for="">{{_ks_value.path}}</label></li>{{/each}}</ul><div>ÃÌº””≥…‰¬∑æ∂£∫<input type="text" />' +
+                                '<a href="#" class="icon-add" id="mappingAdd">ÃÌº”</a></div><div style="margin-top:10px"><a href="#" class="icon-ok" title="»∑∂®" id="addMappingOK" style="text-indent: 0;padding-left: 18px;width: auto">»∑∂®</a>' +
+                                '<a href="#" class="icon-cancel" title="»°œ˚" id="addMappingCancel" style="text-indent: 0;padding-left: 18px;width: auto">»°œ˚</a></div>');
                         
                         var mappingSelect = document.createElement("div");
                         mappingSelect.innerHTML = '<div class="loading" style="width:950px;height:600px;"> '
@@ -683,6 +708,7 @@
                                         duration:0.5
                                     }
                                 });
+
                         Event.on("#saveConfig", "click", function(e) {
                             e.halt();
                             
