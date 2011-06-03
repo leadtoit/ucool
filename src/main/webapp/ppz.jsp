@@ -250,7 +250,7 @@
             position: absolute;
             width: 360px;
             left: 50%;
-            top: 50%;
+            top: 30%;
             background-color: #FFF;
             padding: 10px;
             margin-left: -180px;
@@ -378,7 +378,7 @@
                             <div>
                                 <input type="text" id="bind-path"
                                        value="<% if(personConfig.getUserDO().getMappingPath() == null){out.print("");}else{out.print(personConfig.getUserDO().getMappingPath());}%>"
-                                        disabaled />
+                                        <%if(!personConfig.isEnableLocalMapping())out.print("disabled");%>/>
                                 <span class="status" id="bind-path-status"></span>
                             </div>
                         </td>
@@ -445,8 +445,6 @@
         UCOOL.Pz = function() {
 
             var bindPathRequest = false, mappingPopup, ipadStatus;
-
-            var mappingChecksTemplate;
 
             var mappingJSON = JSON.parse('<%=personConfig.getUserDO().getMappingPath()%>') || {mappings:[]};
 
@@ -660,37 +658,70 @@
                                         duration:0.5
                                     }
                                 });
-                                
+
+                        var _inited = false;
+
+                        // 总的内容模板
+                        var mappingChecksTemplate = T('<h3 class="{{#if mappings.length==0}} hidden {{/if}}">已保存（上限5个）：</h3>'+
+                                '<ul id="mapping-check" class="checks {{#if mappings.length==0}} hidden {{/if}}"></ul>'+
+                                '<div>添加映射路径：<input type="text" /><a href="#" class="icon-add" id="mappingAdd" title="添加">添加</a>'+
+                                '</div><div style="margin-top:10px"><a href="#" class="icon-ok" title="确定" id="addMappingOK" style="text-indent: 0;padding-left: 18px;width: auto">确定</a>' +
+                                '<a href="#" class="icon-cancel" title="取消" id="addMappingCancel" style="text-indent: 0;padding-left: 18px;width: auto">取消</a></div>');
+
+                        //各li模板
+                        var mappingChecksLiTemplate = T('{{#each mappings}}<li>'+
+                                '<input type="checkbox" value="{{_ks_value.path}}"/><label for="">{{_ks_value.path}}</label></li>{{/each}}');
+                        // 添加的li模板
+                        var mappingChecks = T('<li><input type="checkbox" value="{{path}}"/><label for="">{{path}}</label></li>');
+                        
                         Event.on('#bind-path', 'blur', function(e) {
 //                            _bindPath(undefined);
                         });
                         Event.on('#bind-path', 'focus', function(e) {
                             mappingPopup.show();
-                            //bind pupup event
-                            Event.on(['#addMappingOK', '#addMappingCancel'], 'click', function(e){
-                                e.halt();
-                                if(e.target.id==='addMappingOK') {
-                                    //save mapping
-                                }
-                                mappingPopup.hide();
-                            });
+                            if(!_inited) {
+                                //bind pupup event
+                                Event.on(['#addMappingOK', '#addMappingCancel'], 'click', function(e){
+                                    e.halt();
+                                    if(e.target.id==='addMappingOK') {
+                                        //save mapping
+                                        S.query('#mapping-check input').each(function(el){
+                                            
+                                        });
+                                    }
+                                    mappingPopup.hide();
+                                });
 
-                            Event.on('#mappingAdd', 'click', function(e){
-                                e.halt();
-                                alert(e.target.parentNode.childrens[0].value);
-                            });
+                                Event.on('#mappingAdd', 'click', function(e){
+                                    e.halt();
+                                    var path = S.trim(DOM.prev(e.target).value);
+                                    if(!path) {
+                                        alert('别试了，不会让空的内容过的。。');
+                                        return;
+                                    }
+                                    if(mappingJSON.mappings.length >=5) {
+                                        alert('超过限制了，删除几个不用的吧，或者悄悄跟张挺说，给你多几个。。');
+                                        return;
+                                    }
+                                    var checkObject = {path:path, use:false};
+                                    var checkParent = DOM.parent(e.target, '.check-box');
 
+                                    S.one('#mapping-check').append(mappingChecks.render(checkObject)).show();
+                                    S.one('h3', checkParent).show();
+                                    mappingJSON.mappings.push(checkObject);
+                                });
+
+                            }
+
+                            S.available('#mapping-check', function(){
+                                S.one('#mapping-check').html(mappingChecksLiTemplate.render(mappingJSON));
+                            });
 //                            DOM.hide('#bind-path-status');
                         });
 
-                        mappingChecksTemplate = T('<h3 class="{{#if mappings.length==0}} hidden {{/if}}">已保存：</h3><ul id="mapping-check" class="checks {{#if mappings.length==0}} hidden {{/if}}">{{#each mappings}}<li><input type="checkbox" />' +
-                                '<label for="">{{_ks_value.path}}</label></li>{{/each}}</ul><div>添加映射路径：<input type="text" />' +
-                                '<a href="#" class="icon-add" id="mappingAdd">添加</a></div><div style="margin-top:10px"><a href="#" class="icon-ok" title="确定" id="addMappingOK" style="text-indent: 0;padding-left: 18px;width: auto">确定</a>' +
-                                '<a href="#" class="icon-cancel" title="取消" id="addMappingCancel" style="text-indent: 0;padding-left: 18px;width: auto">取消</a></div>');
-                        
                         var mappingSelect = document.createElement("div");
                         mappingSelect.innerHTML = '<div class="loading" style="width:950px;height:600px;"> '
-                                + '<div class="mask"></div><div class="check-box"> '
+                                + '<div class="mask"></div><div class="check-box">'
                                 + mappingChecksTemplate.render(mappingJSON)
                                 + '</div></div>';
                         mappingPopup = new O.Popup({
