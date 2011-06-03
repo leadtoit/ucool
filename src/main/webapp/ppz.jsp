@@ -204,6 +204,7 @@
             height:18px;
             line-height: 18px;
             text-indent: -9999px;
+            vertical-align: middle;
         }
         .icon-del {
             background-position: 0 -18px;
@@ -373,11 +374,11 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>映射请求路径：</th>
+                        <th>映射前缀：</th>
                         <td>
                             <div>
                                 <input type="text" id="bind-path"
-                                       value="<% if(personConfig.getUserDO().getMappingPath() == null){out.print("");}else{out.print(personConfig.getUserDO().getMappingPath());}%>"
+                                       value=""
                                         <%if(!personConfig.isEnableLocalMapping())out.print("disabled");%>/>
                                 <span class="status" id="bind-path-status"></span>
                             </div>
@@ -446,7 +447,9 @@
 
             var bindPathRequest = false, mappingPopup, ipadStatus;
 
-            var mappingJSON = JSON.parse('<%=personConfig.getUserDO().getMappingPath()%>') || {mappings:[]};
+            // 映射路径的json
+            var mappingJSON;
+            try{mappingJSON = JSON.parse('<%=personConfig.getUserDO().getMappingPath()%>');}catch(e){mappingJSON = {mappings:[]}};
 
             var _change = function(pid, success, curState) {
                 if (success === 'ok') {
@@ -566,13 +569,14 @@
                 }
             };
 
+            // 构造映射json并发送
             var _bindPath = function(fn) {
                 var bindPathEl = S.get('#bind-path');
                 bindPathRequest = false;
                 DOM.removeClass('#bind-path-status', 'icon-success');
                 DOM.addClass('#bind-path-status', 'load');
                 DOM.show('#bind-path-status');
-                S.jsonp('ppzbg.jsp?pid=bindPath&mappingPath=' + bindPathEl.value, function(data){
+                S.jsonp('ppzbg.jsp?pid=bindPath&mappingPath=' + JSON.stringify(mappingJSON), function(data){
                     DOM.hide('#message');
                     if(data.success === "true") {
                         DOM.removeClass('#bind-path-status', 'load');
@@ -638,10 +642,18 @@
                         });
                     });
 
+                    // 填充映射
+                    var paths = [];
+                    for (var i = 0; i < mappingJSON.mappings.length; i++) {
+                        if (mappingJSON.mappings[i].use) {
+                            paths.push(mappingJSON.mappings[i].path);
+                        }
+                    }
+                    DOM.get('#bind-path').value = paths.join(';');
 
                     KISSY.use('ua,overlay, template', function(S, UA, O, T) {
 
-                    var ipadMsg = document.createElement("div");
+                        var ipadMsg = document.createElement("div");
                         ipadMsg.innerHTML = '<div class="msg-ipad"">保存成功</div>';
                         ipadStatus = new O.Popup({
                                     content: ipadMsg,
@@ -670,9 +682,9 @@
 
                         //各li模板
                         var mappingChecksLiTemplate = T('{{#each mappings}}<li>'+
-                                '<input type="checkbox" value="{{_ks_value.path}}"/><label for="">{{_ks_value.path}}</label></li>{{/each}}');
+                                '<a class="icon-del" href="#" title="删除">删除</a><input type="checkbox" value="{{_ks_value.path}}" {{#if _ks_value.use}}checked{{/if}}/><label for="">{{_ks_value.path}}</label></li>{{/each}}');
                         // 添加的li模板
-                        var mappingChecks = T('<li><input type="checkbox" value="{{path}}"/><label for="">{{path}}</label></li>');
+                        var mappingChecks = T('<li><a class="icon-del" href="#" title="删除">删除</a><input type="checkbox" value="{{path}}"/><label for="">{{path}}</label></li>');
                         
                         Event.on('#bind-path', 'blur', function(e) {
 //                            _bindPath(undefined);
@@ -686,14 +698,41 @@
                                 Event.on(['#addMappingOK', '#addMappingCancel'], 'click', function(e){
                                     e.halt();
                                     if(e.target.id==='addMappingOK') {
+                                        mappingJSON.mappings.length = 0;
                                         //save mapping
                                         S.query('#mapping-check input').each(function(el){
-                                            if(el.checked) {
-                                                mappingJSON.mappings.??
-                                            }
+                                            mappingJSON.mappings.push({path:el.value,use:el.checked});
                                         });
                                     }
+                                    mappingJSON.mappings.sort(function(a, b){
+                                        if(a.path === b.path) {
+                                            return 0;
+                                        }
+                                        var l = a.path.length > b.path.length ? b.path.length: a.path.length;
+                                        var i = 0;
+                                        while(i < l) {
+                                            if(a.path.charCodeAt(i) > b.path.charCodeAt(i)) {
+                                                return 1;
+                                            } else if(a.path.charCodeAt(i) < b.path.charCodeAt(i)) {
+                                                return -1;
+                                            }
+                                            i++;
+                                        }
+                                        if(i == a.path.length) {
+                                            return -1;
+                                        } else {
+                                            return 1;
+                                        }
+                                    });
                                     mappingPopup.hide();
+                                    var paths = [];
+                                    for (var i = 0; i < mappingJSON.mappings.length; i++) {
+                                        if(mappingJSON.mappings[i].use) {
+                                            paths.push(mappingJSON.mappings[i].path);
+                                        }
+                                    }
+                                    DOM.get('#bind-path').value = paths.join(';');
+                                    _bindPath(undefined);
                                 });
 
                                 Event.on('#mappingAdd', 'click', function(e){
@@ -708,11 +747,20 @@
                                         return;
                                     }
                                     var checkObject = {path:path, use:false};
+                                    for (var i = 0; i < mappingJSON.mappings.length; i++) {
+                                        var obj = mappingJSON.mappings[i];
+                                        if(obj.path === checkObject.path) {
+                                            alert('这个路径已经有了');
+                                            return;
+                                        }
+                                    }
+
                                     var checkParent = DOM.parent(e.target, '.check-box');
 
                                     S.one('#mapping-check').append(mappingChecks.render(checkObject)).show();
                                     S.one('h3', checkParent).show();
                                     mappingJSON.mappings.push(checkObject);
+                                    DOM.prev(e.target).value = '';
                                 });
 
                             }

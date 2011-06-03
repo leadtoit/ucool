@@ -13,6 +13,7 @@
 <%@ page import="net.sf.json.util.JSONUtils" %>
 <%@ page import="net.sf.json.JSONObject" %>
 <%@ page import="dao.entity.ConfigDO" %>
+<%@ page import="net.sf.json.JSONArray" %>
 <%
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(this.getServletContext());
     ConfigCenter configCenter = (ConfigCenter) wac.getBean("configCenter");
@@ -66,24 +67,25 @@
         } else if(pid.equalsIgnoreCase("bindPath")) {
             String mappingPath = request.getParameter("mappingPath");
             if(mappingPath != null && !"".equals(mappingPath)) {
-                String[] mappingPaths = mappingPath.split(";");
-                StringBuilder paths = new StringBuilder();
+                //解析json
+                JSONObject jsonObject = JSONObject.fromObject(mappingPath);
+                JSONArray jsonArray = jsonObject.getJSONArray("mappings");
+
                 // 取得当前的映射路径
-                for (String mp : mappingPaths) {
-                    if(mp.equals("/")) {
-                        paths.append(mp).append(";");
+                for (Object mp : jsonArray) {
+                    JSONObject temp = (JSONObject)mp;
+                    String path = temp.getString("path");
+                    if(path.equals("/")) {
                         continue;
                     }
-                    if(!mp.startsWith("/")) {
-                        mp = "/" + mp;
+                    if(!path.startsWith("/")) {
+                        temp.element("path", "/" + path);
                     }
-                    if(mp.endsWith("/")) {
-                        mp = mp.substring(0, mp.length()-1);
+                    if(path.endsWith("/")) {
+                        temp.element("path", path.substring(0, path.length()-1));
                     }
-                    paths.append(mp).append(";");
                 }
-
-                mappingPath = paths.toString();
+                mappingPath = jsonObject.toString();
             }
 
             if(personConfig.isNewUser()) {
