@@ -679,14 +679,18 @@
                         });
                         Event.on('#bind-path', 'focus', function(e) {
                             mappingPopup.show();
+                            S.one('#mapping-check').html(mappingChecksLiTemplate.render(mappingJSON));
                             if(!_inited) {
+                                _inited = true;
                                 //bind pupup event
                                 Event.on(['#addMappingOK', '#addMappingCancel'], 'click', function(e){
                                     e.halt();
                                     if(e.target.id==='addMappingOK') {
                                         //save mapping
                                         S.query('#mapping-check input').each(function(el){
-                                            
+                                            if(el.checked) {
+                                                mappingJSON.mappings.??
+                                            }
                                         });
                                     }
                                     mappingPopup.hide();
@@ -712,10 +716,6 @@
                                 });
 
                             }
-
-                            S.available('#mapping-check', function(){
-                                S.one('#mapping-check').html(mappingChecksLiTemplate.render(mappingJSON));
-                            });
 //                            DOM.hide('#bind-path-status');
                         });
 
