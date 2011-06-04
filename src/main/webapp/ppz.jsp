@@ -8,7 +8,6 @@
 <%@ page import="web.handler.impl.PersonConfigHandler" %>
 <%@ page import="common.tools.DirSyncTools" %>
 <%@ page import="dao.UserDAO" %>
-<%@ page import="net.sf.json.JSONObject" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -763,6 +762,12 @@
                                     DOM.prev(e.target).value = '';
                                 });
 
+                                //delete
+                                Event.on('#mapping-check', 'click', function(e){
+                                    if(DOM.hasClass(e.target, 'icon-del')) {
+                                        DOM.remove(e.target.parentNode);
+                                    }
+                                });
                             }
 //                            DOM.hide('#bind-path-status');
                         });

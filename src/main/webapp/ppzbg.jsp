@@ -10,10 +10,8 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.List" %>
 <%@ page import="dao.ConfigDAO" %>
-<%@ page import="net.sf.json.util.JSONUtils" %>
-<%@ page import="net.sf.json.JSONObject" %>
 <%@ page import="dao.entity.ConfigDO" %>
-<%@ page import="net.sf.json.JSONArray" %>
+<%@ page import="common.tools.JSONFilter" %>
 <%
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(this.getServletContext());
     ConfigCenter configCenter = (ConfigCenter) wac.getBean("configCenter");
@@ -66,28 +64,6 @@
             tState = personConfig.isEnableAssets() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("bindPath")) {
             String mappingPath = request.getParameter("mappingPath");
-            if(mappingPath != null && !"".equals(mappingPath)) {
-                //解析json
-                JSONObject jsonObject = JSONObject.fromObject(mappingPath);
-                JSONArray jsonArray = jsonObject.getJSONArray("mappings");
-
-                // 取得当前的映射路径
-                for (Object mp : jsonArray) {
-                    JSONObject temp = (JSONObject)mp;
-                    String path = temp.getString("path");
-                    if(path.equals("/")) {
-                        continue;
-                    }
-                    if(!path.startsWith("/")) {
-                        temp.element("path", "/" + path);
-                    }
-                    if(path.endsWith("/")) {
-                        temp.element("path", path.substring(0, path.length()-1));
-                    }
-                }
-                mappingPath = jsonObject.toString();
-            }
-
             if(personConfig.isNewUser()) {
                 //create user
                 personConfig.getUserDO().setName("");
@@ -97,7 +73,8 @@
                     return;
                 }
             }
-            personConfig.getUserDO().setMappingPath(mappingPath);
+            JSONFilter filter = new JSONFilter();
+            personConfig.getUserDO().setMappingPath(filter.getValidateMapping(mappingPath));
             //update
             boolean op = userDAO.updateMappingPath(personConfig.getUserDO().getId(), personConfig.getUserDO().getMappingPath(), srcMappingPath);
             tState = op ? "true" : "false";
