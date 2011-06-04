@@ -305,15 +305,15 @@
                             （当前使用ip作为用户唯一标识，请注意ip变化）
                         </td>
                     </tr>
-                    <tr>
-                        <th></th>
-                        <td>
-                            <input type="text">
-                            <a class="icon-save" href="#" title="保存配置" id="saveConfig">保存配置</a>
-                            <a class="icon-load" href="#" title="加载配置" id="loadConfig">加载配置</a>
-                            <a class="icon-del" href="#" title="删除配置" id="delConfig">删除配置</a>
-                        </td>
-                    </tr>
+                    <%--<tr>--%>
+                        <%--<th></th>--%>
+                        <%--<td>--%>
+                            <%--<input type="text">--%>
+                            <%--<a class="icon-save" href="#" title="保存配置" id="saveConfig">保存配置</a>--%>
+                            <%--<a class="icon-load" href="#" title="加载配置" id="loadConfig">加载配置</a>--%>
+                            <%--<a class="icon-del" href="#" title="删除配置" id="delConfig">删除配置</a>--%>
+                        <%--</td>--%>
+                    <%--</tr>--%>
                     <tr>
                         <th>请选择一个绑定目录：</th>
                         <td>

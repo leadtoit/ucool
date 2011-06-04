@@ -52,6 +52,9 @@ public class UserDO {
     }
 
     public String getMappingPath() {
+        if(mappingPath == null || mappingPath.equals("")) {
+            return "{\"mappings\":[]}";
+        }
         return mappingPath;
     }
 
