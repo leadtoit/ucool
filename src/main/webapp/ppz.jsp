@@ -286,8 +286,8 @@
 <div id="page">
     <div id="header">
         <div class="top">
-            <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start">ucool config page</a></h1>
-            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" title="what's new?">ucool-pro version：0.8 <i>?</i></a>
+            <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start" target="_blank">ucool config page</a></h1>
+            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" target="_blank" title="what's new?">ucool-pro version：0.8 <i>?</i></a>
         </div>
     </div>
     <div id="content">
@@ -427,7 +427,7 @@
         </div>
     </div>
     <div id="footer">
-        <a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start"><span class="help">(?) help</span></a>
+        <a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start" target="_blank"><span class="help">(?) help</span></a>
         <ul class="author">
             <li><a href="mailto:zhangting@taobao.com">开发：张挺(zhangting@taobao.com)</a></li>
             <li><a href="mailto:wuxuan@taobao.com">设计：悟玄(wuxuan@taobao.com)</a></li>
@@ -675,8 +675,8 @@
                         // 总的内容模板
                         var mappingChecksTemplate = T('<h3 class="{{#if mappings.length==0}} hidden {{/if}}">已保存（上限5个）：</h3>'+
                                 '<ul id="mapping-check" class="checks {{#if mappings.length==0}} hidden {{/if}}"></ul>'+
-                                '<div>添加映射路径：<input type="text" /><a href="#" class="icon-add" id="mappingAdd" title="添加">添加</a>'+
-                                '</div><div style="margin-top:10px"><a href="#" class="icon-ok" title="确定" id="addMappingOK" style="text-indent: 0;padding-left: 18px;width: auto">确定</a>' +
+                                '<div style="margin-top:10px">添加映射路径：<input type="text" style="width: 200px;" maxlength="100" placeholder="例如：/apps/buy 或者 /p/fp"/><a href="#" class="icon-add" id="mappingAdd" title="添加">添加</a>'+
+                                '</div><div style="margin-top:10px"><a href="#" class="icon-ok" title="保存" id="addMappingOK" style="text-indent: 0;padding-left: 18px;width: auto">确定</a>' +
                                 '<a href="#" class="icon-cancel" title="取消" id="addMappingCancel" style="text-indent: 0;padding-left: 18px;width: auto">取消</a></div>');
 
                         //各li模板
