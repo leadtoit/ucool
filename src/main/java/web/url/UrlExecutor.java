@@ -53,6 +53,10 @@ public class UrlExecutor {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
         String curMappingPath = null;
+        
+        if (validateLocalCombo(requestInfo, response, personConfig)) {
+            return;
+        }
         if(personConfig.getUserDO().getMappingPath() != null && !"".equals(personConfig.getUserDO().getMappingPath())) {
             // 本地映射不走服务器assets目录
             String[] mappingPaths = personConfig.getUserDO().getMappingPath().split(";");
@@ -92,9 +96,6 @@ public class UrlExecutor {
                 }
             }
         } else {
-            if (validateLocalCombo(requestInfo, response, personConfig)) {
-                return;
-            }
             if (findAssetsFile(filePath, personConfig)) {
                 try {
                     requestInfo.setRealUrl(requestInfo.getFilePath());
