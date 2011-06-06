@@ -450,7 +450,16 @@
                 if (success === 'ok') {
                     _switchChange('#' + pid, curState);
                 }
+                if(pid === "enableAssets" && curState=="true") {
+                    _switchChange('#enableLocalMapping', false);
+                    DOM.get('#bind-path').disabled = true;
+                    DOM.get('#root-bind').disabled =false;
+                    DOM.get('#dir-bind').disabled = false;
+                }
                 if(pid === "enableLocalMapping") {
+                    if (curState=="true") {
+                        _switchChange('#enableAssets', false);
+                    }
                     DOM.get('#bind-path').disabled = (curState=="true" ? "" : true);
                     DOM.get('#root-bind').disabled = (curState=="true" ? true : "");
                     DOM.get('#dir-bind').disabled = (curState=="true" ? true : "");

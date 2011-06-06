@@ -56,6 +56,11 @@
             tState = personConfig.isPrepub() ? "true" : "false";
         } else if (pid.equalsIgnoreCase("enableAssets")) {
             personConfig.setEnableAssets(!personConfig.isEnableAssets());
+            //和本地映射互斥
+            if(personConfig.isEnableAssets()) {
+                personConfig.setEnableLocalMapping(false);
+            }
+            
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableAssets() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("bindPath")) {
@@ -77,14 +82,12 @@
             out.print(callback + "(" + "{\"pid\":\""+ pid + "\",\"success\":\"" +tState+ "\"}" + ")");
             return;
         } else if (pid.equalsIgnoreCase("enableLocalMapping")) {
-            // 这个开关在js中保证必须会创建新用户
-            if (personConfig.getUserDO() == null || personConfig.isNewUser()) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
-                return;
+            personConfig.setEnableLocalMapping(!personConfig.isEnableLocalMapping());
+            //启用assets和这个开关互斥
+            if(personConfig.isEnableLocalMapping()) {
+                personConfig.setEnableAssets(false);
             }
 
-            srcConfig = personConfig.getUserDO().getConfig();
-            personConfig.setEnableLocalMapping(!personConfig.isEnableLocalMapping());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableLocalMapping() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("enableLocalCombo")) {
