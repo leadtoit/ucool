@@ -89,7 +89,7 @@ public class UserDAOImpl implements UserDAO, InitializingBean {
         try {
             String sql = "update user set mapping_path=? where id=? and mapping_path=?";
             if(srcMappingPath == null) {
-                sql = "update user set mapping_path=? where id=? and mapping_path is null";
+                sql = "update user set mapping_path=? where id=?";
                 if (jdbcTemplate.update(sql, new Object[]{mappingPath, userId}) > 0) {
                     return true;
                 }
