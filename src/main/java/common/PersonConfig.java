@@ -47,7 +47,7 @@ public class PersonConfig {
     }
 
     public boolean isEnableAssets() {
-        if(isAdvanced()) {
+        if(!isNewUser()) {
             return this.userDO.isEnableAssets();
         } else {
             return configCenter.isEnableAssets();
@@ -103,7 +103,7 @@ public class PersonConfig {
      * @return
      */
     public boolean isEnableLocalCombo() {
-        return isAdvanced() && this.userDO.isEnableLocalCombo();
+        return userDO!= null && !isNewUser() && this.userDO.isEnableLocalCombo();
     }
 
     public void setEnableLocalCombo(boolean enableLocalCombo) {

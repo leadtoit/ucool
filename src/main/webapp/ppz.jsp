@@ -55,7 +55,7 @@
             bottom:0;
             color: #999966;
         }
-        #header .new i {
+        .new i {
             width:16px;
             height:16px;
             background-color: #feab1b;
@@ -278,6 +278,7 @@
     if(personConfig.isNewUser()) {
         boolean op = userDAO.createNewUser(personConfig.getUserDO());
         if (op) {
+            personConfig.setNewUser(false);
             //重新取一次
             personConfig = personConfigHandler.doHandler(request);
         }
@@ -373,7 +374,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>映射前缀：</th>
+                        <th>映射前缀：<a style="line-height: normal" class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:mapping-prefix" target="_blank" title=什么是映射前缀?"><i>?</i></a></th>
                         <td>
                             <div>
                                 <input type="text" id="bind-path"
@@ -401,27 +402,22 @@
                         <td class="note">打开后切换到预发环境</td>
                     </tr>
                     <tr>
-                        <th>本地目录映射：<sup class="lab">lab</sup></th>
-                        <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalMapping())%>" id="enableLocalMapping"></a></td>
-                        <td class="note">通过<a href="#">本地工具</a>将请求代理到本机，代理整个目录，此开关和"服务器上的Assets目录"开关互斥</td>
+                        <th>启用手动combo：</th>
+                        <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
+                        <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo">how to use?</a></td>
                     </tr>
                 </table>
-                <table id="J_BoxSwitch" class="<%=personConfig.isAdvanced()?"":"hidden"%>">
+                <table>
                     <tr>
                         <th>使用服务器 Assets 目录：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableAssets())%>" id="enableAssets"></a></td>
                         <td class="note">打开后启用服务器上的assets目录中的文件</td>
                     </tr>
                     <tr>
-                        <th>启用手动combo：</th>
-                        <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
-                        <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo">how to use?</a></td>
+                        <th>本地目录映射：<sup class="lab">lab</sup></th>
+                        <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalMapping())%>" id="enableLocalMapping"></a></td>
+                        <td class="note">通过<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:hfs" target="_blank">本地工具</a>将请求代理到本机，代理整个目录，此开关和"服务器上的Assets目录"开关互斥</td>
                     </tr>
-                    <%--<tr>--%>
-                        <%--<th>RELEASE CACHE：</th>--%>
-                        <%--<td class="op"><input type="button" value="CLEAR" id="cleanOnlineCache"/></td>--%>
-                        <%--<td class="note"></td>--%>
-                    <%--</tr>--%>
                 </table>
             </div>
         </div>
@@ -482,14 +478,11 @@
                 if (success === 'ok') {
                     //switch config
                     if(data !== 'cancel') {
-                        DOM.show('#J_BoxSwitch');
                         _updateConfig(data);
                     } else {
                         //取消要把子目录置位
                         
                     }
-                } else {
-                    DOM.hide('#J_BoxSwitch');
                 }
             };
 
@@ -512,8 +505,6 @@
                             }
                         }
                     }
-                } else {
-                    DOM.hide('#J_BoxSwitch');
                 }
             };
 
@@ -615,7 +606,7 @@
                     }
 
                     Event.on('#root-bind', 'change', function(e) {
-                        DOM.hide('#J_BoxSwitch');
+//                        DOM.hide('#J_BoxSwitch');
                         DOM.show('#message');
                         S.get('#dir-bind').options.length = 0;
                         var selectRootEl = S.get('#root-bind');
@@ -627,7 +618,7 @@
                         }
                     });
                     Event.on('#dir-bind', 'change', function(e) {
-                        DOM.hide('#J_BoxSwitch');
+//                        DOM.hide('#J_BoxSwitch');
                         DOM.show('#message');
                         var selectRootEl = S.get('#root-bind');
                         var selectSubEl = S.get('#dir-bind');
@@ -675,8 +666,8 @@
                         // 总的内容模板
                         var mappingChecksTemplate = T('<h3 class="{{#if mappings.length==0}} hidden {{/if}}">已保存（上限5个）：</h3>'+
                                 '<ul id="mapping-check" class="checks {{#if mappings.length==0}} hidden {{/if}}"></ul>'+
-                                '<div style="margin-top:10px">添加映射路径：<input type="text" style="width: 200px;" maxlength="100" placeholder="例如：/apps/buy 或者 /p/fp"/><a href="#" class="icon-add" id="mappingAdd" title="添加">添加</a>'+
-                                '</div><div style="margin-top:10px"><a href="#" class="icon-ok" title="保存" id="addMappingOK" style="text-indent: 0;padding-left: 18px;width: auto">确定</a>' +
+                                '<div style="margin-top:10px">添加一个映射前缀：<input type="text" style="width: 200px;" maxlength="100" placeholder="例如：/apps/buy 或者 /p/fp"/><a href="#" class="icon-add" id="mappingAdd" title="添加">添加</a>'+
+                                '</div><div style="margin-top:10px"><a href="#" class="icon-ok" title="保存" id="addMappingOK" style="text-indent: 0;padding-left: 18px;width: auto">保存</a>' +
                                 '<a href="#" class="icon-cancel" title="取消" id="addMappingCancel" style="text-indent: 0;padding-left: 18px;width: auto">取消</a></div>');
 
                         //各li模板
@@ -684,10 +675,7 @@
                                 '<a class="icon-del" href="#" title="删除">删除</a><input type="checkbox" value="{{_ks_value.path}}" {{#if _ks_value.use}}checked{{/if}}/><label for="">{{_ks_value.path}}</label></li>{{/each}}');
                         // 添加的li模板
                         var mappingChecks = T('<li><a class="icon-del" href="#" title="删除">删除</a><input type="checkbox" value="{{path}}"/><label for="">{{path}}</label></li>');
-                        
-                        Event.on('#bind-path', 'blur', function(e) {
-//                            _bindPath(undefined);
-                        });
+
                         Event.on('#bind-path', 'focus', function(e) {
                             mappingPopup.show();
                             S.one('#mapping-check').html(mappingChecksLiTemplate.render(mappingJSON));
@@ -711,16 +699,16 @@
                                         var i = 0;
                                         while(i < l) {
                                             if(a.path.charCodeAt(i) > b.path.charCodeAt(i)) {
-                                                return 1;
-                                            } else if(a.path.charCodeAt(i) < b.path.charCodeAt(i)) {
                                                 return -1;
+                                            } else if(a.path.charCodeAt(i) < b.path.charCodeAt(i)) {
+                                                return 1;
                                             }
                                             i++;
                                         }
                                         if(i == a.path.length) {
-                                            return -1;
-                                        } else {
                                             return 1;
+                                        } else {
+                                            return -1;
                                         }
                                     });
                                     mappingPopup.hide();
@@ -749,7 +737,7 @@
                                     for (var i = 0; i < mappingJSON.mappings.length; i++) {
                                         var obj = mappingJSON.mappings[i];
                                         if(obj.path === checkObject.path) {
-                                            alert('这个路径已经有了');
+                                            alert('这个映射已经有了');
                                             return;
                                         }
                                     }
@@ -769,18 +757,18 @@
                                     }
                                 });
                             }
-//                            DOM.hide('#bind-path-status');
+                            DOM.hide('#bind-path-status');
                         });
 
                         var mappingSelect = document.createElement("div");
-                        mappingSelect.innerHTML = '<div class="loading" style="width:950px;height:600px;"> '
+                        mappingSelect.innerHTML = '<div class="loading" style="width:950px;height:650px;"> '
                                 + '<div class="mask"></div><div class="check-box">'
                                 + mappingChecksTemplate.render(mappingJSON)
                                 + '</div></div>';
                         mappingPopup = new O.Popup({
                                     content: mappingSelect,
                                     width: 950,
-                                    height: 600,
+                                    height: 650,
                                     elStyle:{
                                         position:UA.ie == 6 ? "absolute" : "fixed"
                                     },

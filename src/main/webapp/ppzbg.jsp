@@ -31,6 +31,7 @@
             return;
         } else {
             //重新取一次
+            personConfig.setNewUser(false);
             personConfig = personConfigHandler.doHandler(request);
         }
     }
@@ -54,11 +55,6 @@
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isPrepub() ? "true" : "false";
         } else if (pid.equalsIgnoreCase("enableAssets")) {
-            if (!personConfig.isAdvanced()) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
-                return;
-            }
-
             personConfig.setEnableAssets(!personConfig.isEnableAssets());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableAssets() ? "true" : "false";
@@ -92,11 +88,6 @@
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableLocalMapping() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("enableLocalCombo")) {
-            if (!personConfig.isAdvanced()) {
-                out.print(callback + "(\'" + pid + "\',\'error\', \'personConfig validate fail\');");
-                return;
-            }
-
             personConfig.setEnableLocalCombo(!personConfig.isEnableLocalCombo());
             userDAO.updateConfig(personConfig.getUserDO().getId(), personConfig.getUserDO().getConfig(), srcConfig);
             tState = personConfig.isEnableLocalCombo() ? "true" : "false";

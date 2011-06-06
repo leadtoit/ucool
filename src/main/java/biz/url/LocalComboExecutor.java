@@ -52,7 +52,7 @@ public class LocalComboExecutor {
             url = new URL(propertiesUrl);
             p.load(url.openStream());
         } catch (IOException e) {
-            
+            System.out.println(e);
         }
         return p;
     }

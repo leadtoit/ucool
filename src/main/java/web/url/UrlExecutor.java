@@ -46,6 +46,14 @@ public class UrlExecutor {
         this.urlReader = urlReader;
     }
 
+    public void setJsonFilter(JSONFilter jsonFilter) {
+        this.jsonFilter = jsonFilter;
+    }
+
+    public void setLocalComboExecutor(LocalComboExecutor localComboExecutor) {
+        this.localComboExecutor = localComboExecutor;
+    }
+
     /**
      * 为debug模式特殊处理url请求，不走cache
      *
@@ -64,13 +72,16 @@ public class UrlExecutor {
         // 防止本地映射开启时没填映射路径，这样还可以走旧逻辑
         if(personConfig.getUserDO().getMappingPath() != null && !"".equals(personConfig.getUserDO().getMappingPath())) {
             // 本地映射不走服务器assets目录
-            String[] mappingPaths = this.jsonFilter.getUsedMappings(personConfig.getUserDO().getMappingPath()).split(";");
-            // 取得当前的映射路径
-            for (String mappingPath : mappingPaths) {
-                if(requestInfo.getFilePath().startsWith(mappingPath)){
-                    curMappingPath = mappingPath;
-                    requestInfo.setCurMappingPath(curMappingPath);
-                    break;
+            String usedMappings = this.jsonFilter.getUsedMappings(personConfig.getUserDO().getMappingPath());
+            if(!"".equals(usedMappings)) {
+                String[] mappingPaths = usedMappings.split(";");
+                // 取得当前的映射路径
+                for (String mappingPath : mappingPaths) {
+                    if(requestInfo.getFilePath().startsWith(mappingPath)){
+                        curMappingPath = mappingPath;
+                        requestInfo.setCurMappingPath(curMappingPath);
+                        break;
+                    }
                 }
             }
         }
@@ -88,9 +99,8 @@ public class UrlExecutor {
             if(personConfig.isEnableLocalCombo()) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("http://").append(requestInfo.getClientAddr()).append(":")
-                        .append(configCenter.getUcoolProxyClientPort())
-                        .append(curMappingPath).append("/")
-                        .append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
+                            .append(configCenter.getUcoolProxyClientPort())
+                            .append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
                 if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByUrl(sb.toString()), requestInfo, response, personConfig)) {
                     // 如果已经被本地代理掉了，就return
                     return;
@@ -157,7 +167,19 @@ public class UrlExecutor {
 
 
     public void doDebugUrlRuleCopy(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
-        if(personConfig.isEnableLocalMapping() && requestInfo.getFilePath().startsWith(personConfig.getUserDO().getMappingPath())) {
+        if(personConfig.isEnableLocalMapping() && requestInfo.getFilePath().startsWith(requestInfo.getCurMappingPath())) {
+            // 判断本地combo
+            if(personConfig.isEnableLocalCombo()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("http://").append(requestInfo.getClientAddr()).append(":")
+                            .append(configCenter.getUcoolProxyClientPort())
+                            .append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
+                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByUrl(sb.toString()), requestInfo, response, personConfig)) {
+                    // 如果已经被本地代理掉了，就return
+                    return;
+                }
+            }
+
             requestInfo.setRealUrl(requestInfo.getFullUrl());
             urlReader.readUrlFile(requestInfo, response);
         } else {

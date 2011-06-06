@@ -79,7 +79,10 @@ public class UserDAOImpl implements UserDAO, InitializingBean {
 
     @Override
     public boolean updateMappingPath(Long userId, String mappingPath, String srcMappingPath) {
-        if (mappingPath == srcMappingPath) {
+        if(mappingPath.equals("{\"mappings\":[]}")) {
+            srcMappingPath = null;
+        }
+        if (mappingPath.equals(srcMappingPath)) {
             //这里return true不知道会不会有什么问题
             return true;
         }
