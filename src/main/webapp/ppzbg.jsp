@@ -73,7 +73,7 @@
                     return;
                 }
             }
-            JSONFilter filter = new JSONFilter();
+            JSONFilter filter = (JSONFilter) wac.getBean("jsonFilter");
             personConfig.getUserDO().setMappingPath(filter.getValidateMapping(mappingPath));
             //update
             boolean op = userDAO.updateMappingPath(personConfig.getUserDO().getId(), personConfig.getUserDO().getMappingPath(), srcMappingPath);

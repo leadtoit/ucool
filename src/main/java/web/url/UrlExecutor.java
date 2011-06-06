@@ -5,6 +5,7 @@ import biz.url.UrlReader;
 import common.ConfigCenter;
 import common.MyConfig;
 import common.PersonConfig;
+import common.tools.JSONFilter;
 import common.tools.UrlTools;
 import dao.entity.RequestInfo;
 
@@ -26,6 +27,8 @@ public class UrlExecutor {
     private ConfigCenter configCenter;
 
     private UrlReader urlReader;
+
+    private JSONFilter jsonFilter;
 
     public void setFileEditor(FileEditor fileEditor) {
         this.fileEditor = fileEditor;
@@ -53,13 +56,11 @@ public class UrlExecutor {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
         String curMappingPath = null;
-        
-        if (validateLocalCombo(requestInfo, response, personConfig)) {
-            return;
-        }
+
+        // 防止本地映射开启时没填映射路径，这样还可以走旧逻辑
         if(personConfig.getUserDO().getMappingPath() != null && !"".equals(personConfig.getUserDO().getMappingPath())) {
             // 本地映射不走服务器assets目录
-            String[] mappingPaths = personConfig.getUserDO().getMappingPath().split(";");
+            String[] mappingPaths = jsonFilter.getUsedMappings(personConfig.getUserDO().getMappingPath()).split(";");
             // 取得当前的映射路径
             for (String mappingPath : mappingPaths) {
                 if(requestInfo.getFilePath().startsWith(mappingPath)){
@@ -68,6 +69,11 @@ public class UrlExecutor {
                 }
             }
         }
+
+        if (validateLocalCombo(requestInfo, response, personConfig)) {
+            return;
+        }
+        
         if(personConfig.isEnableLocalMapping() && curMappingPath != null) {
             // 将ip替换为客户端的，并且将目录映射掉
             realUrl = realUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());

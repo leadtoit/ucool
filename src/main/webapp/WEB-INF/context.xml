@@ -13,6 +13,7 @@
     <bean id="configDAO" class="dao.ConfigDAOImpl"/>
     <bean id="dirSyncTools" class="common.tools.DirSyncTools"/>
     <bean id="urlReader" class="biz.url.UrlReader"/>
+    <bean id="jsonFilter" class="common.tools.JSONFilter"/>
 
     <bean id="dispatchMapping" class="common.DispatchMapping">
         <property name="mappingTable">

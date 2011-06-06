@@ -36,4 +36,23 @@ public class JSONFilter {
         }
         return "";
     }
+
+    public String getUsedMappings(String mappingPath) {
+        if (mappingPath != null && !"".equals(mappingPath)) {
+            //解析json
+            JSONObject jsonObject = JSONObject.fromObject(mappingPath);
+            JSONArray jsonArray = jsonObject.getJSONArray("mappings");
+            StringBuilder sb = new StringBuilder();
+
+            // 取得当前的映射路径
+            for (Object mp : jsonArray) {
+                JSONObject temp = (JSONObject) mp;
+                if(temp.getBoolean("use")) {
+                    sb.append(temp.getString("path")).append(";");
+                }
+            }
+            return sb.toString();
+        }
+        return "";
+    }
 }
