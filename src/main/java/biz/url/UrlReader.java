@@ -7,6 +7,7 @@ import dao.entity.RequestInfo;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URL;
 import java.util.Map;
 
 /**
@@ -121,6 +122,38 @@ public class UrlReader {
             buff.close();
         }
         return true;
+    }
+
+        /**
+     * Method readUrlFile ...
+     *
+     * @param requestInfo
+     * @param response
+     * @return
+     */
+    public boolean readUrlFile(RequestInfo requestInfo,  HttpServletResponse response) {
+        try {
+            URL url = new URL(requestInfo.getRealUrl());
+            return this.pushStream(requestInfo, response, url.openStream());
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    /**
+     * 专为图片处理的方法
+     * @param requestInfo
+     * @param fullUrl
+     * @param out
+     * @return
+     */
+    public boolean readUrlFileForPng(RequestInfo requestInfo, String fullUrl, ServletOutputStream out) {
+        try {
+            URL url = new URL(fullUrl);
+            return this.pushStream(out, url.openStream(), fullUrl, !requestInfo.getType().equals("assets"));
+        } catch (Exception e) {
+        }
+        return false;
     }
 
 }

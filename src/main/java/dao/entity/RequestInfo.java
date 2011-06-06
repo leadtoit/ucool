@@ -23,6 +23,8 @@ public class RequestInfo {
 
     private boolean isLocalCombo = false;
 
+    private String curMappingPath = "";
+
     public RequestInfo(HttpServletRequest request) {
         this.requestUrl = request.getRequestURI();
         this.serverName = request.getServerName();
@@ -108,5 +110,13 @@ public class RequestInfo {
 
     public void setClientAddr(String clientAddr) {
         this.clientAddr = clientAddr;
+    }
+
+    public String getCurMappingPath() {
+        return curMappingPath;
+    }
+
+    public void setCurMappingPath(String curMappingPath) {
+        this.curMappingPath = curMappingPath;
     }
 }

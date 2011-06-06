@@ -1,6 +1,7 @@
 package web.url;
 
 import biz.file.FileEditor;
+import biz.url.LocalComboExecutor;
 import biz.url.UrlReader;
 import common.ConfigCenter;
 import common.MyConfig;
@@ -13,6 +14,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
 import java.util.Properties;
 
@@ -29,6 +31,8 @@ public class UrlExecutor {
     private UrlReader urlReader;
 
     private JSONFilter jsonFilter;
+
+    private LocalComboExecutor localComboExecutor;
 
     public void setFileEditor(FileEditor fileEditor) {
         this.fileEditor = fileEditor;
@@ -60,20 +64,17 @@ public class UrlExecutor {
         // 防止本地映射开启时没填映射路径，这样还可以走旧逻辑
         if(personConfig.getUserDO().getMappingPath() != null && !"".equals(personConfig.getUserDO().getMappingPath())) {
             // 本地映射不走服务器assets目录
-            String[] mappingPaths = jsonFilter.getUsedMappings(personConfig.getUserDO().getMappingPath()).split(";");
+            String[] mappingPaths = this.jsonFilter.getUsedMappings(personConfig.getUserDO().getMappingPath()).split(";");
             // 取得当前的映射路径
             for (String mappingPath : mappingPaths) {
                 if(requestInfo.getFilePath().startsWith(mappingPath)){
                     curMappingPath = mappingPath;
+                    requestInfo.setCurMappingPath(curMappingPath);
                     break;
                 }
             }
         }
 
-        if (validateLocalCombo(requestInfo, response, personConfig)) {
-            return;
-        }
-        
         if(personConfig.isEnableLocalMapping() && curMappingPath != null) {
             // 将ip替换为客户端的，并且将目录映射掉
             realUrl = realUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
@@ -83,8 +84,20 @@ public class UrlExecutor {
             fullUrl = fullUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
             fullUrl = fullUrl.replaceAll(curMappingPath, "");
             requestInfo.setFullUrl(fullUrl);
+            // 判断本地combo
+            if(personConfig.isEnableLocalCombo()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("http://").append(requestInfo.getClientAddr()).append(":")
+                        .append(configCenter.getUcoolProxyClientPort())
+                        .append(curMappingPath).append("/")
+                        .append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
+                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByUrl(sb.toString()), requestInfo, response, personConfig)) {
+                    // 如果已经被本地代理掉了，就return
+                    return;
+                }
+            }
             //直接请求客户端
-            if (!readUrlFile(requestInfo, response)) {
+            if (!urlReader.readUrlFile(requestInfo, response)) {
                 // 图片不用重复请求
                 if (!requestInfo.getType().equals("assets")) {
                     return;
@@ -98,10 +111,20 @@ public class UrlExecutor {
                 } else {
                     //最后的保障，如果缓存失败了，从线上取吧
                     requestInfo.setRealUrl(requestInfo.getFullUrl());
-                    readUrlFile(requestInfo, response);
+                    urlReader.readUrlFile(requestInfo, response);
                 }
             }
         } else {
+            // 判断本地combo
+            if(personConfig.isEnableLocalCombo()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
+                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByFile(sb.toString()), requestInfo, response, personConfig)) {
+                    // 如果已经被本地代理掉了，就return
+                    return;
+                }
+            }
+
             if (findAssetsFile(filePath, personConfig)) {
                 try {
                     requestInfo.setRealUrl(requestInfo.getFilePath());
@@ -111,7 +134,7 @@ public class UrlExecutor {
                     System.out.println("file has exception" + e);
                 }
             } else {
-                if (!readUrlFile(requestInfo, response)) {
+                if (!urlReader.readUrlFile(requestInfo, response)) {
                     // 图片不用重复请求
                     if (!requestInfo.getType().equals("assets")) {
                         return;
@@ -125,7 +148,7 @@ public class UrlExecutor {
                     } else {
                         //最后的保障，如果缓存失败了，从线上取吧
                         requestInfo.setRealUrl(requestInfo.getFullUrl());
-                        readUrlFile(requestInfo, response);
+                        urlReader.readUrlFile(requestInfo, response);
                     }
                 }
             }
@@ -136,10 +159,16 @@ public class UrlExecutor {
     public void doDebugUrlRuleCopy(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
         if(personConfig.isEnableLocalMapping() && requestInfo.getFilePath().startsWith(personConfig.getUserDO().getMappingPath())) {
             requestInfo.setRealUrl(requestInfo.getFullUrl());
-            readUrlFile(requestInfo, response);
+            urlReader.readUrlFile(requestInfo, response);
         } else {
-            if (validateLocalCombo(requestInfo, response, personConfig)) {
-                return;
+            // 判断本地combo
+            if(personConfig.isEnableLocalCombo()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
+                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByFile(sb.toString()), requestInfo, response, personConfig)) {
+                    // 如果已经被本地代理掉了，就return
+                    return;
+                }
             }
             if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
                 try {
@@ -152,7 +181,7 @@ public class UrlExecutor {
             } else {
                 //最后的保障，如果缓存失败了，从线上取吧
                 requestInfo.setRealUrl(requestInfo.getFullUrl());
-                readUrlFile(requestInfo, response);
+                urlReader.readUrlFile(requestInfo, response);
             }
         }
     }
@@ -169,7 +198,7 @@ public class UrlExecutor {
                 System.out.println("file has exception" +  e);
             }
         } else {
-            readUrlFileForPng(requestInfo, realUrl, out);
+            urlReader.readUrlFileForPng(requestInfo, realUrl, out);
         }
     }
 
@@ -179,6 +208,7 @@ public class UrlExecutor {
      * @param requestInfo
      * @param personConfig
      * @return
+     * @Deprecated
      */
     @Deprecated
     private String getConfigEncoding(RequestInfo requestInfo, PersonConfig personConfig) {
@@ -216,56 +246,6 @@ public class UrlExecutor {
             }
         }
         return "gbk";
-    }
-
-    private boolean validateLocalCombo(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
-        //当用户目录配置了特殊需要反向combo的文件，需要特殊处理
-        if(personConfig.isEnableLocalCombo()) {
-            //read properties
-            Properties p = new Properties();
-            StringBuilder sb = new StringBuilder();
-            sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
-            try {
-                File comboFile = new File(sb.toString());
-                if(comboFile.exists() && comboFile.canRead()) {
-                    FileReader fileReader = new FileReader(comboFile);
-                    p.load(fileReader);
-                    fileReader.close();
-                }
-            } catch (IOException e) {
-            }
-            if(!p.isEmpty()) {
-                //url replace
-                boolean matchUrl = false;
-                for (Map.Entry<Object, Object> objectObjectEntry : p.entrySet()) {
-                    if (((String) objectObjectEntry.getKey()).indexOf(requestInfo.getFilePath()) != -1) {
-                        String newUrl = (String) objectObjectEntry.getValue();
-                        newUrl = newUrl.replace("{baseUrl}", requestInfo.getServerName());
-                        newUrl = "http://" + newUrl + UrlTools.getParam(requestInfo.getRealUrl());
-                        //简单校验，不能同一文件循环请求
-                        if (newUrl.indexOf((String) objectObjectEntry.getKey()) == -1) {
-                            requestInfo.setRealUrl(newUrl);
-                            matchUrl = true;
-                            break;
-                        }
-                    }
-                }
-                if (matchUrl) {
-                    String realUrl = requestInfo.getRealUrl();
-                    if(realUrl.indexOf("?") != -1) {
-                        realUrl += ("?pcname=" + personConfig.getUserDO().getHostName());
-                    } else {
-                        realUrl += ("&pcname=" + personConfig.getUserDO().getHostName());
-                    }
-                    requestInfo.setRealUrl(realUrl);
-                    requestInfo.setLocalCombo(true);
-                    
-                    readUrlFile(requestInfo, response);
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -327,38 +307,6 @@ public class UrlExecutor {
 
         }
         return null;
-    }
-
-    /**
-     * Method readUrlFile ...
-     *
-     * @param requestInfo
-     * @param response
-     * @return
-     */
-    private boolean readUrlFile(RequestInfo requestInfo,  HttpServletResponse response) {
-        try {
-            URL url = new URL(requestInfo.getRealUrl());
-            return this.urlReader.pushStream(requestInfo, response, url.openStream());
-        } catch (Exception e) {
-        }
-        return false;
-    }
-
-    /**
-     * 专为图片处理的方法
-     * @param requestInfo
-     * @param fullUrl
-     * @param out
-     * @return
-     */
-    private boolean readUrlFileForPng(RequestInfo requestInfo, String fullUrl, ServletOutputStream out) {
-        try {
-            URL url = new URL(fullUrl);
-            return this.urlReader.pushStream(out, url.openStream(), fullUrl, !requestInfo.getType().equals("assets"));
-        } catch (Exception e) {
-        }
-        return false;
     }
 
 }
