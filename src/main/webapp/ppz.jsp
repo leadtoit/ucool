@@ -244,7 +244,7 @@
             font-weight: bold;
         }
         .loading {position:absolute;z-index:10000;}
-        .loading .mask{left:0;top:0;width:100%;height:100%;background:url(http://yiminghe.github.com/kissy-dpl/base/build/img/bg-transparent.png);_background:#000;_filter:alpha(opacity=20);}
+        .loading .mask{left:0;top:0;width:100%;height:100%;background:url(http://img01.taobaocdn.com/tps/i1/T1rOeeXjpuXXXXXXXX-20-20.png);_background:#000;_filter:alpha(opacity=20);}
         .loading .icon{position:absolute;width:220px;height:19px;left:50%;top:50%;margin:-19px 0 0 -110px;padding-top:18px;font-style:normal;text-align:center;background:url(http://yiminghe.github.com/kissy-dpl/base/build/img//loading.gif) no-repeat;}
         .loading .check-box{
             position: absolute;
