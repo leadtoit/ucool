@@ -374,7 +374,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>映射前缀：<a style="line-height: normal" class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:mapping-prefix" target="_blank" title=什么是映射前缀?"><i>?</i></a></th>
+                        <th>映射前缀：<a style="line-height: normal" class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:mapping-prefix" target="_blank" title="什么是映射前缀?"><i>?</i></a></th>
                         <td>
                             <div>
                                 <input type="text" id="bind-path"
@@ -402,7 +402,7 @@
                         <td class="note">打开后切换到预发环境</td>
                     </tr>
                     <tr>
-                        <th>启用手动combo：</th>
+                        <th>手动combo：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
                         <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo">how to use?</a></td>
                     </tr>
