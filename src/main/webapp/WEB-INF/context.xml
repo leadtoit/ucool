@@ -15,6 +15,7 @@
     <bean id="urlReader" class="biz.url.UrlReader"/>
     <bean id="jsonFilter" class="common.tools.JSONFilter"/>
     <bean id="localComboExecutor" class="biz.url.LocalComboExecutor"/>
+    <bean id="cookieUtils" class="common.tools.CookieUtils"/>
 
     <bean id="dispatchMapping" class="common.DispatchMapping">
         <property name="mappingTable">

@@ -17,7 +17,14 @@
         <servlet-name>DoorServlet</servlet-name>
         <servlet-class>web.servlet.DoorServlet</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>web.servlet.LoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>DoorServlet</servlet-name>
         <url-pattern>*.htm</url-pattern>
