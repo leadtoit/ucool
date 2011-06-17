@@ -29,9 +29,15 @@ public class LoginServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Cookie cookie = cookieUtils.addCookie(CookieUtils.DEFAULT_KEY, request.getRemoteAddr() , "u.taobao.net");
-        if(cookie != null) {
-            response.addCookie(cookie);
+        System.out.println(request.getCookies());
+        if(cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY)) {
+            System.out.println("has cookie:" + cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY));
+        } else {
+            Cookie cookie = cookieUtils.addCookie(CookieUtils.DEFAULT_KEY, request.getRemoteAddr() , "u.taobao.net");
+            if(cookie != null) {
+                response.addCookie(cookie);
+                System.out.println("add cookie:" + cookie);
+            }
         }
     }
 

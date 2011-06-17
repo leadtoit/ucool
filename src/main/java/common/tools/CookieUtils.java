@@ -15,7 +15,9 @@ public class CookieUtils {
     
     public Cookie addCookie(String key, String value, String domain) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setDomain(domain);
+        cookie.setPath("/");
+        cookie.setMaxAge(2592000);
+//        cookie.setDomain(domain);
         return cookie;
     }
 
