@@ -57,6 +57,8 @@ public class ComboHandler extends AssetsHandler {
         boolean isOnline = getConfigCenter().getUcoolOnlineDomain().indexOf(request.getServerName()) != -1;
         boolean isDebugMode = personConfig.isUcoolAssetsDebug() || HttpTools.isReferDebug(request);
         for (String everyFile : allFiles) {
+            //过滤时间戳和一些参数
+            everyFile = everyFile.replace("\\?.*$", "");
             // e.g.:header/header-min.css
             //拼出单个url，然后的逻辑和单文件相同
             String singleFilePath = filePath + everyFile;
@@ -64,8 +66,6 @@ public class ComboHandler extends AssetsHandler {
             singleRealUrl= attachOper(singleRealUrl, request);
             String singleFullUrl = singleRealUrl;
 
-            //在debug过滤之前还要过滤时间戳
-            singleFilePath = singleFilePath.split(HttpTools.filterSpecialChar("?"))[0];
             //获取源文件url
             if (isDebugMode) {
                 singleFilePath = getUrlTools().debugMode(singleFilePath, singleFullUrl);
