@@ -58,7 +58,7 @@ public class ComboHandler extends AssetsHandler {
         boolean isDebugMode = personConfig.isUcoolAssetsDebug() || HttpTools.isReferDebug(request);
         for (String everyFile : allFiles) {
             //过滤时间戳和一些参数
-            everyFile = everyFile.replaceAll("\\?.*$", "");
+            everyFile = everyFile.replaceAll("[\\?&].*$", "");
             // e.g.:header/header-min.css
             //拼出单个url，然后的逻辑和单文件相同
             String singleFilePath = filePath + everyFile;
