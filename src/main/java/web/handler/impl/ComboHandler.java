@@ -82,6 +82,8 @@ public class ComboHandler extends AssetsHandler {
             requestInfo.setRealUrl(singleRealUrl);
             requestInfo.setFullUrl(singleFullUrl);
             requestInfo.setUrlCombo(true);
+            //local combo时必须set值，否则这个值就变成127.0.0.1，会死循环
+            requestInfo.setClientAddr(personConfig.getUserDO().getHostName());
             getUrlExecutor().doDebugUrlRule(requestInfo, response, personConfig);
         }
 
