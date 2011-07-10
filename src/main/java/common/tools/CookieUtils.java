@@ -1,6 +1,8 @@
 package common.tools;
 
 import javax.servlet.http.Cookie;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,20 +13,24 @@ import javax.servlet.http.Cookie;
  */
 public class CookieUtils {
 
-    public static String DEFAULT_KEY = "";
-    
+    public static String DEFAULT_KEY = "_ucool_login_";
+
+    public static String[] domains = new String[]{".u.taobao.net", ".a.tbcdn.cn", ".assets.daily.taobao.net", ".assets.taobaocdn.com"};
+
     public Cookie addCookie(String key, String value, String domain) {
         Cookie cookie = new Cookie(key, value);
         cookie.setPath("/");
         cookie.setMaxAge(2592000);
-//        cookie.setDomain(domain);
+        cookie.setDomain(domain);
         return cookie;
     }
 
     public Cookie getCookie(Cookie[] cookies, String key) {
-        for (Cookie cookie : cookies) {
-            if(cookie.getName().equals(key)) {
-                return cookie;
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
+                if(cookie.getName().equals(key)) {
+                    return cookie;
+                }
             }
         }
         return null;

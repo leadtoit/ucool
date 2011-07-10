@@ -22,4 +22,6 @@ public interface UserDAO {
     boolean updateConfig(Long userId, int newConfig, int srcConfig);
 
     boolean updateMappingPath(Long id, String mappingPath, String srcMappingPath);
+
+    UserDO getPersonInfoByGUID(String guid);
 }

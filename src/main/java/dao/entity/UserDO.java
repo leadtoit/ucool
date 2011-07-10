@@ -18,6 +18,7 @@ public class UserDO {
      */
     private String mappingPath = "";
 
+    private String guid= "";
 
     public Long getId() {
         return id;
@@ -121,5 +122,13 @@ public class UserDO {
         } else {
             config = config & ~(1 << 4);
         }
+    }
+
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(String guid) {
+        this.guid = guid;
     }
 }
