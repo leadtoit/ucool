@@ -29,14 +29,15 @@ public class UserDAOImpl implements UserDAO, InitializingBean {
             user.setName((String)map.get("name"));
             user.setConfig((Integer) map.get("config"));
             user.setMappingPath((String) map.get("mapping_path"));
+            user.setGuid((String) map.get("guid"));
         }
         return user;
     }
 
     @Override public boolean createNewUser(UserDO userDO) {
-        String sql = "insert into user (host_name, name, config) values (?,?,?)";
+        String sql = "insert into user (host_name, name, config, guid) values (?,?,?,?)";
         try {
-            if (this.jdbcTemplate.update(sql, new Object[]{userDO.getHostName(), userDO.getName(), userDO.getConfig()}) > 0) {
+            if (this.jdbcTemplate.update(sql, new Object[]{userDO.getHostName(), userDO.getName(), userDO.getConfig(), userDO.getGuid()}) > 0) {
                 UserDO newUser = getPersonInfo(userDO.getHostName());
                 userDO.setId(newUser.getId());
                 return true;

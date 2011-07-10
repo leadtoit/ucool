@@ -50,8 +50,9 @@ public class PersonConfigHandler {
         String remoteHost = request.getRemoteAddr();
         String querySring = request.getQueryString();
         String pcname = null;
-        if(querySring != null && querySring.indexOf("pcname") != -1) {
-            Matcher matc = Pattern.compile("(?<=pcname=)[^?&]+").matcher(querySring);
+        String guid = null;
+        if(querySring != null && querySring.indexOf("guid") != -1) {
+            Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
 
             if (matc.find()) {
                 pcname = matc.group();
@@ -60,16 +61,16 @@ public class PersonConfigHandler {
 
         //本地combo二次请求的时候机器名只能这样带过来
         if (pcname != null) {
-            remoteHost = pcname.toString();
+            guid = pcname.toString();
         }
 
         // get user from cache
-        UserDO personInfo = userCache.get(remoteHost);
+        UserDO personInfo = userCache.get(guid);
         if(personInfo == null) {
-            personInfo = this.userDAO.getPersonInfo(remoteHost);
+            personInfo = this.userDAO.getPersonInfoByGUID(guid);
             if(personInfo != null) {
-                userCache.put(remoteHost, personInfo);
-                request.getSession().setAttribute(request.getSession().getId(), remoteHost);
+                userCache.put(guid, personInfo);
+                request.getSession().setAttribute(request.getSession().getId(), guid);
                 System.out.println("map has size:" + userCache.size());
             }
         }
@@ -82,6 +83,7 @@ public class PersonConfigHandler {
         } else {
             personConfig.setUserDO(new UserDO());
             personConfig.getUserDO().setHostName(remoteHost);
+            personConfig.getUserDO().setGuid(guid);
             //没在数据库查询到数据，肯定是新人
             personConfig.setNewUser(true);
         }

@@ -51,11 +51,11 @@ public class LoginFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) resp;
         String remoteHost = request.getRemoteAddr();
         String querySring = request.getQueryString();
-        String pcname = null;
+        Map<String, UserDO> userCache = personConfigHandler.getUserCache();
         String guid = null;
 
         //local combo set pcname
-        if(querySring != null && querySring.indexOf("guid") != -1) {
+        if (querySring != null && querySring.indexOf("guid") != -1) {
             Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
 
             if (matc.find()) {
@@ -64,7 +64,7 @@ public class LoginFilter implements Filter {
         }
 
         if (cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY) || guid != null) {
-            if(guid == null) {
+            if (guid == null) {
                 // has visited
                 guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
             }
@@ -72,13 +72,15 @@ public class LoginFilter implements Filter {
              * 有cookie -> 查找cache user -> 找到 ok，返回
              * 有cookie -> 没找到cache user -> 查询db -> 查到，同步ip，没查到，创建一个用户，写入ip
              */
-            Map<String, UserDO> userCache = personConfigHandler.getUserCache();
             if (!personConfigHandler.getUserCache().containsKey(guid)) {
                 // get user from cache
                 UserDO personInfo = this.userDAO.getPersonInfoByGUID(guid);
                 if (personInfo != null) {
                     userCache.put(guid, personInfo);
                     request.getSession().setAttribute(request.getSession().getId(), guid);
+                    if (!remoteHost.equals(personInfo.getHostName())) {
+                        //TODO update user
+                    }
                 } else {
                     //没查到就创建新用户
                     //构造个人配置
@@ -86,15 +88,39 @@ public class LoginFilter implements Filter {
                     personInfo.setHostName(remoteHost);
                     personInfo.setGuid(guid);
                     boolean op = userDAO.createNewUser(personInfo);
-                    if(op) {
+                    if (op) {
                         userCache.put(guid, personInfo);
                         request.getSession().setAttribute(request.getSession().getId(), guid);
                     }
                 }
             }
         } else {
+            guid = getGuid();
+            //ip sync
+            UserDO personInfo = this.userDAO.getPersonInfo(remoteHost);
+            if (personInfo != null) {
+                guid = personInfo.getGuid();
+                if (guid == null || "".equals(guid)) {
+                    guid = getGuid();
+                    personInfo.setGuid(guid);
+                    //TODO update user
+                }
+                userCache.put(guid, personInfo);
+                request.getSession().setAttribute(request.getSession().getId(), guid);
+            } else {
+                //没查到就创建新用户
+                //构造个人配置
+                personInfo = new UserDO();
+                personInfo.setHostName(remoteHost);
+                personInfo.setGuid(guid);
+                boolean op = userDAO.createNewUser(personInfo);
+                if (op) {
+                    userCache.put(guid, personInfo);
+                    request.getSession().setAttribute(request.getSession().getId(), guid);
+                }
+            }
             for (String domain : CookieUtils.domains) {
-                Cookie cookie = cookieUtils.addCookie(CookieUtils.DEFAULT_KEY, request.getRemoteAddr(), domain);
+                Cookie cookie = cookieUtils.addCookie(CookieUtils.DEFAULT_KEY, guid, domain);
                 if (cookie != null) {
                     response.addCookie(cookie);
                 }
