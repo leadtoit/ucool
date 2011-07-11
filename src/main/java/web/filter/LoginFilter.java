@@ -79,7 +79,9 @@ public class LoginFilter implements Filter {
                     userCache.put(guid, personInfo);
                     request.getSession().setAttribute(request.getSession().getId(), guid);
                     if (!remoteHost.equals(personInfo.getHostName())) {
-                        //TODO update user
+                        if (this.userDAO.updateHostName(personInfo.getId(), remoteHost, personInfo.getHostName())) {
+                            personInfo.setHostName(remoteHost);
+                        }
                     }
                 } else {
                     //没查到就创建新用户
@@ -103,7 +105,9 @@ public class LoginFilter implements Filter {
                 if (guid == null || "".equals(guid)) {
                     guid = getGuid();
                     personInfo.setGuid(guid);
-                    //TODO update user
+                    if (this.userDAO.updateHostName(personInfo.getId(), remoteHost, personInfo.getHostName())) {
+                        personInfo.setHostName(remoteHost);
+                    }
                 }
                 userCache.put(guid, personInfo);
                 request.getSession().setAttribute(request.getSession().getId(), guid);

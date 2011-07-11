@@ -24,4 +24,6 @@ public interface UserDAO {
     boolean updateMappingPath(Long id, String mappingPath, String srcMappingPath);
 
     UserDO getPersonInfoByGUID(String guid);
+
+    boolean updateHostName(Long userId, String newHostName, String srcHostName);
 }
