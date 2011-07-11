@@ -66,6 +66,7 @@ public class PersonConfigHandler {
 
         // get user from cache
         UserDO personInfo = userCache.get(guid);
+        // 这里自从有了filter之后基本上是不会取不到的
         if(personInfo == null) {
             personInfo = this.userDAO.getPersonInfoByGUID(guid);
             if(personInfo != null) {
