@@ -77,9 +77,9 @@ public class LocalComboExecutor {
             if (matchUrl) {
                 String realUrl = requestInfo.getRealUrl();
                 if(realUrl.indexOf("?") != -1) {
-                    realUrl += ("?pcname=" + personConfig.getUserDO().getHostName());
+                    realUrl += ("?guid=" + personConfig.getUserDO().getHostName());
                 } else {
-                    realUrl += ("&pcname=" + personConfig.getUserDO().getHostName());
+                    realUrl += ("&guid=" + personConfig.getUserDO().getHostName());
                 }
                 requestInfo.setRealUrl(realUrl);
                 requestInfo.setLocalCombo(true);
