@@ -20,6 +20,7 @@ public class PersonConfig {
     }
 
     // 如果新用户第二次过来，这个值就为 true了，这样就不用重复查询数据库了
+    @Deprecated
     private boolean newUser = false;
 
     public boolean isUcoolAssetsDebug() {
@@ -129,10 +130,12 @@ public class PersonConfig {
      * 2、老用户，但是取消了绑定
      * @return
      */
+    @Deprecated
     public boolean isNewUser() {
         return newUser;
     }
 
+    @Deprecated
     public void setNewUser(boolean newUser) {
         this.newUser = newUser;
     }
@@ -170,7 +173,7 @@ public class PersonConfig {
      * @return
      */
     public boolean isAdvanced() {
-        return userDO!= null && !isNewUser() && userDO.getName()!= null && !userDO.getName().isEmpty();
+        return userDO!= null && userDO.getName()!= null && !userDO.getName().isEmpty();
     }
 
 }

@@ -20,7 +20,7 @@ public class CookieUtils {
     public Cookie addCookie(String key, String value, String domain) {
         Cookie cookie = new Cookie(key, value);
         cookie.setPath("/");
-        cookie.setMaxAge(2592000);
+        cookie.setMaxAge(31536000);
         cookie.setDomain(domain);
         return cookie;
     }

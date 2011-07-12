@@ -2,6 +2,7 @@ package web.handler.impl;
 
 import common.ConfigCenter;
 import common.PersonConfig;
+import common.tools.CookieUtils;
 import dao.UserDAO;
 import dao.entity.UserDO;
 
@@ -22,6 +23,8 @@ public class PersonConfigHandler {
 
     private ConfigCenter configCenter;
 
+    private CookieUtils cookieUtils;
+
     private Map<String, UserDO> userCache = new HashMap<String, UserDO>();
 
     public void setConfigCenter(ConfigCenter configCenter) {
@@ -36,6 +39,10 @@ public class PersonConfigHandler {
         return userCache;
     }
 
+    public void setCookieUtils(CookieUtils cookieUtils) {
+        this.cookieUtils = cookieUtils;
+    }
+
     /**
      * Method doHandler ...
      *
@@ -47,10 +54,9 @@ public class PersonConfigHandler {
     public PersonConfig doHandler(HttpServletRequest request)
             throws IOException, ServletException {
         // 0.6版本后直接去取ip了
-        String remoteHost = request.getRemoteAddr();
         String querySring = request.getQueryString();
         String pcname = null;
-        String guid = null;
+        String guid  = (String) request.getAttribute("guid");
         if(querySring != null && querySring.indexOf("guid") != -1) {
             Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
 
@@ -81,12 +87,6 @@ public class PersonConfigHandler {
         personConfig.setConfigCenter(configCenter);
         if (personInfo != null) {
             personConfig.setUserDO(personInfo);
-        } else {
-            personConfig.setUserDO(new UserDO());
-            personConfig.getUserDO().setHostName(remoteHost);
-            personConfig.getUserDO().setGuid(guid);
-            //没在数据库查询到数据，肯定是新人
-            personConfig.setNewUser(true);
         }
         return personConfig;
     }

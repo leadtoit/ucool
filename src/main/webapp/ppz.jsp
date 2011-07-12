@@ -273,16 +273,6 @@
     PersonConfig personConfig = personConfigHandler.doHandler(request);
     FileEditor fileEditor = (FileEditor) wac.getBean("fileEditor");
     DirSyncTools dirSyncTools = (DirSyncTools) wac.getBean("dirSyncTools");
-    UserDAO userDAO = (UserDAO) wac.getBean("userDAO");
-
-    if(personConfig.isNewUser()) {
-        boolean op = userDAO.createNewUser(personConfig.getUserDO());
-        if (op) {
-            personConfig.setNewUser(false);
-            //重新取一次
-            personConfig = personConfigHandler.doHandler(request);
-        }
-    }
 %>
 <div id="page">
     <div id="header">
@@ -322,13 +312,10 @@
                                 <select name="root-bind" id="root-bind" autocomplete="off" <%if(personConfig.isEnableLocalMapping())out.print("disabled");%>>
                                     <%
                                         List<String> assetsSubDirs = fileEditor.getAssetsSubDirs();
-                                        String curDirName = "";
-                                        if (!personConfig.isNewUser()) {
-                                            curDirName = personConfig.getUserDO().getName();
-                                            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
-                                                personConfig.getUserDO().setName("");
-                                                curDirName = "";
-                                            }
+                                        String curDirName = personConfig.getUserDO().getName();
+                                        if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
+                                            personConfig.getUserDO().setName("");
+                                            curDirName = "";
                                         }
                                         String rootName = "", subName = "";
                                         if (!curDirName.isEmpty()) {

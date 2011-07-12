@@ -23,7 +23,7 @@ public class UserDAOImpl implements UserDAO, InitializingBean {
         String sql = "select * from user where host_name=?";
         UserDO user = null;
         List perList = this.jdbcTemplate.queryForList(sql, new Object[]{hostName});
-        if (perList.size() == 1) {
+        if (perList.size() >= 1) {
             user = new UserDO();
             Map map = (Map) perList.get(0);
             user.setId(Long.valueOf(String.valueOf(map.get("id"))));

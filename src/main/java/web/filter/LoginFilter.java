@@ -2,6 +2,7 @@ package web.filter;
 
 import common.PersonConfig;
 import common.tools.CookieUtils;
+import common.tools.RandomString;
 import dao.UserDAO;
 import dao.entity.UserDO;
 import org.springframework.web.context.WebApplicationContext;
@@ -130,6 +131,7 @@ public class LoginFilter implements Filter {
                 }
             }
         }
+        request.setAttribute("guid", guid);
         chain.doFilter(req, resp);
     }
 
@@ -143,7 +145,7 @@ public class LoginFilter implements Filter {
     }
 
     private String getGuid() {
-        return "";
+        return RandomString.getRandomString(30);
     }
 
 }
