@@ -273,22 +273,12 @@
     PersonConfig personConfig = personConfigHandler.doHandler(request);
     FileEditor fileEditor = (FileEditor) wac.getBean("fileEditor");
     DirSyncTools dirSyncTools = (DirSyncTools) wac.getBean("dirSyncTools");
-    UserDAO userDAO = (UserDAO) wac.getBean("userDAO");
-
-    if(personConfig.isNewUser()) {
-        boolean op = userDAO.createNewUser(personConfig.getUserDO());
-        if (op) {
-            personConfig.setNewUser(false);
-            //重新取一次
-            personConfig = personConfigHandler.doHandler(request);
-        }
-    }
 %>
 <div id="page">
     <div id="header">
         <div class="top">
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start" target="_blank">ucool config page</a></h1>
-            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" target="_blank" title="what's new?">ucool-pro version：0.8.4 <i>?</i></a>
+            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" target="_blank" title="what's new?">ucool-pro version：0.9 <i>?</i></a>
         </div>
     </div>
     <div id="content">
@@ -322,13 +312,10 @@
                                 <select name="root-bind" id="root-bind" autocomplete="off" <%if(personConfig.isEnableLocalMapping())out.print("disabled");%>>
                                     <%
                                         List<String> assetsSubDirs = fileEditor.getAssetsSubDirs();
-                                        String curDirName = "";
-                                        if (!personConfig.isNewUser()) {
-                                            curDirName = personConfig.getUserDO().getName();
-                                            if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
-                                                personConfig.getUserDO().setName("");
-                                                curDirName = "";
-                                            }
+                                        String curDirName = personConfig.getUserDO().getName();
+                                        if (dirSyncTools.sync(configCenter.getWebRoot() + personConfig.getUcoolAssetsRoot(), personConfig)) {
+                                            personConfig.getUserDO().setName("");
+                                            curDirName = "";
                                         }
                                         String rootName = "", subName = "";
                                         if (!curDirName.isEmpty()) {
@@ -374,7 +361,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>映射前缀：<a style="line-height: normal" class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:mapping-prefix" target="_blank" title=什么是映射前缀?"><i>?</i></a></th>
+                        <th>映射前缀：<a style="line-height: normal" class="new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:mapping-prefix" target="_blank" title="什么是映射前缀?"><i>?</i></a></th>
                         <td>
                             <div>
                                 <input type="text" id="bind-path"
@@ -402,7 +389,7 @@
                         <td class="note">打开后切换到预发环境</td>
                     </tr>
                     <tr>
-                        <th>启用手动combo：</th>
+                        <th>手动combo：</th>
                         <td class="op"><a class="<%=configCenter.getStateStyle(personConfig.isEnableLocalCombo())%>" id="enableLocalCombo"></a></td>
                         <td class="note">根据根目录的配置文件combo.properties可以将一个文件以combo的形式拆分<a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:ucool-local-combo">how to use?</a></td>
                     </tr>

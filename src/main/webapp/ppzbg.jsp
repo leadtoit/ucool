@@ -24,19 +24,6 @@
 
     PersonConfig personConfig = personConfigHandler.doHandler(request);
 
-    if(personConfig.isNewUser()) {
-        boolean op = userDAO.createNewUser(personConfig.getUserDO());
-        if (!op) {
-            out.print(callback + "(\'" + pid + "\',\'error\', \'create user error\');");
-            return;
-        } else {
-            //重新取一次
-            personConfig.setNewUser(false);
-            personConfig = personConfigHandler.doHandler(request);
-        }
-    }
-
-
     String srcMappingPath = personConfig.getUserDO().getMappingPath();
 
     int srcConfig = personConfig.getUserDO().getConfig();
@@ -65,15 +52,6 @@
             tState = personConfig.isEnableAssets() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("bindPath")) {
             String mappingPath = request.getParameter("mappingPath");
-            if(personConfig.isNewUser()) {
-                //create user
-                personConfig.getUserDO().setName("");
-                boolean op = userDAO.createNewUser(personConfig.getUserDO());
-                if (!op) {
-                    out.print(callback + "(" + "{\"pid\":\""+ pid + "\",\"success\":\"error\", \"message\":\"create user error\"}" + ")");
-                    return;
-                }
-            }
             JSONFilter filter = (JSONFilter) wac.getBean("jsonFilter");
             personConfig.getUserDO().setMappingPath(filter.getValidateMapping(mappingPath));
             //update
@@ -122,12 +100,6 @@
                     personConfig.getUserDO().setName(targetPath);
                     if (!op) {
                         out.print(callback + "(\'" + pid + "\',\'error\', \'update config error\');");
-                        return;
-                    }
-                } else {
-                    op = userDAO.createNewUser(personConfig.getUserDO());
-                    if (!op) {
-                        out.print(callback + "(\'" + pid + "\',\'error\', \'create user error\');");
                         return;
                     }
                 }

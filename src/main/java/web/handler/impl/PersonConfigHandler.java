@@ -2,6 +2,7 @@ package web.handler.impl;
 
 import common.ConfigCenter;
 import common.PersonConfig;
+import common.tools.CookieUtils;
 import dao.UserDAO;
 import dao.entity.UserDO;
 
@@ -22,6 +23,8 @@ public class PersonConfigHandler {
 
     private ConfigCenter configCenter;
 
+    private CookieUtils cookieUtils;
+
     private Map<String, UserDO> userCache = new HashMap<String, UserDO>();
 
     public void setConfigCenter(ConfigCenter configCenter) {
@@ -36,6 +39,10 @@ public class PersonConfigHandler {
         return userCache;
     }
 
+    public void setCookieUtils(CookieUtils cookieUtils) {
+        this.cookieUtils = cookieUtils;
+    }
+
     /**
      * Method doHandler ...
      *
@@ -47,11 +54,11 @@ public class PersonConfigHandler {
     public PersonConfig doHandler(HttpServletRequest request)
             throws IOException, ServletException {
         // 0.6版本后直接去取ip了
-        String remoteHost = request.getRemoteAddr();
         String querySring = request.getQueryString();
         String pcname = null;
-        if(querySring != null && querySring.indexOf("pcname") != -1) {
-            Matcher matc = Pattern.compile("(?<=pcname=)[^?&]+").matcher(querySring);
+        String guid  = (String) request.getAttribute("guid");
+        if(querySring != null && querySring.indexOf("guid") != -1) {
+            Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
 
             if (matc.find()) {
                 pcname = matc.group();
@@ -60,16 +67,17 @@ public class PersonConfigHandler {
 
         //本地combo二次请求的时候机器名只能这样带过来
         if (pcname != null) {
-            remoteHost = pcname.toString();
+            guid = pcname.toString();
         }
 
         // get user from cache
-        UserDO personInfo = userCache.get(remoteHost);
+        UserDO personInfo = userCache.get(guid);
+        // 这里自从有了filter之后基本上是不会取不到的
         if(personInfo == null) {
-            personInfo = this.userDAO.getPersonInfo(remoteHost);
+            personInfo = this.userDAO.getPersonInfoByGUID(guid);
             if(personInfo != null) {
-                userCache.put(remoteHost, personInfo);
-                request.getSession().setAttribute(request.getSession().getId(), remoteHost);
+                userCache.put(guid, personInfo);
+                request.getSession().setAttribute(request.getSession().getId(), guid);
                 System.out.println("map has size:" + userCache.size());
             }
         }
@@ -79,11 +87,6 @@ public class PersonConfigHandler {
         personConfig.setConfigCenter(configCenter);
         if (personInfo != null) {
             personConfig.setUserDO(personInfo);
-        } else {
-            personConfig.setUserDO(new UserDO());
-            personConfig.getUserDO().setHostName(remoteHost);
-            //没在数据库查询到数据，肯定是新人
-            personConfig.setNewUser(true);
         }
         return personConfig;
     }
