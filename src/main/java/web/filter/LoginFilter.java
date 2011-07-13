@@ -132,6 +132,9 @@ public class LoginFilter implements Filter {
             }
         }
         request.setAttribute("guid", guid);
+        if((Boolean)request.getAttribute("isCombo")) {
+            request.getRequestDispatcher("/combo").forward(request, response);
+        }
         chain.doFilter(req, resp);
     }
 

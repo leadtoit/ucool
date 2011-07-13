@@ -44,13 +44,14 @@ public class DoorFilter implements Filter {
             request.setAttribute("op", request.getParameter("op"));
             if (fullUrl.indexOf(configCenter.getUcoolComboDecollator()) != -1) {
                 request.setAttribute("realUrl", fullUrl);
-                request.getRequestDispatcher("/combo").forward(request, response);
+                request.setAttribute("isCombo", true);
             } else {
                 request.setAttribute("realUrl", request.getRequestURL().toString());
+                request.setAttribute("isCombo", false);
                 //目前只有flash文件用到，需要302
                 request.setAttribute("fullUrl", fullUrl);
-                chain.doFilter(req, resp);
             }
+            chain.doFilter(req, resp);
         }
     }
 
