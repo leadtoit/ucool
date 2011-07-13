@@ -76,7 +76,13 @@ public class LocalComboExecutor {
             }
             if (matchUrl) {
                 String realUrl = requestInfo.getRealUrl();
-                if(realUrl.indexOf("?", realUrl.indexOf("??")) != -1) {
+                int fromIndex = realUrl.indexOf("??");
+                if(fromIndex == -1) {
+                    fromIndex = 0;
+                } else {
+                    fromIndex += 2;
+                }
+                if(realUrl.indexOf("?", fromIndex) != -1) {
                     realUrl += ("?guid=" + personConfig.getUserDO().getGuid());
                 } else {
                     realUrl += ("&guid=" + personConfig.getUserDO().getGuid());
