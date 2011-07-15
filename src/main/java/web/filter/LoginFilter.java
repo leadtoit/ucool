@@ -69,6 +69,10 @@ public class LoginFilter implements Filter {
                 // has visited
                 guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
             }
+
+            if(guid.equals("")) {
+                guid = getGuid();
+            }
             /**
              * 有cookie -> 查找cache user -> 找到 ok，返回
              * 有cookie -> 没找到cache user -> 查询db -> 查到，同步ip，没查到，创建一个用户，写入ip
