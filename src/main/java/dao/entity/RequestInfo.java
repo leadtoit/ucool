@@ -1,12 +1,16 @@
 package dao.entity;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>
  * @since 11-3-12 ÏÂÎç1:19
  */
 public class RequestInfo {
+
+    private HttpServletRequest request;
+    private HttpServletResponse response;
 
     private String filePath;
     private String realUrl;
@@ -25,7 +29,9 @@ public class RequestInfo {
 
     private String curMappingPath = "";
 
-    public RequestInfo(HttpServletRequest request) {
+    public RequestInfo(HttpServletRequest request, HttpServletResponse response) {
+        this.request = request;
+        this.response = response;
         this.requestUrl = request.getRequestURI();
         this.serverName = request.getServerName();
         this.queryString = request.getQueryString();
@@ -118,5 +124,13 @@ public class RequestInfo {
 
     public void setCurMappingPath(String curMappingPath) {
         this.curMappingPath = curMappingPath;
+    }
+
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    public HttpServletResponse getResponse() {
+        return response;
     }
 }

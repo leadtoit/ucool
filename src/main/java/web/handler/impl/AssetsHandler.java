@@ -100,11 +100,11 @@ public class AssetsHandler implements Handler {
         }
         //尝试debug下所有的直接走source，不走cache
         //线上缓存已经迁移至ucool-proxy
-        RequestInfo requestInfo = new RequestInfo(request);
+        RequestInfo requestInfo = new RequestInfo(request, response);
         requestInfo.setFilePath(filePath);
         requestInfo.setRealUrl(realUrl);
         requestInfo.setFullUrl(fullUrl);
-        urlExecutor.doDebugUrlRule(requestInfo, response, personConfig);
+        urlExecutor.doDebugUrlRule(requestInfo, personConfig);
     }
 
     public String attachOper(String fullUrl, HttpServletRequest request) {

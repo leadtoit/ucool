@@ -668,7 +668,7 @@
 
                         //¸÷liÄ£°å
                         var mappingChecksLiTemplate = T('{{#each mappings}}<li>'+
-                                '<a class="icon-del" href="#" title="É¾³ý">É¾³ý</a><input type="checkbox" value="{{_ks_value.path}}" {{#if _ks_value.use}}checked{{/if}}/><label for="">{{_ks_value.path}}</label></li>{{/each}}');
+                                '<a class="icon-del" href="#" title="É¾³ý">É¾³ý</a><input type="checkbox" checked="checked" value="{{_ks_value.path}}" {{#if _ks_value.use}}checked{{/if}}/><label for="">{{_ks_value.path}}</label></li>{{/each}}');
                         // Ìí¼ÓµÄliÄ£°å
                         var mappingChecks = T('<li><a class="icon-del" href="#" title="É¾³ý">É¾³ý</a><input type="checkbox" value="{{path}}"/><label for="">{{path}}</label></li>');
 

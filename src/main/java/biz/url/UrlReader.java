@@ -73,7 +73,7 @@ public class UrlReader {
      * @return
      * @throws IOException
      */
-    public boolean pushStream(RequestInfo requestInfo, HttpServletResponse response, InputStream stream) throws IOException {
+    public boolean pushStream(RequestInfo requestInfo, InputStream stream) throws IOException {
         BufferedInputStream buff = new BufferedInputStream(stream);
         String charset = null;
         boolean findCharset = false;
@@ -89,15 +89,15 @@ public class UrlReader {
         }
         if(requestInfo.getRealUrl().indexOf("kissy.js") != -1 || requestInfo.getRealUrl().indexOf("seed.js") != -1 || requestInfo.getRealUrl().indexOf("/s/kissy/") != -1) {
             if(requestInfo.isUrlCombo()) {
-                response.setCharacterEncoding("gbk");
+                requestInfo.getResponse().setCharacterEncoding("gbk");
             } else {
-                response.setCharacterEncoding("utf-8");
+                requestInfo.getResponse().setCharacterEncoding("utf-8");
             }
         } else {
-            response.setCharacterEncoding("gbk");
+            requestInfo.getResponse().setCharacterEncoding("gbk");
         }
 
-        PrintWriter writer = response.getWriter();
+        PrintWriter writer = requestInfo.getResponse().getWriter();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(buff, charset));
         String firstLine = bufferedReader.readLine();
         if(firstLine == null || "/*not found*/".equals(firstLine)) {
@@ -128,13 +128,12 @@ public class UrlReader {
      * Method readUrlFile ...
      *
      * @param requestInfo
-     * @param response
      * @return
      */
-    public boolean readUrlFile(RequestInfo requestInfo,  HttpServletResponse response) {
+    public boolean readUrlFile(RequestInfo requestInfo) {
         try {
             URL url = new URL(requestInfo.getRealUrl());
-            return this.pushStream(requestInfo, response, url.openStream());
+            return this.pushStream(requestInfo, url.openStream());
         } catch (Exception e) {
         }
         return false;

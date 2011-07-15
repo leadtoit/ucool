@@ -76,7 +76,7 @@ public class PngHandler implements Handler {
         realUrl = urlTools.urlFilter(realUrl, isOnline, personConfig);
         fullUrl = urlTools.urlFilter(fullUrl, isOnline, personConfig);
         ServletOutputStream out = response.getOutputStream();
-        RequestInfo requestInfo = new RequestInfo(request);
+        RequestInfo requestInfo = new RequestInfo(request, response);
         requestInfo.setFilePath(filePath);
         requestInfo.setRealUrl(realUrl);
         requestInfo.setFullUrl(fullUrl);

@@ -77,14 +77,14 @@ public class ComboHandler extends AssetsHandler {
 
             //尝试debug下所有的直接走source，不走cache
             //线上缓存已经迁移至ucool-proxy
-            RequestInfo requestInfo = new RequestInfo(request);
+            RequestInfo requestInfo = new RequestInfo(request, response);
             requestInfo.setFilePath(singleFilePath);
             requestInfo.setRealUrl(singleRealUrl);
             requestInfo.setFullUrl(singleFullUrl);
             requestInfo.setUrlCombo(true);
             //local combo时必须set值，否则这个值就变成127.0.0.1，会死循环
             requestInfo.setClientAddr(personConfig.getUserDO().getHostName());
-            getUrlExecutor().doDebugUrlRule(requestInfo, response, personConfig);
+            getUrlExecutor().doDebugUrlRule(requestInfo, personConfig);
         }
 
     }

@@ -57,7 +57,8 @@ public class LocalComboExecutor {
         return p;
     }
 
-    public boolean executeLocalCombo(Properties p, RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
+    public boolean executeLocalCombo(Properties p, RequestInfo requestInfo, PersonConfig personConfig) {
+        //读取combo.properties效率太低，改成只读一次，之后的配置从session中取
         if(!p.isEmpty()) {
             //url replace
             boolean matchUrl = false;
@@ -90,7 +91,7 @@ public class LocalComboExecutor {
                 requestInfo.setRealUrl(realUrl);
                 requestInfo.setLocalCombo(true);
 
-                urlReader.readUrlFile(requestInfo, response);
+                urlReader.readUrlFile(requestInfo);
                 return true;
             }
         }

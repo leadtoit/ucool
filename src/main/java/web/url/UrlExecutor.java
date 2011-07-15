@@ -59,12 +59,11 @@ public class UrlExecutor {
      *
      *
      * @param requestInfo
-     * @param response
      * @param personConfig
      * @author zhangting
      * @since 10-10-29 上午9:51
      */
-    public void doDebugUrlRule(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
+    public void doDebugUrlRule(RequestInfo requestInfo, PersonConfig personConfig) {
         String filePath = requestInfo.getFilePath();
         String realUrl = requestInfo.getRealUrl();
         String curMappingPath = null;
@@ -101,13 +100,13 @@ public class UrlExecutor {
                 sb.append("http://").append(requestInfo.getClientAddr()).append(":")
                             .append(configCenter.getUcoolProxyClientPort())
                             .append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
-                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByUrl(sb.toString()), requestInfo, response, personConfig)) {
+                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByUrl(sb.toString()), requestInfo, personConfig)) {
                     // 如果已经被本地代理掉了，就return
                     return;
                 }
             }
             //直接请求客户端
-            if (!urlReader.readUrlFile(requestInfo, response)) {
+            if (!urlReader.readUrlFile(requestInfo)) {
                 // 图片不用重复请求
                 if (!requestInfo.getType().equals("assets")) {
                     return;
@@ -117,11 +116,11 @@ public class UrlExecutor {
                     //如果到这里那就说明线上都没有改文件，即使返回压缩的文件也没问题，只要保证尽可能的命中cache
                     requestInfo.setFilePath(filePath.replace(".source", ""));
                     requestInfo.setRealUrl(realUrl.replace(".source", ""));
-                    doDebugUrlRuleCopy(requestInfo, response, personConfig);
+                    doDebugUrlRuleCopy(requestInfo, personConfig);
                 } else {
                     //最后的保障，如果缓存失败了，从线上取吧
                     requestInfo.setRealUrl(requestInfo.getFullUrl());
-                    urlReader.readUrlFile(requestInfo, response);
+                    urlReader.readUrlFile(requestInfo);
                 }
             }
         } else {
@@ -129,7 +128,7 @@ public class UrlExecutor {
             if(personConfig.isEnableLocalCombo()) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
-                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByFile(sb.toString()), requestInfo, response, personConfig)) {
+                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByFile(sb.toString()), requestInfo, personConfig)) {
                     // 如果已经被本地代理掉了，就return
                     return;
                 }
@@ -138,13 +137,13 @@ public class UrlExecutor {
             if (findAssetsFile(filePath, personConfig)) {
                 try {
                     requestInfo.setRealUrl(requestInfo.getFilePath());
-                    this.urlReader.pushStream(requestInfo, response, loadExistFileStream(filePath, personConfig));
+                    this.urlReader.pushStream(requestInfo, loadExistFileStream(filePath, personConfig));
                 } catch (IOException e) {
                     //捕获所有异常，这里有可能缓存失败，所以取不到文件
                     System.out.println("file has exception" + e);
                 }
             } else {
-                if (!urlReader.readUrlFile(requestInfo, response)) {
+                if (!urlReader.readUrlFile(requestInfo)) {
                     // 图片不用重复请求
                     if (!requestInfo.getType().equals("assets")) {
                         return;
@@ -154,11 +153,11 @@ public class UrlExecutor {
                         //如果到这里那就说明线上都没有改文件，即使返回压缩的文件也没问题，只要保证尽可能的命中cache
                         requestInfo.setFilePath(filePath.replace(".source", ""));
                         requestInfo.setRealUrl(realUrl.replace(".source", ""));
-                        doDebugUrlRuleCopy(requestInfo, response, personConfig);
+                        doDebugUrlRuleCopy(requestInfo, personConfig);
                     } else {
                         //最后的保障，如果缓存失败了，从线上取吧
                         requestInfo.setRealUrl(requestInfo.getFullUrl());
-                        urlReader.readUrlFile(requestInfo, response);
+                        urlReader.readUrlFile(requestInfo);
                     }
                 }
             }
@@ -166,7 +165,7 @@ public class UrlExecutor {
     }
 
 
-    public void doDebugUrlRuleCopy(RequestInfo requestInfo, HttpServletResponse response, PersonConfig personConfig) {
+    public void doDebugUrlRuleCopy(RequestInfo requestInfo, PersonConfig personConfig) {
         if(personConfig.isEnableLocalMapping() && requestInfo.getFilePath().startsWith(requestInfo.getCurMappingPath())) {
             // 判断本地combo
             if(personConfig.isEnableLocalCombo()) {
@@ -174,20 +173,20 @@ public class UrlExecutor {
                 sb.append("http://").append(requestInfo.getClientAddr()).append(":")
                             .append(configCenter.getUcoolProxyClientPort())
                             .append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
-                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByUrl(sb.toString()), requestInfo, response, personConfig)) {
+                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByUrl(sb.toString()), requestInfo, personConfig)) {
                     // 如果已经被本地代理掉了，就return
                     return;
                 }
             }
 
             requestInfo.setRealUrl(requestInfo.getFullUrl());
-            urlReader.readUrlFile(requestInfo, response);
+            urlReader.readUrlFile(requestInfo);
         } else {
             // 判断本地combo
             if(personConfig.isEnableLocalCombo()) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(configCenter.getWebRoot()).append(configCenter.getUcoolAssetsRoot()).append(personConfig.getUserRootDir()).append(MyConfig.LOCAL_COMBO_CONFIG_NAME);
-                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByFile(sb.toString()), requestInfo, response, personConfig)) {
+                if(localComboExecutor.executeLocalCombo(localComboExecutor.getPropertiesByFile(sb.toString()), requestInfo, personConfig)) {
                     // 如果已经被本地代理掉了，就return
                     return;
                 }
@@ -195,7 +194,7 @@ public class UrlExecutor {
             if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
                 try {
                     requestInfo.setRealUrl(requestInfo.getFilePath());
-                    this.urlReader.pushStream(requestInfo, response, loadExistFileStream(requestInfo.getFilePath(), personConfig));
+                    this.urlReader.pushStream(requestInfo, loadExistFileStream(requestInfo.getFilePath(), personConfig));
                 } catch (IOException e) {
                     //捕获所有异常，这里有可能缓存失败，所以取不到文件
                     System.out.println("file has exception" + e);
@@ -203,7 +202,7 @@ public class UrlExecutor {
             } else {
                 //最后的保障，如果缓存失败了，从线上取吧
                 requestInfo.setRealUrl(requestInfo.getFullUrl());
-                urlReader.readUrlFile(requestInfo, response);
+                urlReader.readUrlFile(requestInfo);
             }
         }
     }
