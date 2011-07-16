@@ -94,8 +94,9 @@ public class UrlExecutor {
             fullUrl = fullUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
             fullUrl = fullUrl.replaceAll(curMappingPath, "");
             requestInfo.setFullUrl(fullUrl);
+
             // 判断本地combo
-            if(personConfig.isEnableLocalCombo()) {
+            if(personConfig.isEnableLocalCombo() && !requestInfo.isAfterLocalCombo()) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("http://").append(requestInfo.getClientAddr()).append(":")
                             .append(configCenter.getUcoolProxyClientPort())
@@ -168,7 +169,7 @@ public class UrlExecutor {
     public void doDebugUrlRuleCopy(RequestInfo requestInfo, PersonConfig personConfig) {
         if(personConfig.isEnableLocalMapping() && requestInfo.getFilePath().startsWith(requestInfo.getCurMappingPath())) {
             // 判断本地combo
-            if(personConfig.isEnableLocalCombo()) {
+            if(personConfig.isEnableLocalCombo() && !requestInfo.isAfterLocalCombo()) {
                 StringBuilder sb = new StringBuilder();
                 sb.append("http://").append(requestInfo.getClientAddr()).append(":")
                             .append(configCenter.getUcoolProxyClientPort())

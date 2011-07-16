@@ -29,6 +29,11 @@ public class RequestInfo {
 
     private String curMappingPath = "";
 
+    /**
+     * 是否是本地combo之后的combo链接
+     */
+    private boolean isAfterLocalCombo = false;
+
     public RequestInfo(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
@@ -132,5 +137,13 @@ public class RequestInfo {
 
     public HttpServletResponse getResponse() {
         return response;
+    }
+
+    public boolean isAfterLocalCombo() {
+        return isAfterLocalCombo;
+    }
+
+    public void setAfterLocalCombo(boolean afterLocalCombo) {
+        isAfterLocalCombo = afterLocalCombo;
     }
 }
