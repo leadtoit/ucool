@@ -86,6 +86,9 @@ public class ComboHandler extends AssetsHandler {
             requestInfo.setAfterLocalCombo(isAfterLocalCombo);
             //local combo时必须set值，否则这个值就变成127.0.0.1，会死循环
             requestInfo.setClientAddr(personConfig.getUserDO().getHostName());
+            if(requestInfo.getClientAddr().equals("127.0.0.1")) {
+                System.out.println("client addr is error");
+            }
             getUrlExecutor().doDebugUrlRule(requestInfo, personConfig);
         }
 
