@@ -93,7 +93,7 @@ public class AssetsHandler implements Handler {
         realUrl = urlTools.urlFilter(realUrl, isOnline, personConfig);
         fullUrl = urlTools.urlFilter(fullUrl, isOnline, personConfig);
 
-        if(filePath.indexOf(".css") != -1) {
+        if (filePath.indexOf(".css") != -1) {
             response.setContentType("text/css");
         } else {
             response.setContentType("application/x-javascript");
@@ -104,22 +104,24 @@ public class AssetsHandler implements Handler {
         requestInfo.setFilePath(filePath);
         requestInfo.setRealUrl(realUrl);
         requestInfo.setFullUrl(fullUrl);
+        //必须set值，否则这个值就变成127.0.0.1，会死循环
+        requestInfo.setClientAddr(personConfig.getUserDO().getHostName());
         urlExecutor.doDebugUrlRule(requestInfo, personConfig);
     }
 
     public String attachOper(String fullUrl, HttpServletRequest request) {
         String op = (String) request.getAttribute("op");
         boolean referClean = HttpTools.isReferClean(request);
-        if((op!= null && !op.isEmpty()) || referClean) {
-            if(fullUrl.indexOf("?") != -1) {
+        if ((op != null && !op.isEmpty()) || referClean) {
+            if (fullUrl.indexOf("?") != -1) {
                 fullUrl += "&";
             } else {
                 fullUrl += "?";
             }
-            if(referClean) {
+            if (referClean) {
                 op = "clean";
             }
-            fullUrl += ("op="+op);
+            fullUrl += ("op=" + op);
         }
         return fullUrl;
     }
