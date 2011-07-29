@@ -54,6 +54,7 @@ public class LoginFilter implements Filter {
         String querySring = request.getQueryString();
         Map<String, UserDO> userCache = personConfigHandler.getUserCache();
         String guid = null;
+        request.setAttribute("isAfterLocalCombo", false);
 
         //local combo set pcname
         if (querySring != null && querySring.indexOf("guid") != -1) {
@@ -61,6 +62,7 @@ public class LoginFilter implements Filter {
 
             if (matc.find()) {
                 guid = matc.group();
+                request.setAttribute("isAfterLocalCombo", true);
             }
         }
 

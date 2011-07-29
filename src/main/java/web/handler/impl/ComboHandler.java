@@ -43,6 +43,7 @@ public class ComboHandler extends AssetsHandler {
          */
         String realUrl = (String) request.getAttribute("realUrl");
         String filePath = (String) request.getAttribute("filePath"); // e.g.:/p/
+        boolean isAfterLocalCombo = (Boolean) request.getAttribute("isAfterLocalCombo");
 
         String[] firstCut = realUrl.split(HttpTools.filterSpecialChar(getConfigCenter().getUcoolComboDecollator()));
         String pathPrefix = firstCut[0];    // e.g.:http://a.tbcdn.cn/p/
@@ -82,6 +83,7 @@ public class ComboHandler extends AssetsHandler {
             requestInfo.setRealUrl(singleRealUrl);
             requestInfo.setFullUrl(singleFullUrl);
             requestInfo.setUrlCombo(true);
+            requestInfo.setAfterLocalCombo(isAfterLocalCombo);
             //local combo时必须set值，否则这个值就变成127.0.0.1，会死循环
             requestInfo.setClientAddr(personConfig.getUserDO().getHostName());
             getUrlExecutor().doDebugUrlRule(requestInfo, personConfig);
