@@ -678,7 +678,7 @@
                             if(!_inited) {
                                 _inited = true;
                                 //bind pupup event
-                                Event.on(['#addMappingOK', '#addMappingCancel'], 'click', function(e){
+                                Event.on('#addMappingOK,#addMappingCancel', 'click', function(e){
                                     e.halt();
                                     if(e.target.id==='addMappingOK') {
                                         mappingJSON.mappings.length = 0;
