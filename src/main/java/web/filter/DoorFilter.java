@@ -37,9 +37,9 @@ public class DoorFilter implements Filter {
             response.getWriter().println("domain error!please don't request by ip!");
         } else {
             String fullUrl = getFullUrl(request);
-            if(request.getRemoteAddr().equals("127.0.0.1")) {
+//            if(request.getRemoteAddr().equals("127.0.0.1")) {
                 System.out.println(fullUrl);
-            }
+//            }
             request.setAttribute("filePath", request.getRequestURI());
             request.setAttribute("op", request.getParameter("op"));
             if (fullUrl.indexOf(configCenter.getUcoolComboDecollator()) != -1) {
