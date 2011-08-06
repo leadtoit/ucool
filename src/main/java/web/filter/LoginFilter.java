@@ -57,7 +57,7 @@ public class LoginFilter implements Filter {
         request.setAttribute("isAfterLocalCombo", false);
 
         Object uid = request.getSession().getAttribute(request.getSession().getId());
-        if(uid != null) {
+        if (uid != null) {
             guid = uid.toString();
         }
 
@@ -77,28 +77,22 @@ public class LoginFilter implements Filter {
                 guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
             }
 
-            if(guid.equals("")) {
+            if (guid.equals("")) {
                 guid = getGuid();
             }
             /**
              * 有cookie -> 查找cache user -> 找到 ok，返回
              * 有cookie -> 没找到cache user -> 查询db -> 查到，同步ip，没查到，创建一个用户，写入ip
              */
-            if (!personConfigHandler.getUserCache().containsKey(guid)) {
+            if (!userCache.containsKey(guid)) {
                 // get user from cache
                 UserDO personInfo = this.userDAO.getPersonInfoByGUID(guid);
                 if (personInfo != null) {
                     userCache.put(guid, personInfo);
                     request.getSession().setAttribute(request.getSession().getId(), guid);
-                    if (!remoteHost.equals(personInfo.getHostName())) {
-                        System.out.println("remoteHost changed, update ip to " + remoteHost);
-                        if (this.userDAO.updateHostName(personInfo.getId(), remoteHost, personInfo.getHostName())) {
-                            System.out.println("update success");
-                            personInfo.setHostName(remoteHost);
-                        }
-                    }
+                    syncRemoteHost(personInfo, remoteHost);
                 } else {
-                    System.out.println("has guid ["+guid+"] can't find user[" + remoteHost + "] and create new user");
+                    System.out.println("has guid [" + guid + "] can't find user[" + remoteHost + "] and create new user");
                     //没查到就创建新用户
                     //构造个人配置
                     personInfo = new UserDO();
@@ -110,6 +104,8 @@ public class LoginFilter implements Filter {
                         request.getSession().setAttribute(request.getSession().getId(), guid);
                     }
                 }
+            } else {
+                syncRemoteHost(userCache.get(guid), remoteHost);
             }
         } else {
             guid = getGuid();
@@ -121,9 +117,7 @@ public class LoginFilter implements Filter {
                 if (guid == null || "".equals(guid)) {
                     guid = getGuid();
                     personInfo.setGuid(guid);
-                    if (this.userDAO.updateHostName(personInfo.getId(), remoteHost, personInfo.getHostName())) {
-                        personInfo.setHostName(remoteHost);
-                    }
+                    syncRemoteHost(personInfo, remoteHost);
                 }
                 userCache.put(guid, personInfo);
                 request.getSession().setAttribute(request.getSession().getId(), guid);
@@ -148,7 +142,7 @@ public class LoginFilter implements Filter {
             }
         }
         request.setAttribute("guid", guid);
-        if((Boolean)request.getAttribute("isCombo")) {
+        if ((Boolean) request.getAttribute("isCombo")) {
             request.getRequestDispatcher("/combo").forward(request, response);
             return;
         }
@@ -166,6 +160,19 @@ public class LoginFilter implements Filter {
 
     private String getGuid() {
         return RandomString.getRandomString(30);
+    }
+
+    //同步ip
+    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost) {
+        if (newRemoteHost.equals(personInfo.getHostName())) {
+            return true;
+        }
+        if (this.userDAO.updateHostName(personInfo.getId(), newRemoteHost, personInfo.getHostName())) {
+            System.out.println("remoteHost changed, update ip to " + newRemoteHost);
+            personInfo.setHostName(newRemoteHost);
+            return true;
+        }
+        return false;
     }
 
 }
