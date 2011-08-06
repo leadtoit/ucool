@@ -91,6 +91,7 @@ public class LoginFilter implements Filter {
                         }
                     }
                 } else {
+                    System.out.println("has guid ["+guid+"] can't find user[" + remoteHost + "] and create new user");
                     //没查到就创建新用户
                     //构造个人配置
                     personInfo = new UserDO();
@@ -108,6 +109,7 @@ public class LoginFilter implements Filter {
             //ip sync
             UserDO personInfo = this.userDAO.getPersonInfo(remoteHost);
             if (personInfo != null) {
+                System.out.println("no guid and find user[" + remoteHost + "] and sync ip");
                 guid = personInfo.getGuid();
                 if (guid == null || "".equals(guid)) {
                     guid = getGuid();
@@ -119,6 +121,7 @@ public class LoginFilter implements Filter {
                 userCache.put(guid, personInfo);
                 request.getSession().setAttribute(request.getSession().getId(), guid);
             } else {
+                System.out.println("no guid,can't find user[" + remoteHost + "] and create new user");
                 //没查到就创建新用户
                 //构造个人配置
                 personInfo = new UserDO();
