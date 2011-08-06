@@ -56,6 +56,11 @@ public class LoginFilter implements Filter {
         String guid = null;
         request.setAttribute("isAfterLocalCombo", false);
 
+        Object uid = request.getSession().getAttribute(request.getSession().getId());
+        if(uid != null) {
+            guid = uid.toString();
+        }
+
         //local combo set pcname
         if (querySring != null && querySring.indexOf("guid") != -1) {
             Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
@@ -66,7 +71,7 @@ public class LoginFilter implements Filter {
             }
         }
 
-        if (cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY) || guid != null) {
+        if (guid != null || cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY)) {
             if (guid == null) {
                 // has visited
                 guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
