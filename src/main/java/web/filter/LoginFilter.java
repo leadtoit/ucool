@@ -91,7 +91,9 @@ public class LoginFilter implements Filter {
                     userCache.put(guid, personInfo);
                     request.getSession().setAttribute(request.getSession().getId(), guid);
                     if (!remoteHost.equals(personInfo.getHostName())) {
+                        System.out.println("remoteHost changed, update ip to " + remoteHost);
                         if (this.userDAO.updateHostName(personInfo.getId(), remoteHost, personInfo.getHostName())) {
+                            System.out.println("update success");
                             personInfo.setHostName(remoteHost);
                         }
                     }
