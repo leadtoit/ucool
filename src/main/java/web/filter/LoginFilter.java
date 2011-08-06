@@ -109,7 +109,7 @@ public class LoginFilter implements Filter {
             //ip sync
             UserDO personInfo = this.userDAO.getPersonInfo(remoteHost);
             if (personInfo != null) {
-                System.out.println("no guid and find user[" + remoteHost + "] and sync ip");
+                System.out.println("no guid and find user[" + remoteHost + "] and sync guid");
                 guid = personInfo.getGuid();
                 if (guid == null || "".equals(guid)) {
                     guid = getGuid();
