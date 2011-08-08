@@ -164,6 +164,9 @@ public class LoginFilter implements Filter {
 
     //Í¬²½ip
     private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost) {
+        if(newRemoteHost.equals("127.0.0.1")) {
+            return true;
+        }
         if (newRemoteHost.equals(personInfo.getHostName())) {
             return true;
         }
