@@ -53,22 +53,7 @@ public class PersonConfigHandler {
      */
     public PersonConfig doHandler(HttpServletRequest request)
             throws IOException, ServletException {
-        // 0.6版本后直接去取ip了
-        String querySring = request.getQueryString();
-        String pcname = null;
         String guid  = (String) request.getAttribute("guid");
-        if(querySring != null && querySring.indexOf("guid") != -1) {
-            Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
-
-            if (matc.find()) {
-                pcname = matc.group();
-            }
-        }
-
-        //本地combo二次请求的时候机器名只能这样带过来
-        if (pcname != null) {
-            guid = pcname.toString();
-        }
 
         // get user from cache
         UserDO personInfo = userCache.get(guid);
@@ -77,7 +62,6 @@ public class PersonConfigHandler {
             personInfo = this.userDAO.getPersonInfoByGUID(guid);
             if(personInfo != null) {
                 userCache.put(guid, personInfo);
-                request.getSession().setAttribute(request.getSession().getId(), guid);
                 System.out.println("map has size:" + userCache.size());
             }
         }

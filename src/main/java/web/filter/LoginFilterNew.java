@@ -1,6 +1,5 @@
 package web.filter;
 
-import common.PersonConfig;
 import common.tools.CookieUtils;
 import common.tools.RandomString;
 import dao.UserDAO;
@@ -23,10 +22,8 @@ import java.util.regex.Pattern;
  *
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>
  * @since 2010-9-24 18:26:00
- * @deprecated
  */
-@Deprecated
-public class LoginFilter implements Filter {
+public class LoginFilterNew implements Filter {
 
     private CookieUtils cookieUtils;
 
@@ -58,11 +55,16 @@ public class LoginFilter implements Filter {
         String guid = null;
         request.setAttribute("isAfterLocalCombo", false);
 
+        //获取guid，优先级querystring > session > cookie
         Object uid = request.getSession().getAttribute(request.getSession().getId());
         if (uid != null) {
             guid = uid.toString();
         }
 
+        if (guid == null && cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY)) {
+            guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
+        }
+        
         //local combo set pcname
         if (querySring != null && querySring.indexOf("guid") != -1) {
             Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
@@ -73,59 +75,25 @@ public class LoginFilter implements Filter {
             }
         }
 
-        if (guid != null || cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY)) {
-            if (guid == null) {
-                // has visited
-                guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
-            }
-
-            if (guid.equals("")) {
-                guid = getGuid();
-            }
-            /**
-             * 有cookie -> 查找cache user -> 找到 ok，返回
-             * 有cookie -> 没找到cache user -> 查询db -> 查到，同步ip，没查到，创建一个用户，写入ip
-             */
-            if (!userCache.containsKey(guid)) {
-                // get user from cache
-                UserDO personInfo = this.userDAO.getPersonInfoByGUID(guid);
-                if (personInfo != null) {
-                    userCache.put(guid, personInfo);
-                    request.getSession().setAttribute(request.getSession().getId(), guid);
-                    syncRemoteHost(personInfo, remoteHost);
-                } else {
-                    System.out.println("has guid [" + guid + "] can't find user[" + remoteHost + "] and create new user");
-                    //没查到就创建新用户
-                    //构造个人配置
-                    personInfo = new UserDO();
-                    personInfo.setHostName(remoteHost);
-                    personInfo.setGuid(guid);
-                    boolean op = userDAO.createNewUser(personInfo);
-                    if (op) {
-                        userCache.put(guid, personInfo);
-                        request.getSession().setAttribute(request.getSession().getId(), guid);
-                    }
-                }
-            } else {
-                syncRemoteHost(userCache.get(guid), remoteHost);
-            }
-        } else {
+        if(guid == null) {
             guid = getGuid();
-            //ip sync
-            UserDO personInfo = this.userDAO.getPersonInfo(remoteHost);
+        }
+
+        request.setAttribute("guid", guid);
+        request.getSession().setAttribute(request.getSession().getId(), guid);
+
+        /**
+         * begin sync
+         * 1、查找user cache
+         * 2、查db
+         * 3、创建用户
+         */
+        if (!userCache.containsKey(guid)) {
+            // get user from cache
+            UserDO personInfo = this.userDAO.getPersonInfoByGUID(guid);
             if (personInfo != null) {
-                System.out.println("no guid and find user[" + remoteHost + "] and sync guid");
-                guid = personInfo.getGuid();
-                if (guid == null || "".equals(guid)) {
-                    guid = getGuid();
-                    personInfo.setGuid(guid);
-                    syncRemoteHost(personInfo, remoteHost);
-                }
                 userCache.put(guid, personInfo);
-                request.getSession().setAttribute(request.getSession().getId(), guid);
             } else {
-                System.out.println("no guid,can't find user[" + remoteHost + "] and create new user");
-                //没查到就创建新用户
                 //构造个人配置
                 personInfo = new UserDO();
                 personInfo.setHostName(remoteHost);
@@ -133,9 +101,9 @@ public class LoginFilter implements Filter {
                 boolean op = userDAO.createNewUser(personInfo);
                 if (op) {
                     userCache.put(guid, personInfo);
-                    request.getSession().setAttribute(request.getSession().getId(), guid);
                 }
             }
+            
             for (String domain : CookieUtils.domains) {
                 Cookie cookie = cookieUtils.addCookie(CookieUtils.DEFAULT_KEY, guid, domain);
                 if (cookie != null) {
@@ -143,11 +111,14 @@ public class LoginFilter implements Filter {
                 }
             }
         }
-        request.setAttribute("guid", guid);
+        //不管什么情况反正都会做ip同步
+        syncRemoteHost(userCache.get(guid), remoteHost);
+        
         if ((Boolean) request.getAttribute("isCombo")) {
             request.getRequestDispatcher("/combo").forward(request, response);
             return;
         }
+
         chain.doFilter(req, resp);
     }
 
