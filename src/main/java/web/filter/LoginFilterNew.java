@@ -6,6 +6,7 @@ import dao.UserDAO;
 import dao.entity.UserDO;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import sun.nio.ch.SocketOpts;
 import web.handler.impl.PersonConfigHandler;
 
 import javax.servlet.*;
@@ -52,6 +53,8 @@ public class LoginFilterNew implements Filter {
         String remoteHost = request.getRemoteAddr();
         String querySring = request.getQueryString();
         Map<String, UserDO> userCache = personConfigHandler.getUserCache();
+        Map<String, String> ipCache = personConfigHandler.getIpCache();
+        
         String guid = null;
         request.setAttribute("isAfterLocalCombo", false);
 
@@ -75,8 +78,16 @@ public class LoginFilterNew implements Filter {
             }
         }
 
+        boolean isIpSync = false;
+
         if(guid == null) {
-            guid = getGuid();
+            //根据ip查guid
+            guid = ipCache.get(remoteHost);
+            if(guid == null) {
+                guid = getGuid();
+            } else {
+                isIpSync = true;
+            }
         }
 
         request.setAttribute("guid", guid);
@@ -103,16 +114,16 @@ public class LoginFilterNew implements Filter {
                     userCache.put(guid, personInfo);
                 }
             }
-            
-            for (String domain : CookieUtils.domains) {
-                Cookie cookie = cookieUtils.addCookie(CookieUtils.DEFAULT_KEY, guid, domain);
-                if (cookie != null) {
-                    response.addCookie(cookie);
-                }
+
+            pushCookie(response, guid);
+        } else {
+            //没有cookie的情况下，从ip获取guid，必须要回写cookie
+            if(isIpSync) {
+                pushCookie(response, guid);
             }
         }
         //不管什么情况反正都会做ip同步
-        syncRemoteHost(userCache.get(guid), remoteHost);
+        syncRemoteHost(userCache.get(guid), remoteHost, ipCache);
         
         if ((Boolean) request.getAttribute("isCombo")) {
             request.getRequestDispatcher("/combo").forward(request, response);
@@ -120,6 +131,15 @@ public class LoginFilterNew implements Filter {
         }
 
         chain.doFilter(req, resp);
+    }
+
+    private void pushCookie(HttpServletResponse response, String guid) {
+        for (String domain : CookieUtils.domains) {
+            Cookie cookie = cookieUtils.addCookie(CookieUtils.DEFAULT_KEY, guid, domain);
+            if (cookie != null) {
+                response.addCookie(cookie);
+            }
+        }
     }
 
     public void init(FilterConfig config) throws ServletException {
@@ -136,13 +156,17 @@ public class LoginFilterNew implements Filter {
     }
 
     //同步ip
-    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost) {
+    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, String> ipCache) {
         if(newRemoteHost.equals("127.0.0.1")) {
             return true;
         }
+
+        ipCache.put(newRemoteHost, personInfo.getGuid());
+        
         if (newRemoteHost.equals(personInfo.getHostName())) {
             return true;
         }
+
         if (this.userDAO.updateHostName(personInfo.getId(), newRemoteHost, personInfo.getHostName())) {
             System.out.println("remoteHost changed, update ip to " + newRemoteHost);
             personInfo.setHostName(newRemoteHost);

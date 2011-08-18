@@ -65,7 +65,7 @@ public class LocalComboExecutor {
             for (Map.Entry<Object, Object> objectObjectEntry : p.entrySet()) {
                 if (((String) objectObjectEntry.getKey()).indexOf(requestInfo.getFilePath()) != -1) {
                     String newUrl = (String) objectObjectEntry.getValue();
-                    newUrl = newUrl.replace("{baseUrl}", requestInfo.getServerName());
+                    newUrl = newUrl.replace("{baseUrl}", "localhost");
                     newUrl = "http://" + newUrl + UrlTools.getParam(requestInfo.getRealUrl());
                     //简单校验，不能同一文件循环请求
                     if (newUrl.indexOf((String) objectObjectEntry.getKey()) == -1) {
