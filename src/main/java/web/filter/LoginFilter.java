@@ -1,6 +1,5 @@
 package web.filter;
 
-import common.PersonConfig;
 import common.tools.CookieUtils;
 import common.tools.RandomString;
 import dao.UserDAO;
