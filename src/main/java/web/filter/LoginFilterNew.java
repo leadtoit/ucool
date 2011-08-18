@@ -6,7 +6,6 @@ import dao.UserDAO;
 import dao.entity.UserDO;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import sun.nio.ch.SocketOpts;
 import web.handler.impl.PersonConfigHandler;
 
 import javax.servlet.*;
