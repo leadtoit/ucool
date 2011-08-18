@@ -118,6 +118,7 @@ public class LoginFilterNew implements Filter {
         } else {
             //没有cookie的情况下，从ip获取guid，必须要回写cookie
             if(isIpSync) {
+                System.out.println("ip sync success, another brower has push guid");
                 pushCookie(response, guid);
             }
         }
