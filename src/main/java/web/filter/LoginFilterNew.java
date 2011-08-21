@@ -1,6 +1,8 @@
 package web.filter;
 
+import common.ConfigCenter;
 import common.tools.CookieUtils;
+import common.tools.HttpTools;
 import common.tools.RandomString;
 import dao.UserDAO;
 import dao.entity.UserDO;
@@ -31,6 +33,8 @@ public class LoginFilterNew implements Filter {
 
     private UserDAO userDAO;
 
+    private ConfigCenter configCenter;
+
     public void setCookieUtils(CookieUtils cookieUtils) {
         this.cookieUtils = cookieUtils;
     }
@@ -43,6 +47,10 @@ public class LoginFilterNew implements Filter {
         this.userDAO = userDAO;
     }
 
+    public void setConfigCenter(ConfigCenter configCenter) {
+        this.configCenter = configCenter;
+    }
+
     public void destroy() {
     }
 
@@ -53,7 +61,11 @@ public class LoginFilterNew implements Filter {
         String querySring = request.getQueryString();
         Map<String, UserDO> userCache = personConfigHandler.getUserCache();
         Map<String, String> ipCache = personConfigHandler.getIpCache();
-        
+        String[] domains = configCenter.getUcoolCookieDomain().split(HttpTools.filterSpecialChar(","));
+        String url = request.getRequestURL().toString();
+        url = url.replaceAll("http://", "");
+        url = url.substring(0, url.indexOf("/") != -1 ? url.indexOf("/"): 0);
+
         String guid = null;
         request.setAttribute("isAfterLocalCombo", false);
 
@@ -63,8 +75,10 @@ public class LoginFilterNew implements Filter {
             guid = uid.toString();
         }
 
-        if (guid == null && cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY)) {
-            guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
+        if(guid != null && configCenter.getUcoolCookieDomain().contains(url)) {
+            if (cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY)) {
+                guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
+            }
         }
         
         //local combo set pcname
@@ -114,12 +128,18 @@ public class LoginFilterNew implements Filter {
                 }
             }
 
-            pushCookie(response, guid);
+            if(configCenter.getUcoolOnlineDomain().contains(request.getRequestURI()) ||
+                configCenter.getUcoolDailyDomain().contains(request.getRequestURI())) {
+                pushCookie(response, guid);
+            }
         } else {
             //没有cookie的情况下，从ip获取guid，必须要回写cookie
             if(isIpSync) {
                 System.out.println("ip sync success, another brower has push guid");
-                pushCookie(response, guid);
+                if(configCenter.getUcoolOnlineDomain().contains(request.getRequestURI()) ||
+                    configCenter.getUcoolDailyDomain().contains(request.getRequestURI())) {
+                    pushCookie(response, guid);
+                }
             }
         }
         //不管什么情况反正都会做ip同步
@@ -148,6 +168,7 @@ public class LoginFilterNew implements Filter {
             setCookieUtils((CookieUtils) context.getBean("cookieUtils"));
             setPersonConfigHandler((PersonConfigHandler) context.getBean("personConfigHandler"));
             setUserDAO((UserDAO) context.getBean("userDAO"));
+            setConfigCenter((ConfigCenter) context.getBean("configCenter"));
         }
     }
 

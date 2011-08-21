@@ -90,6 +90,8 @@ public class ConfigCenter implements InitializingBean {
     // ucool的客户端代理端口
     private String ucoolProxyClientPort;
 
+    private String ucoolCookieDomain;
+
     public String getWebRoot() {
         return webRoot;
     }
@@ -289,6 +291,14 @@ public class ConfigCenter implements InitializingBean {
 
     public void setUcoolProxyClientPort(String ucoolProxyClientPort) {
         this.ucoolProxyClientPort = ucoolProxyClientPort;
+    }
+
+    public String getUcoolCookieDomain() {
+        return ucoolCookieDomain;
+    }
+
+    public void setUcoolCookieDomain(String ucoolCookieDomain) {
+        this.ucoolCookieDomain = ucoolCookieDomain;
     }
 
     /**
