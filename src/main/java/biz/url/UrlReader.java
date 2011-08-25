@@ -106,6 +106,13 @@ public class UrlReader {
             buff.close();
             return false;
         } else {
+            if(charset.equals("utf-8")) {
+                //È¥³ýutf-8µÄbomÍ·
+                int pos = firstLine.indexOf("/");
+                if(pos != -1) {
+                    firstLine = firstLine.substring(pos);
+                }
+            }
             if (requestInfo.getType().equals("assets")) {
                 if(requestInfo.isLocalCombo()) {
                     writer.println("/*ucool local combo matched:" + requestInfo.getFilePath() + "*/");
