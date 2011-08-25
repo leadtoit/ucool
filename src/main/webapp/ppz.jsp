@@ -293,7 +293,7 @@
                     <tr>
                         <th>用户 IP 标识：</th>
                         <td><%=request.getRemoteAddr()%>
-                            （当前使用ip作为用户唯一标识，请注意ip变化）
+                            (guid:<%=personConfig.getUserDO().getGuid()%>)
                         </td>
                     </tr>
                     <%--<tr>--%>

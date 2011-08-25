@@ -61,7 +61,6 @@ public class LoginFilterNew implements Filter {
         String querySring = request.getQueryString();
         Map<String, UserDO> userCache = personConfigHandler.getUserCache();
         Map<String, String> ipCache = personConfigHandler.getIpCache();
-        String[] domains = configCenter.getUcoolCookieDomain().split(HttpTools.filterSpecialChar(","));
         String curDomain = request.getRequestURL().toString();
         curDomain = curDomain.replaceAll("http://", "");
         curDomain = curDomain.substring(0, curDomain.indexOf("/") != -1 ? curDomain.indexOf("/"): 0);
