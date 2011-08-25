@@ -62,9 +62,10 @@ public class LoginFilterNew implements Filter {
         Map<String, UserDO> userCache = personConfigHandler.getUserCache();
         Map<String, String> ipCache = personConfigHandler.getIpCache();
         String[] domains = configCenter.getUcoolCookieDomain().split(HttpTools.filterSpecialChar(","));
-        String url = request.getRequestURL().toString();
-        url = url.replaceAll("http://", "");
-        url = url.substring(0, url.indexOf("/") != -1 ? url.indexOf("/"): 0);
+        String curDomain = request.getRequestURL().toString();
+        curDomain = curDomain.replaceAll("http://", "");
+        curDomain = curDomain.substring(0, curDomain.indexOf("/") != -1 ? curDomain.indexOf("/"): 0);
+        boolean isInCookieDomain = configCenter.getUcoolCookieDomain().contains(curDomain);
 
         String guid = null;
         request.setAttribute("isAfterLocalCombo", false);
@@ -75,7 +76,7 @@ public class LoginFilterNew implements Filter {
             guid = uid.toString();
         }
 
-        if(guid != null && configCenter.getUcoolCookieDomain().contains(url)) {
+        if(guid != null && isInCookieDomain) {
             if (cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY)) {
                 guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
             }
@@ -128,16 +129,14 @@ public class LoginFilterNew implements Filter {
                 }
             }
 
-            if(configCenter.getUcoolOnlineDomain().contains(request.getRequestURI()) ||
-                configCenter.getUcoolDailyDomain().contains(request.getRequestURI())) {
+            if(isInCookieDomain) {
                 pushCookie(response, guid);
             }
         } else {
             //没有cookie的情况下，从ip获取guid，必须要回写cookie
             if(isIpSync) {
                 System.out.println("ip sync success, another brower has push guid");
-                if(configCenter.getUcoolOnlineDomain().contains(request.getRequestURI()) ||
-                    configCenter.getUcoolDailyDomain().contains(request.getRequestURI())) {
+                if(isInCookieDomain) {
                     pushCookie(response, guid);
                 }
             }
