@@ -69,18 +69,7 @@ public class LoginFilterNew implements Filter {
         String guid = null;
         request.setAttribute("isAfterLocalCombo", false);
 
-        //获取guid，优先级querystring > session > cookie
-        Object uid = request.getSession().getAttribute(request.getSession().getId());
-        if (uid != null) {
-            guid = uid.toString();
-        }
-
-        if(guid != null && isInCookieDomain) {
-            if (cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY)) {
-                guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
-            }
-        }
-        
+        //获取guid，优先级querystring > cookie > session
         //local combo set pcname
         if (querySring != null && querySring.indexOf("guid") != -1) {
             Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
@@ -91,16 +80,31 @@ public class LoginFilterNew implements Filter {
             }
         }
 
+        if(guid == null && isInCookieDomain) {
+            if (cookieUtils.hasCookie(request.getCookies(), CookieUtils.DEFAULT_KEY)) {
+                guid = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue();
+            }
+        }
+
+        //如果在正常情况下清空了cookie，这里的session里的估计就有问题了
+        if(guid == null) {
+            Object uid = request.getSession().getAttribute(request.getSession().getId());
+            if (uid != null) {
+                guid = uid.toString();
+            }
+        }
+
         boolean isIpSync = false;
 
+        //根据ip查guid
+        String oldGuid = ipCache.get(remoteHost);
+        if(guid == null && oldGuid != null) {
+            guid = oldGuid;
+        }
         if(guid == null) {
-            //根据ip查guid
-            guid = ipCache.get(remoteHost);
-            if(guid == null) {
-                guid = getGuid();
-            } else {
-                isIpSync = true;
-            }
+            guid = getGuid();
+        } else {
+            isIpSync = true;
         }
 
         request.setAttribute("guid", guid);
