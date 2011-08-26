@@ -106,8 +106,8 @@ public class UrlReader {
             }
 
             PrintWriter writer = requestInfo.getResponse().getWriter();
-            
-            if(charset.equals("utf-8")) {
+
+            if(charset.equals("UTF-8")) {
                 //È¥³ýutf-8µÄbomÍ·
                 int pos = firstLine.indexOf("/");
                 if(pos != -1) {
