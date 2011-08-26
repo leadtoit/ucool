@@ -94,7 +94,7 @@ public class UrlReader {
                 requestInfo.getResponse().setCharacterEncoding("utf-8");
             }
         } else {
-            requestInfo.getResponse().setCharacterEncoding("gbk");
+            requestInfo.getResponse().setCharacterEncoding(charset);
         }
 
         PrintWriter writer = requestInfo.getResponse().getWriter();

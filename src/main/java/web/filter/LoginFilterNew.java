@@ -87,10 +87,12 @@ public class LoginFilterNew implements Filter {
         }
 
         //如果在正常情况下清空了cookie，这里的session里的估计就有问题了
+        boolean useSession = false;
         if(guid == null) {
             Object uid = request.getSession().getAttribute(request.getSession().getId());
             if (uid != null) {
                 guid = uid.toString();
+                useSession = true;
             }
         }
 
@@ -105,6 +107,9 @@ public class LoginFilterNew implements Filter {
             guid = getGuid();
         } else {
             isIpSync = true;
+            if(useSession && !guid.equals(oldGuid)) {
+                //TODO 没想好，可能直接用ipCache做同步
+            }
         }
 
         request.setAttribute("guid", guid);
