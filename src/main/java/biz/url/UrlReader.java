@@ -79,7 +79,7 @@ public class UrlReader {
         boolean findCharset = false;
         for (String filterEncoding : configCenter.getUcoolAssetsEncodingCorrectStrings()) {
             if(requestInfo.getRealUrl().indexOf(filterEncoding) != -1) {
-                charset = "utf-8";
+                charset = "UTF-8";
                 findCharset = true;
                 break;
             }
@@ -87,25 +87,26 @@ public class UrlReader {
         if(!findCharset) {
             charset = urlTools.getCharset(buff);
         }
-        if(requestInfo.getRealUrl().indexOf("kissy.js") != -1 || requestInfo.getRealUrl().indexOf("seed.js") != -1 || requestInfo.getRealUrl().indexOf("/s/kissy/") != -1) {
-            if(requestInfo.isUrlCombo()) {
-                requestInfo.getResponse().setCharacterEncoding("gbk");
-            } else {
-                requestInfo.getResponse().setCharacterEncoding("utf-8");
-            }
-        } else {
-            requestInfo.getResponse().setCharacterEncoding(charset);
-        }
 
-        PrintWriter writer = requestInfo.getResponse().getWriter();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(buff, charset));
         String firstLine = bufferedReader.readLine();
         if(firstLine == null || "/*not found*/".equals(firstLine)) {
-            writer.flush();
             bufferedReader.close();
             buff.close();
             return false;
         } else {
+            if(requestInfo.getRealUrl().indexOf("kissy.js") != -1 || requestInfo.getRealUrl().indexOf("seed.js") != -1 || requestInfo.getRealUrl().indexOf("/s/kissy/") != -1) {
+                if(requestInfo.isUrlCombo()) {
+                    requestInfo.getResponse().setCharacterEncoding("GBK");
+                } else {
+                    requestInfo.getResponse().setCharacterEncoding("UTF-8");
+                }
+            } else {
+                requestInfo.getResponse().setCharacterEncoding(charset);
+            }
+
+            PrintWriter writer = requestInfo.getResponse().getWriter();
+            
             if(charset.equals("utf-8")) {
                 //È¥³ýutf-8µÄbomÍ·
                 int pos = firstLine.indexOf("/");
