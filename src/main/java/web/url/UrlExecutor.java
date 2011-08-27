@@ -135,7 +135,10 @@ public class UrlExecutor {
                 }
             }
 
-            if (findAssetsFile(filePath, personConfig)) {
+            //TODO 这里是临时方案，要重构
+            String filePath2 = filePath.replace(".source", "");
+
+            if (findAssetsFile(filePath, personConfig) || findAssetsFile(filePath2, personConfig)) {
                 try {
                     requestInfo.setRealUrl(requestInfo.getFilePath());
                     this.urlReader.pushStream(requestInfo, loadExistFileStream(filePath, personConfig));
@@ -192,19 +195,10 @@ public class UrlExecutor {
                     return;
                 }
             }
-            if (findAssetsFile(requestInfo.getFilePath(), personConfig)) {
-                try {
-                    requestInfo.setRealUrl(requestInfo.getFilePath());
-                    this.urlReader.pushStream(requestInfo, loadExistFileStream(requestInfo.getFilePath(), personConfig));
-                } catch (IOException e) {
-                    //捕获所有异常，这里有可能缓存失败，所以取不到文件
-                    System.out.println("file has exception" + e);
-                }
-            } else {
-                //最后的保障，如果缓存失败了，从线上取吧
-                requestInfo.setRealUrl(requestInfo.getFullUrl());
-                urlReader.readUrlFile(requestInfo);
-            }
+
+            //最后的保障，如果缓存失败了，从线上取吧
+            requestInfo.setRealUrl(requestInfo.getFullUrl());
+            urlReader.readUrlFile(requestInfo);
         }
     }
 

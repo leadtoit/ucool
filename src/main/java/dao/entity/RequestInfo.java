@@ -12,7 +12,13 @@ public class RequestInfo {
     private HttpServletRequest request;
     private HttpServletResponse response;
 
+    /**
+     *  文件路径
+     */
     private String filePath;
+    /**
+     *  真实url
+     */
     private String realUrl;
     private String fullUrl;
 
