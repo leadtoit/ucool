@@ -166,7 +166,7 @@ public class GUIDFilter implements Filter {
 
         //ip同步
         if(needIpSync) {
-            syncRemoteHost(userCache.get(guid), remoteHost, ipCache);
+            syncRemoteHost(userCache.get(guid), remoteHost, ipCache, userCache);
         }
         
         if ((Boolean) request.getAttribute("isCombo")) {
@@ -201,12 +201,10 @@ public class GUIDFilter implements Filter {
     }
 
     //同步ip
-    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, UserDO> ipCache) {
+    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, UserDO> ipCache, Map<String, UserDO> userCache) {
         if(newRemoteHost.equals("127.0.0.1")) {
             return true;
         }
-
-        ipCache.put(newRemoteHost, personInfo);
 
         if (newRemoteHost.equals(personInfo.getHostName())) {
             return true;
@@ -215,6 +213,9 @@ public class GUIDFilter implements Filter {
         if (this.userDAO.updateHostName(personInfo.getId(), newRemoteHost, personInfo.getHostName())) {
             System.out.println("remoteHost changed, update ip to " + newRemoteHost);
             personInfo.setHostName(newRemoteHost);
+
+            ipCache.put(newRemoteHost, personInfo);
+            userCache.put(personInfo.getGuid(), personInfo);
             return true;
         }
         return false;
@@ -244,7 +245,7 @@ public class GUIDFilter implements Filter {
                 //到这里才说明的确是旧用户
                 oldUser.setGuid(getGuid());
                 if (this.userDAO.updateGUID(oldUser.getId(), oldUser.getGuid(), "")) {
-                    System.out.println("old user "+ oldUser.getId() +":set new guid!");
+                    System.out.println("old user " + oldUser.getId() + ":set new guid!");
                 }
             } else {
                 //到这里说明是session失效并且cookie被删了的
