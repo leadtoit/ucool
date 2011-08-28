@@ -90,7 +90,7 @@ public class GUIDFilter implements Filter {
         if(guid == null) {
             //session中的值最快
             Object uid = request.getSession().getAttribute(request.getSession().getId());
-            if (uid == null) {
+            if (uid != null) {
                 guid = uid.toString();
                 /**
                  * 当cookie被清除后，理论上应该取这个值，不排除取不到的可能
