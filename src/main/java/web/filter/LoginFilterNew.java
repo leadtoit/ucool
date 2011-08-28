@@ -63,7 +63,7 @@ public class LoginFilterNew implements Filter {
         String remoteHost = request.getRemoteAddr();
         String querySring = request.getQueryString();
         Map<String, UserDO> userCache = personConfigHandler.getUserCache();
-        Map<String, String> ipCache = personConfigHandler.getIpCache();
+        Map<String, UserDO> ipCache = personConfigHandler.getIpCache();
         String curDomain = request.getRequestURL().toString();
         curDomain = curDomain.replaceAll("http://", "");
         curDomain = curDomain.substring(0, curDomain.indexOf("/") != -1 ? curDomain.indexOf("/"): 0);
@@ -102,7 +102,7 @@ public class LoginFilterNew implements Filter {
         boolean isIpSync = false;
 
         //根据ip查guid
-        String oldGuid = ipCache.get(remoteHost);
+        String oldGuid = ipCache.get(remoteHost).getGuid();
         if(guid == null && oldGuid != null) {
             guid = oldGuid;
         }
@@ -187,12 +187,12 @@ public class LoginFilterNew implements Filter {
     }
 
     //同步ip
-    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, String> ipCache) {
+    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, UserDO> ipCache) {
         if(newRemoteHost.equals("127.0.0.1")) {
             return true;
         }
 
-        ipCache.put(newRemoteHost, personInfo.getGuid());
+        ipCache.put(newRemoteHost, personInfo);
         
         if (newRemoteHost.equals(personInfo.getHostName())) {
             return true;

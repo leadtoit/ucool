@@ -26,4 +26,6 @@ public interface UserDAO {
     UserDO getPersonInfoByGUID(String guid);
 
     boolean updateHostName(Long userId, String newHostName, String srcHostName);
+
+    boolean updateGUID(Long userId, String guid, String oldguid);
 }

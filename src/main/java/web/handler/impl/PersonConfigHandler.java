@@ -27,7 +27,7 @@ public class PersonConfigHandler {
 
     private Map<String, UserDO> userCache = new HashMap<String, UserDO>();
 
-    private Map<String, String> ipCache = new HashMap<String, String>();
+    private Map<String, UserDO> ipCache = new HashMap<String, UserDO>();
 
     public void setConfigCenter(ConfigCenter configCenter) {
         this.configCenter = configCenter;
@@ -45,7 +45,7 @@ public class PersonConfigHandler {
         this.cookieUtils = cookieUtils;
     }
 
-    public Map<String, String> getIpCache() {
+    public Map<String, UserDO> getIpCache() {
         return ipCache;
     }
 

@@ -137,11 +137,12 @@ public class UrlExecutor {
 
             //TODO 这里是临时方案，要重构
             String filePath2 = filePath.replace(".source", "");
+            boolean useFilePath2 = false;
 
-            if (findAssetsFile(filePath, personConfig) || findAssetsFile(filePath2, personConfig)) {
+            if (findAssetsFile(filePath, personConfig) || (useFilePath2 = findAssetsFile(filePath2, personConfig))) {
                 try {
                     requestInfo.setRealUrl(requestInfo.getFilePath());
-                    this.urlReader.pushStream(requestInfo, loadExistFileStream(filePath, personConfig));
+                    this.urlReader.pushStream(requestInfo, loadExistFileStream(useFilePath2 ? filePath2 : filePath, personConfig));
                 } catch (IOException e) {
                     //捕获所有异常，这里有可能缓存失败，所以取不到文件
                     System.out.println("file has exception" + e);

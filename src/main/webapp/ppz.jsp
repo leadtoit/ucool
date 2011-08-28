@@ -278,7 +278,7 @@
     <div id="header">
         <div class="top">
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start" target="_blank">ucool config page</a></h1>
-            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" target="_blank" title="what's new?">ucool-pro version£º0.9.5 <i>?</i></a>
+            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" target="_blank" title="what's new?">ucool-pro version£º0.9.6 <i>?</i></a>
         </div>
     </div>
     <div id="content">

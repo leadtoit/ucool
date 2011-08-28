@@ -11,5 +11,14 @@ public class MatchTest {
     public static void main(String[] args) {
         String url = "http://a.tbcdn.cn/p??/mods.js?pcname=213";
         System.out.println(url.indexOf("?", url.indexOf("??") + 2));
+
+        boolean t = false;
+        if(t = getTrue()) {
+            System.out.println(t);
+        }
+    }
+
+    public static boolean getTrue() {
+        return true;
     }
 }

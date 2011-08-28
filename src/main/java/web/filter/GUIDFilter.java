@@ -60,7 +60,7 @@ public class GUIDFilter implements Filter {
         String remoteHost = request.getRemoteAddr();
         String querySring = request.getQueryString();
         Map<String, UserDO> userCache = personConfigHandler.getUserCache();
-        Map<String/*ip*/, String/*guid*/> ipCache = personConfigHandler.getIpCache();
+        Map<String/*ip*/, UserDO> ipCache = personConfigHandler.getIpCache();
         
         UrlBase urlBase = new UrlBase(request.getRequestURL().toString());
         String curDomain = urlBase.getHost();
@@ -105,24 +105,31 @@ public class GUIDFilter implements Filter {
                  * 在这里有可能是session失效了，也有可能是ip变换了
                  */
                 needIpSync = true;
+                request.getSession().setAttribute(request.getSession().getId(), guid);
             }
         }
 
         /**
-         * get from ip
-         * 如果在ipCache才找到说明是没有cookie，需要push cookie
+         * 走到这里还没有guid，就默认作为旧用户处理，也有可能是cookie被删和session失效的用户
          */
-        if(guid == null && ipCache.containsKey(remoteHost)) {
-            guid = ipCache.get(remoteHost);
+        if(guid == null) {
+            guid = oldUserSync(remoteHost, ipCache, userCache);
+            if(guid != null) {
+                request.getSession().setAttribute(request.getSession().getId(), guid);
+                needPushCookie = true;
+            }
+        }
+
+        /**
+         * 这里是真正的新用户
+         */
+        if(guid == null) {
+            guid = getGuid();
+            request.getSession().setAttribute(request.getSession().getId(), guid);
             needPushCookie = true;
         }
 
-        if(guid == null) {
-            guid = getGuid();
-        }
-
         request.setAttribute("guid", guid);
-        request.getSession().setAttribute(request.getSession().getId(), guid);
 
         /**
          * begin sync
@@ -145,18 +152,18 @@ public class GUIDFilter implements Filter {
                     userCache.put(guid, personInfo);
                 }
             }
+        } else {
 
-            if(isInCookieDomain) {
+        }
+
+
+        if (needPushCookie) {
+            System.out.println("ip sync success, another brower has push guid");
+            if (isInCookieDomain) {
                 pushCookie(response, guid);
             }
-        } else {
-            if(needPushCookie) {
-                System.out.println("ip sync success, another brower has push guid");
-                if(isInCookieDomain) {
-                    pushCookie(response, guid);
-                }
-            }
         }
+
         //ip同步
         if(needIpSync) {
             syncRemoteHost(userCache.get(guid), remoteHost, ipCache);
@@ -194,13 +201,13 @@ public class GUIDFilter implements Filter {
     }
 
     //同步ip
-    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, String> ipCache) {
+    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, UserDO> ipCache) {
         if(newRemoteHost.equals("127.0.0.1")) {
             return true;
         }
 
-        ipCache.put(newRemoteHost, personInfo.getGuid());
-        
+        ipCache.put(newRemoteHost, personInfo);
+
         if (newRemoteHost.equals(personInfo.getHostName())) {
             return true;
         }
@@ -211,6 +218,43 @@ public class GUIDFilter implements Filter {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 对那些没有guid的用户进行同步，并创建guid
+     *
+     *
+     * @param remoteHost
+     * @param ipCache
+     * @param userCache
+     * @return guid
+     */
+    private String oldUserSync(String remoteHost, Map<String, UserDO> ipCache, Map<String, UserDO> userCache) {
+        UserDO oldUser = null;
+        if(ipCache.containsKey(remoteHost)) {
+            oldUser = ipCache.get(remoteHost);
+        } else {
+            oldUser = userDAO.getPersonInfo(remoteHost);
+        }
+
+        if(oldUser == null) {
+            return null;
+        } else {
+            if(oldUser.getGuid() == null || oldUser.getGuid().equals("")) {
+                //到这里才说明的确是旧用户
+                oldUser.setGuid(getGuid());
+                if (this.userDAO.updateGUID(oldUser.getId(), oldUser.getGuid(), "")) {
+                    System.out.println("old user "+ oldUser.getId() +":set new guid!");
+                }
+            } else {
+                //到这里说明是session失效并且cookie被删了的
+            }
+
+            ipCache.put(remoteHost, oldUser);
+            userCache.put(oldUser.getGuid(), oldUser);
+        }
+
+        return oldUser.getGuid();
     }
 
 }

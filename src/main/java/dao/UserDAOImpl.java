@@ -143,6 +143,22 @@ public class UserDAOImpl implements UserDAO, InitializingBean {
     }
 
     @Override
+    public boolean updateGUID(Long userId, String guid, String oldguid) {
+        if (guid.equals(oldguid)) {
+            return true;
+        }
+        try {
+            String sql = "update user set guid=? where id=? and guid=?";
+            if (jdbcTemplate.update(sql, new Object[]{guid, userId, oldguid}) > 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
+    }
+
+    @Override
     public void afterPropertiesSet() throws Exception {
         int userExist = jdbcTemplate.queryForInt("SELECT COUNT(*) FROM sqlite_master where type=\'table\' and name=?", new Object[]{"user"});
         //create table
