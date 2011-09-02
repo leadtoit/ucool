@@ -68,6 +68,7 @@ public class GUIDFilter implements Filter {
         String guid = null;
         boolean needIpSync = false;
         boolean needPushCookie = false;
+        boolean isAfterLocalCombo = false;
 
         /**
          * 有两个步骤
@@ -83,7 +84,8 @@ public class GUIDFilter implements Filter {
 
             if (matc.find()) {
                 guid = matc.group();
-                request.setAttribute("isAfterLocalCombo", true);
+                isAfterLocalCombo = true;
+                request.setAttribute("isAfterLocalCombo", isAfterLocalCombo);
             }
         }
 
@@ -166,7 +168,7 @@ public class GUIDFilter implements Filter {
 
         //ip同步
         if(needIpSync) {
-            syncRemoteHost(userCache.get(guid), remoteHost, ipCache, userCache);
+            syncRemoteHost(userCache.get(guid), remoteHost, ipCache, userCache, isAfterLocalCombo);
         }
         
         if ((Boolean) request.getAttribute("isCombo")) {
@@ -201,8 +203,8 @@ public class GUIDFilter implements Filter {
     }
 
     //同步ip
-    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, UserDO> ipCache, Map<String, UserDO> userCache) {
-        if(newRemoteHost.equals("127.0.0.1")) {
+    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, UserDO> ipCache, Map<String, UserDO> userCache, boolean afterLocalCombo) {
+        if(newRemoteHost.equals("127.0.0.1") && afterLocalCombo) {
             return true;
         }
 
