@@ -107,7 +107,9 @@ public class GUIDFilter implements Filter {
                  * 在这里有可能是session失效了，也有可能是ip变换了
                  */
                 needIpSync = true;
-                request.getSession().setAttribute(request.getSession().getId(), guid);
+                //尝试失效旧session
+                request.getSession().invalidate();
+                request.getSession(true).setAttribute(request.getSession().getId(), guid);
             }
         }
 
