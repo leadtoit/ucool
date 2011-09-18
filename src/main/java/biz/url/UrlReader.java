@@ -16,13 +16,7 @@ import java.util.Map;
  */
 public class UrlReader {
 
-    private UrlTools urlTools;
-
     private ConfigCenter configCenter;
-
-    public void setUrlTools(UrlTools urlTools) {
-        this.urlTools = urlTools;
-    }
 
     public void setConfigCenter(ConfigCenter configCenter) {
         this.configCenter = configCenter;
@@ -85,14 +79,20 @@ public class UrlReader {
             }
         }
         if(!findCharset) {
-            charset = urlTools.getCharset(buff);
+            charset = UrlTools.getCharset(buff);
         }
 
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(buff, charset));
+        InputStream filterBuff = buff;
+        //去除utf-8的bom头
+        if(charset.equals("UTF-8")) {
+            filterBuff = UrlTools.removeBom(filterBuff);
+        }
+
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(filterBuff, charset));
         String firstLine = bufferedReader.readLine();
         if(firstLine == null || "/*not found*/".equals(firstLine)) {
             bufferedReader.close();
-            buff.close();
+            filterBuff.close();
             return false;
         } else {
             if(requestInfo.getRealUrl().indexOf("kissy.js") != -1 || requestInfo.getRealUrl().indexOf("seed.js") != -1 || requestInfo.getRealUrl().indexOf("/s/kissy/") != -1) {
@@ -107,13 +107,6 @@ public class UrlReader {
 
             PrintWriter writer = requestInfo.getResponse().getWriter();
 
-            if(charset.equals("UTF-8")) {
-                //去除utf-8的bom头
-                int pos = firstLine.indexOf("/");
-                if(pos != -1) {
-                    firstLine = firstLine.substring(pos);
-                }
-            }
             if (requestInfo.getType().equals("assets")) {
                 if(requestInfo.isLocalCombo()) {
                     writer.println("/*ucool local combo matched:" + requestInfo.getFilePath() + "*/");
@@ -127,7 +120,7 @@ public class UrlReader {
             }
             writer.flush();
             bufferedReader.close();
-            buff.close();
+            filterBuff.close();
         }
         return true;
     }

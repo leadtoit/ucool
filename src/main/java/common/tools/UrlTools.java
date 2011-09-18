@@ -3,10 +3,7 @@ package common.tools;
 import common.ConfigCenter;
 import common.PersonConfig;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,7 +140,7 @@ public class UrlTools {
             return "";
     }
 
-    public String getCharset(BufferedInputStream bis) {
+    public static String getCharset(BufferedInputStream bis) {
         String charset = "GBK";
         byte[] first3Bytes = new byte[3];
         bis.mark(0);
@@ -198,5 +195,31 @@ public class UrlTools {
         }
 
         return charset;
+    }
+
+    /**
+     * 读取流中前面的字符，看是否有bom，如果有bom，将bom头先读掉丢弃
+     *
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    public static InputStream removeBom(InputStream in) throws IOException {
+
+        PushbackInputStream testin = new PushbackInputStream(in);
+        int ch = testin.read();
+        if (ch != 0xEF) {
+            testin.unread(ch);
+        } else if ((ch = testin.read()) != 0xBB) { // if ch==0xef
+            testin.unread(ch);
+            testin.unread(0xef);
+        } else if ((ch = testin.read()) != 0xBF) { // if ch ==0xbb
+            throw new IOException("错误的UTF-8格式文件");
+        } else { // if ch ==0xbf
+            // 不需要做，这里是bom头被读完了
+            // // System.out.println("still exist bom");
+        }
+        return testin;
+
     }
 }
