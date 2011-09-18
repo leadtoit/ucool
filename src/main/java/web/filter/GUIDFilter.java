@@ -214,6 +214,13 @@ public class GUIDFilter implements Filter {
             System.out.println("remoteHost changed, update ip to " + newRemoteHost);
             personInfo.setHostName(newRemoteHost);
 
+            //每次改变host时需要把旧的ipcache失效掉，否则的话会内存溢出？
+            if(ipCache.containsKey(personInfo.getHostName())
+                    && ipCache.get(personInfo.getHostName()).getGuid().equals(personInfo.getGuid())) {
+                //必须确实是这个guid的ip cache才删除
+                ipCache.remove(personInfo.getHostName());
+            }
+
             ipCache.put(newRemoteHost, personInfo);
             userCache.put(personInfo.getGuid(), personInfo);
             return true;
