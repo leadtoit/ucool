@@ -26,6 +26,10 @@
         <servlet-name>DoorServlet</servlet-name>
         <servlet-class>web.servlet.DoorServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>APIServlet</servlet-name>
+        <servlet-class>web.servlet.APIServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>DoorServlet</servlet-name>
         <url-pattern>*.htm</url-pattern>
@@ -73,6 +77,10 @@
     <servlet-mapping>
         <servlet-name>DoorServlet</servlet-name>
         <url-pattern>*.swf</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>APIServlet</servlet-name>
+        <url-pattern>/api</url-pattern>
     </servlet-mapping>
     
     <listener>
