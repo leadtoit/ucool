@@ -27,8 +27,6 @@ public class PersonConfigHandler {
 
     private Map<String, UserDO> userCache = new HashMap<String, UserDO>();
 
-    private Map<String, UserDO> ipCache = new HashMap<String, UserDO>();
-
     public void setConfigCenter(ConfigCenter configCenter) {
         this.configCenter = configCenter;
     }
@@ -43,10 +41,6 @@ public class PersonConfigHandler {
 
     public void setCookieUtils(CookieUtils cookieUtils) {
         this.cookieUtils = cookieUtils;
-    }
-
-    public Map<String, UserDO> getIpCache() {
-        return ipCache;
     }
 
     /**
@@ -65,7 +59,7 @@ public class PersonConfigHandler {
         UserDO personInfo = userCache.get(guid);
         // 这里自从有了filter之后基本上是不会取不到的
         if(personInfo == null) {
-            personInfo = this.userDAO.getPersonInfoByGUID(guid);
+            personInfo = this.userDAO.getPersonInfo(guid);
             if(personInfo != null) {
                 userCache.put(guid, personInfo);
                 System.out.println("map has size:" + userCache.size());

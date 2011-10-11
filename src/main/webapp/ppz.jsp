@@ -7,7 +7,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="web.handler.impl.PersonConfigHandler" %>
 <%@ page import="common.tools.DirSyncTools" %>
-<%@ page import="dao.UserDAO" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -278,7 +277,7 @@
     <div id="header">
         <div class="top">
             <h1><a href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:start" target="_blank">ucool config page</a></h1>
-            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" target="_blank" title="what's new?">ucool-pro version：0.9.8 <i>?</i></a>
+            <a class="version new" href="http://wiki.ued.taobao.net/doku.php?id=user:zhangting:tools:ucool-pro:history:start" target="_blank" title="what's new?">ucool-pro version：0.9.9 <i>?</i></a>
         </div>
     </div>
     <div id="content">
@@ -293,7 +292,6 @@
                     <tr>
                         <th>用户 IP 标识：</th>
                         <td><%=request.getRemoteAddr()%>
-                            (guid:<%=personConfig.getUserDO().getGuid()%>)
                         </td>
                     </tr>
                     <%--<tr>--%>

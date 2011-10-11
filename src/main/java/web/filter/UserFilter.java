@@ -76,7 +76,10 @@ public class UserFilter implements Filter {
         } else {
             guid = remoteHost;
         }
-        
+
+        request.getSession().setAttribute("guid", guid);
+        request.setAttribute("guid", guid);
+
         if (!userCache.containsKey(remoteHost)) {
             // get user from cache
             UserDO personInfo = this.userDAO.getPersonInfo(guid);
