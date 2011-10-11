@@ -28,9 +28,10 @@
         PersonConfig personConfig = personConfigHandler.doHandler(request);
         FileEditor fileEditor = (FileEditor) wac.getBean("fileEditor");
         CookieUtils cookieUtils = (CookieUtils)wac.getBean("cookieUtils");
+        Cookie cookie1 = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY);
 
         out.println("当前session中的guid为:" + request.getSession().getAttribute(request.getSession().getId()) + "<br>");
-        out.println("当前cookie中的guid为:" + cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY).getValue() + "<br>");
+        out.println("当前cookie中的guid为:" + cookie1 == null? "":cookie1.getValue() + "<br>");
     %>
     <fieldset>
         <legend>操作:</legend>
