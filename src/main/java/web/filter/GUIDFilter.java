@@ -60,7 +60,7 @@ public class GUIDFilter implements Filter {
         String remoteHost = request.getRemoteAddr();
         String querySring = request.getQueryString();
         Map<String, UserDO> userCache = personConfigHandler.getUserCache();
-        Map<String/*ip*/, UserDO> ipCache = personConfigHandler.getIpCache();
+//        Map<String/*ip*/, UserDO> ipCache = personConfigHandler.getIpCache();
         
         UrlBase urlBase = new UrlBase(request.getRequestURL().toString());
         String curDomain = urlBase.getHost();
@@ -116,13 +116,13 @@ public class GUIDFilter implements Filter {
         /**
          * 走到这里还没有guid，就默认作为旧用户处理，也有可能是cookie被删和session失效的用户
          */
-        if(guid == null) {
-            guid = oldUserSync(remoteHost, ipCache, userCache);
-            if(guid != null) {
-                request.getSession().setAttribute(request.getSession().getId(), guid);
-                needPushCookie = true;
-            }
-        }
+//        if(guid == null) {
+//            guid = oldUserSync(remoteHost, ipCache, userCache);
+//            if(guid != null) {
+//                request.getSession().setAttribute(request.getSession().getId(), guid);
+//                needPushCookie = true;
+//            }
+//        }
 
         /**
          * 这里是真正的新用户
@@ -170,7 +170,7 @@ public class GUIDFilter implements Filter {
 
         //ip同步
         if(needIpSync) {
-            syncRemoteHost(userCache.get(guid), remoteHost, ipCache, userCache, isAfterLocalCombo);
+            syncRemoteHost(userCache.get(guid), remoteHost, userCache, isAfterLocalCombo);
         }
         
         if ((Boolean) request.getAttribute("isCombo")) {
@@ -205,7 +205,7 @@ public class GUIDFilter implements Filter {
     }
 
     //同步ip
-    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, UserDO> ipCache, Map<String, UserDO> userCache, boolean afterLocalCombo) {
+    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, UserDO> userCache, boolean afterLocalCombo) {
         if(newRemoteHost.equals("127.0.0.1") && afterLocalCombo) {
             return true;
         }
@@ -219,13 +219,13 @@ public class GUIDFilter implements Filter {
             personInfo.setHostName(newRemoteHost);
 
             //每次改变host时需要把旧的ipcache失效掉，否则的话会内存溢出？
-            if(ipCache.containsKey(personInfo.getHostName())
-                    && ipCache.get(personInfo.getHostName()).getGuid().equals(personInfo.getGuid())) {
-                //必须确实是这个guid的ip cache才删除
-                ipCache.remove(personInfo.getHostName());
-            }
-
-            ipCache.put(newRemoteHost, personInfo);
+//            if(ipCache.containsKey(personInfo.getHostName())
+//                    && ipCache.get(personInfo.getHostName()).getGuid().equals(personInfo.getGuid())) {
+//                //必须确实是这个guid的ip cache才删除
+//                ipCache.remove(personInfo.getHostName());
+//            }
+//
+//            ipCache.put(newRemoteHost, personInfo);
             userCache.put(personInfo.getGuid(), personInfo);
             return true;
         }
