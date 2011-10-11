@@ -52,6 +52,8 @@
             Cookie cookie = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY);
             String tempGuid2 = cookie.getValue();
             cookie.setMaxAge(0);
+            response.addCookie(cookie);
+            
             out.println("cookie已经清理<br>");
             Map<String, UserDO> userCache = personConfigHandler.getUserCache();
             userCache.remove(tempGuid1);
@@ -66,6 +68,7 @@
 
             Cookie cookie = cookieUtils.getCookie(request.getCookies(), CookieUtils.DEFAULT_KEY);
             cookie.setMaxAge(0);
+            response.addCookie(cookie);
             out.println("cookie已经清理<br>");
         }
     %>
