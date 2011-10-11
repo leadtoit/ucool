@@ -24,7 +24,9 @@ import java.util.regex.Pattern;
  *
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>
  * @since 2010-9-24 18:26:00
+ * @deprecated 
  */
+@Deprecated
 public class GUIDFilter implements Filter {
 
     private CookieUtils cookieUtils;

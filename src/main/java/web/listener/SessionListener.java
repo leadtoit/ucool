@@ -29,8 +29,8 @@ public class SessionListener implements HttpSessionListener {
         WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(event.getSession().getServletContext());
         PersonConfigHandler personConfigHandler = (PersonConfigHandler) context.getBean("personConfigHandler");
         Map<String, UserDO> userCache = personConfigHandler.getUserCache();
-        String guid = (String) session.getAttribute(session.getId());
-        if(guid != null) {
+        String guid = (String) session.getAttribute("guid");
+        if(guid != null && userCache.containsKey(guid)) {
             userCache.remove(guid);
         }
     }

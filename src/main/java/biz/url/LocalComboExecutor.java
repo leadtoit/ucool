@@ -84,9 +84,9 @@ public class LocalComboExecutor {
                     fromIndex += 2;
                 }
                 if(realUrl.indexOf("?", fromIndex) != -1) {
-                    realUrl += ("&guid=" + personConfig.getUserDO().getGuid());
+                    realUrl += ("&guid=" + personConfig.getUserDO().getHostName());
                 } else {
-                    realUrl += ("?guid=" + personConfig.getUserDO().getGuid());
+                    realUrl += ("?guid=" + personConfig.getUserDO().getHostName());
                 }
                 requestInfo.setRealUrl(realUrl);
                 requestInfo.setLocalCombo(true);
