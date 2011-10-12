@@ -66,8 +66,8 @@ public class UserFilter implements Filter {
         /*这里是本地combo的guid处理*/
         request.setAttribute("isAfterLocalCombo", false);
         //local combo set pcname
-        if (querySring != null && querySring.indexOf("guid") != -1) {
-            Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
+        if (querySring != null && querySring.indexOf("ucool-guid") != -1) {
+            Matcher matc = Pattern.compile("(?<=ucool-guid=)[^?&]+").matcher(querySring);
 
             if (matc.find()) {
                 guid = matc.group();
