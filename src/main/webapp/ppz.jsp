@@ -294,15 +294,15 @@
                         <td><%=request.getRemoteAddr()%>
                         </td>
                     </tr>
-                    <tr>
-                        <th></th>
-                        <td>
-                            <input type="text">
-                            <a class="icon-save" href="#" title="±£¥Ê≈‰÷√" id="saveConfig">±£¥Ê≈‰÷√</a>
-                            <a class="icon-load" href="#" title="º”‘ÿ≈‰÷√" id="loadConfig">º”‘ÿ≈‰÷√</a>
-                            <a class="icon-del" href="#" title="…æ≥˝≈‰÷√" id="delConfig">…æ≥˝≈‰÷√</a>
-                        </td>
-                    </tr>
+                    <%--<tr>--%>
+                        <%--<th></th>--%>
+                        <%--<td>--%>
+                            <%--<input type="text">--%>
+                            <%--<a class="icon-save" href="#" title="±£¥Ê≈‰÷√" id="saveConfig">±£¥Ê≈‰÷√</a>--%>
+                            <%--<a class="icon-load" href="#" title="º”‘ÿ≈‰÷√" id="loadConfig">º”‘ÿ≈‰÷√</a>--%>
+                            <%--<a class="icon-del" href="#" title="…æ≥˝≈‰÷√" id="delConfig">…æ≥˝≈‰÷√</a>--%>
+                        <%--</td>--%>
+                    <%--</tr>--%>
                     <tr>
                         <th>«Î—°‘Ò“ª∏ˆ∞Û∂®ƒø¬º£∫</th>
                         <td>
