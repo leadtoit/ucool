@@ -72,7 +72,7 @@ public class UrlReader {
         String charset = null;
         boolean findCharset = false;
         for (String filterEncoding : configCenter.getUcoolAssetsEncodingCorrectStrings()) {
-            if(requestInfo.getRealUrl().indexOf(filterEncoding) != -1) {
+            if(requestInfo.getRealUrl().contains(filterEncoding)) {
                 charset = "UTF-8";
                 findCharset = true;
                 break;
@@ -95,7 +95,7 @@ public class UrlReader {
             filterBuff.close();
             return false;
         } else {
-            if(requestInfo.getRealUrl().indexOf("kissy.js") != -1 || requestInfo.getRealUrl().indexOf("seed.js") != -1 || requestInfo.getRealUrl().indexOf("/s/kissy/") != -1) {
+            if(requestInfo.getRealUrl().contains("kissy.js") || requestInfo.getRealUrl().contains("seed.js") || requestInfo.getRealUrl().contains("/s/kissy/")) {
                 if(requestInfo.isUrlCombo()) {
                     requestInfo.getResponse().setCharacterEncoding("GBK");
                 } else {

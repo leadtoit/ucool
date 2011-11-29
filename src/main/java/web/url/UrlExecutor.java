@@ -247,7 +247,7 @@ public class UrlExecutor {
             if(whileList != null && !whileList.isEmpty()) {
                 String[] gbkLists = whileList.split(",");
                 for (String gbkList : gbkLists) {
-                    if (requestInfo.getFilePath().indexOf(gbkList) != -1) {
+                    if (requestInfo.getFilePath().contains(gbkList)) {
                         return "gbk";
                     }
                 }
@@ -256,7 +256,7 @@ public class UrlExecutor {
             if(utfFiles != null && !utfFiles.isEmpty()) {
                 String[] utfLists = utfFiles.split(",");
                 for (String utfList : utfLists) {
-                    if (requestInfo.getFilePath().indexOf(utfList) != -1) {
+                    if (requestInfo.getFilePath().contains(utfList)) {
                         return "utf-8";
                     }
                 }
