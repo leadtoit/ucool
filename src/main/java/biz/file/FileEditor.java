@@ -166,19 +166,19 @@ public class FileEditor {
             return flag;
         }
         String[] tempList = file.list();
-        File temp = null;
-        for (int i = 0; i < tempList.length; i++) {
+        File temp;
+        for (String aTempList : tempList) {
             if (path.endsWith(File.separator)) {
-                temp = new File(path + tempList[i]);
+                temp = new File(path + aTempList);
             } else {
-                temp = new File(path + File.separator + tempList[i]);
+                temp = new File(path + File.separator + aTempList);
             }
             if (temp.isFile()) {
                 temp.delete();
             }
             if (temp.isDirectory()) {
-                delAllFile(path + "/" + tempList[i]);//先删除文件夹里面的文件
-                delFolder(path + "/" + tempList[i]);//再删除空文件夹
+                delAllFile(path + "/" + aTempList);//先删除文件夹里面的文件
+                delFolder(path + "/" + aTempList);//再删除空文件夹
                 flag = true;
             }
         }
@@ -188,9 +188,7 @@ public class FileEditor {
     private void delFolder(String folderPath) {
         try {
             delAllFile(folderPath); //删除完里面所有内容
-            String filePath = folderPath;
-            filePath = filePath.toString();
-            File myFilePath = new File(filePath);
+            File myFilePath = new File(folderPath);
             myFilePath.delete(); //删除空文件夹
         } catch (Exception e) {
 

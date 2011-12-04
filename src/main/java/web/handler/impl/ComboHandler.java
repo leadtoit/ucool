@@ -49,13 +49,13 @@ public class ComboHandler extends AssetsHandler {
         String pathPrefix = firstCut[0];    // e.g.:http://a.tbcdn.cn/p/
         String[] allFiles = firstCut[1].split(HttpTools.filterSpecialChar(","));
 
-        if (realUrl.indexOf(".css") != -1) {
+        if (realUrl.contains(".css")) {
             response.setContentType("text/css");
         } else {
             response.setContentType("application/x-javascript");
         }
 
-        boolean isOnline = getConfigCenter().getUcoolOnlineDomain().indexOf(request.getServerName()) != -1;
+        boolean isOnline = getConfigCenter().getUcoolOnlineDomain().contains(request.getServerName());
         boolean isDebugMode = personConfig.isUcoolAssetsDebug() || HttpTools.isReferDebug(request);
         for (String everyFile : allFiles) {
             //过滤时间戳和一些参数

@@ -32,22 +32,22 @@ public class UrlTools {
      */
     public String urlFilter(String url, boolean isOnline, PersonConfig personConfig) {
         if(personConfig == null) {
-            if (url.indexOf("127.0.0.1") != -1) {
+            if (url.contains("127.0.0.1")) {
                 return url.replace("127.0.0.1", configCenter.getUcoolOnlineIp());
             }
-            if (url.indexOf("localhost") != -1) {
+            if (url.contains("localhost")) {
                 return url.replace("localhost", configCenter.getUcoolOnlineIp());
             }
-            if (url.indexOf("u.taobao.net") != -1) {
+            if (url.contains("u.taobao.net")) {
                 return url.replace("u.taobao.net", configCenter.getUcoolOnlineIp());
             }
             for (String d : configCenter.getUcoolOnlineDomain().split(HttpTools.filterSpecialChar(","))) {
-                if (url.indexOf(d) != -1) {
+                if (url.contains(d)) {
                     return url.replace(d, configCenter.getUcoolOnlineIp());
                 }
             }
             for (String d : configCenter.getUcoolDailyDomain().split(HttpTools.filterSpecialChar(","))) {
-                if (url.indexOf(d) != -1) {
+                if (url.contains(d)) {
                     return url.replace(d, configCenter.getUcoolOnlineIp());
                 }
             }
@@ -57,20 +57,20 @@ public class UrlTools {
          * 防止定位到本地导致自循环
          * 还有一种可能是直接访问本地内网ip，这个没法子
          */
-        if (url.indexOf("127.0.0.1") != -1) {
+        if (url.contains("127.0.0.1")) {
             return url.replace("127.0.0.1", getUsefullIp(personConfig));
         }
-        if (url.indexOf("localhost") != -1) {
+        if (url.contains("localhost")) {
             return url.replace("localhost", getUsefullIp(personConfig));
         }
-        if (url.indexOf("u.taobao.net") != -1) {
+        if (url.contains("u.taobao.net")) {
             return url.replace("u.taobao.net", getUsefullIp(personConfig));
         }
         if (isOnline) {
             for (String d : configCenter.getUcoolOnlineDomain().split(HttpTools.filterSpecialChar(","))) {
-                if (url.indexOf(d) != -1) {
+                if (url.contains(d)) {
                     if (personConfig.isPrepub()) {
-                        if (url.indexOf("?") != -1) {
+                        if (url.contains("?")) {
                             url += "&env=prepub";
                         } else {
                             url += "?env=prepub";
@@ -81,8 +81,8 @@ public class UrlTools {
             }
         } else {
             for (String d : configCenter.getUcoolDailyDomain().split(HttpTools.filterSpecialChar(","))) {
-                if (url.indexOf(d) != -1) {
-                    if (url.indexOf("?") != -1) {
+                if (url.contains(d)) {
+                    if (url.contains("?")) {
                         url += "&env=daily";
                     } else {
                         url += "?env=daily";
@@ -111,15 +111,15 @@ public class UrlTools {
      * @return
      */
     public String debugMode(String filePath, String fullUrl) {
-        if (filePath.indexOf("-min") != -1) {
+        if (filePath.contains("-min")) {
             filePath = filePath.replace("-min", "");
         } else {
-            if (filePath.indexOf(".source.") != -1) {
+            if (filePath.contains(".source.")) {
                 return filePath;
             }
             //在这里使用配置的文件作特殊处理
             for (String filterString : configCenter.getUcoolAssetsDebugCorrectStrings()) {
-                if (fullUrl.indexOf(filterString) != -1) {
+                if (fullUrl.contains(filterString)) {
                     return filePath;
                 }
             }

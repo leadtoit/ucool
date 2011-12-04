@@ -81,7 +81,7 @@ public class GUIDFilter implements Filter {
         /*这里是本地combo的guid处理*/
         request.setAttribute("isAfterLocalCombo", false);
         //local combo set pcname
-        if (querySring != null && querySring.indexOf("guid") != -1) {
+        if (querySring != null && querySring.contains("guid")) {
             Matcher matc = Pattern.compile("(?<=guid=)[^?&]+").matcher(querySring);
 
             if (matc.find()) {
@@ -244,7 +244,7 @@ public class GUIDFilter implements Filter {
      * @return guid
      */
     private String oldUserSync(String remoteHost, Map<String, UserDO> ipCache, Map<String, UserDO> userCache) {
-        UserDO oldUser = null;
+        UserDO oldUser;
         if(ipCache.containsKey(remoteHost)) {
             oldUser = ipCache.get(remoteHost);
         } else {

@@ -19,7 +19,7 @@ public class HttpTools {
         /**
          * 目前支持2种方式：?debug和debug=true
          */
-        return refer != null && (refer.indexOf("ucool=debug") != -1);
+        return refer != null && (refer.contains("ucool=debug"));
     }
 
     public static boolean isReferClean(HttpServletRequest request) {
@@ -27,7 +27,7 @@ public class HttpTools {
         /**
          * 目前支持2种方式：?debug和debug=true
          */
-        return refer != null && (refer.indexOf("op=clean") != -1);
+        return refer != null && (refer.contains("op=clean"));
     }
 
     /**
@@ -36,7 +36,7 @@ public class HttpTools {
      * @return
      */
     public static String filterSpecialChar (String input) {
-        StringBuffer filtered = new StringBuffer(input.length());
+        StringBuilder filtered = new StringBuilder(input.length());
         char c;
         for (int i = 0; i < input.length(); i++) {
             c = input.charAt(i);

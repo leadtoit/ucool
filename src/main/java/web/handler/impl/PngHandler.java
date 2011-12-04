@@ -53,11 +53,11 @@ public class PngHandler implements Handler {
         PersonConfig personConfig = personConfigHandler.doHandler(request);
         String filePath = (String) request.getAttribute("filePath");
         String realUrl = (String) request.getAttribute("realUrl");
-        boolean isOnline = configCenter.getUcoolOnlineDomain().indexOf(request.getServerName()) != -1;
+        boolean isOnline = configCenter.getUcoolOnlineDomain().contains(request.getServerName());
         //´¦ÀíÏÂpng
-        if(request.getRequestURI().indexOf("png") != -1) {
+        if(request.getRequestURI().contains("png")) {
             response.setContentType("image/png");
-        } else if(request.getRequestURI().indexOf("gif") != -1) {
+        } else if(request.getRequestURI().contains("gif")) {
             response.setContentType("image/gif");
         } else {
             response.setContentType("image/x-icon");
@@ -68,7 +68,7 @@ public class PngHandler implements Handler {
         }
 
         String fullUrl = "http://"+ configCenter.getUcoolOnlineIp() + request.getRequestURI();
-        if(fullUrl.indexOf("?") != -1) {
+        if(fullUrl.contains("?")) {
             fullUrl += "&env=" + env;
         } else {
             fullUrl += "?env=" + env;

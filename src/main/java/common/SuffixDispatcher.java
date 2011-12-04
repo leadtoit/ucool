@@ -41,17 +41,17 @@ public class SuffixDispatcher {
         }
         String url = (String) request.getAttribute("realUrl");
         //assets用的最多，所以先判断
-        if (url.indexOf(".js") != -1 || url.indexOf(".css") != -1) {
-            if (url.indexOf(configCenter.getUcoolComboDecollator()) != -1) {
+        if (url.contains(".js") || url.contains(".css")) {
+            if (url.contains(configCenter.getUcoolComboDecollator())) {
                 //支持combo文件
                 this.dispatchMapping.getMapping("combo").doHandler(request, response);
             } else {
                 this.dispatchMapping.getMapping("assets").doHandler(request, response);
             }
-        } else if (url.indexOf(".png") != -1 || url.indexOf(".gif") != -1 || url.indexOf(".ico") != -1) {
+        } else if (url.contains(".png") || url.contains(".gif") || url.contains(".ico")) {
             //图片处理 目前有png,gif,ico
             this.dispatchMapping.getMapping("png").doHandler(request, response);
-        } else if (url.indexOf(".htm") != -1) {
+        } else if (url.contains(".htm")) {
             // htm页面处理
             this.dispatchMapping.getMapping("htm").doHandler(request, response);
         } else {

@@ -315,7 +315,7 @@ public class ConfigCenter implements InitializingBean {
             for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                 String key = entry.getKey().toString();
                 String[] keySplits = key.split(HttpTools.filterSpecialChar("."));
-                StringBuffer realKey = new StringBuffer();
+                StringBuilder realKey = new StringBuilder();
                 for (String keySplit : keySplits) {
                     realKey.append(keySplit.toUpperCase().substring(0, 1)).append(keySplit.substring(1));
                 }
