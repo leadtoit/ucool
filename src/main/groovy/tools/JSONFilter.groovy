@@ -1,18 +1,16 @@
-package common.tools;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
+package tools;
+import net.sf.json.JSONObject
+import net.sf.json.JSONArray
 /**
  * Created by IntelliJ IDEA.
  * User: czy-thinkpad
- * Date: 11-6-4
- * Time: 下午4:14
+ * Date: 11-12-5
+ * Time: 上午12:14
  * To change this template use File | Settings | File Templates.
  */
-public class JSONFilter {
-    
-    public String getValidateMapping(String mappingPath) {
+class JSONFilter {
+
+    String getValidateMapping(String mappingPath) {
         if (mappingPath != null && !"".equals(mappingPath)) {
             //解析json
             JSONObject jsonObject = JSONObject.fromObject(mappingPath);
@@ -37,7 +35,7 @@ public class JSONFilter {
         return "";
     }
 
-    public String getUsedMappings(String mappingPath) {
+    String getUsedMappings(String mappingPath) {
         if (mappingPath != null && !"".equals(mappingPath)) {
             //解析json
             JSONObject jsonObject = JSONObject.fromObject(mappingPath);

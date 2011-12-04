@@ -6,16 +6,11 @@ import biz.url.UrlReader;
 import common.ConfigCenter;
 import common.MyConfig;
 import common.PersonConfig;
-import common.tools.JSONFilter;
-import common.tools.UrlTools;
 import dao.entity.RequestInfo;
+import tools.JSONFilter;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -56,7 +51,6 @@ public class UrlExecutor {
 
     /**
      * 为debug模式特殊处理url请求，不走cache
-     *
      *
      * @param requestInfo
      * @param personConfig

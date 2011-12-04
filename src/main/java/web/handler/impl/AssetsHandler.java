@@ -1,7 +1,7 @@
 package web.handler.impl;
 
 import common.*;
-import common.tools.HttpTools;
+import tools.HttpTools;
 import common.tools.UrlTools;
 import dao.entity.RequestInfo;
 import web.handler.Handler;

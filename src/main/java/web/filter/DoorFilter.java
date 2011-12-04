@@ -1,7 +1,7 @@
 package web.filter;
 
 import common.ConfigCenter;
-import common.tools.HttpTools;
+import tools.HttpTools;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

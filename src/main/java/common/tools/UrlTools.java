@@ -2,12 +2,12 @@ package common.tools;
 
 import common.ConfigCenter;
 import common.PersonConfig;
+import tools.HttpTools;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PushbackInputStream;
 
 /**
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>

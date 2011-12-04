@@ -6,14 +6,13 @@
     <bean id="suffixDispatcher" class="common.SuffixDispatcher" />
     <bean id="configCenter" class="common.ConfigCenter" />
     <bean id="fileEditor" class="biz.file.FileEditor"/>
-    <bean id="switcher" class="common.Switcher"/>
     <bean id="urlExecutor" class="web.url.UrlExecutor" />
     <bean id="urlTools" class="common.tools.UrlTools"/>
     <bean id="userDAO" class="dao.UserDAOImpl"/>
     <bean id="configDAO" class="dao.ConfigDAOImpl"/>
     <bean id="dirSyncTools" class="common.tools.DirSyncTools"/>
     <bean id="urlReader" class="biz.url.UrlReader"/>
-    <bean id="jsonFilter" class="common.tools.JSONFilter"/>
+    <bean id="jsonFilter" class="tools.JSONFilter"/>
     <bean id="localComboExecutor" class="biz.url.LocalComboExecutor"/>
     <bean id="cookieUtils" class="common.tools.CookieUtils"/>
 

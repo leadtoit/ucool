@@ -1,6 +1,6 @@
 package common;
 
-import common.tools.HttpTools;
+import tools.HttpTools;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.Date;

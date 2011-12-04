@@ -1,17 +1,12 @@
 package web.filter;
 
-import common.ConfigCenter;
-import common.tools.CookieUtils;
-import common.tools.RandomString;
 import dao.UserDAO;
-import dao.entity.UrlBase;
 import dao.entity.UserDO;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import web.handler.impl.PersonConfigHandler;
 
 import javax.servlet.*;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,17 +22,9 @@ import java.util.regex.Pattern;
  */
 public class UserFilter implements Filter {
 
-    private CookieUtils cookieUtils;
-
     private PersonConfigHandler personConfigHandler;
 
     private UserDAO userDAO;
-
-    private ConfigCenter configCenter;
-
-    public void setCookieUtils(CookieUtils cookieUtils) {
-        this.cookieUtils = cookieUtils;
-    }
 
     public void setPersonConfigHandler(PersonConfigHandler personConfigHandler) {
         this.personConfigHandler = personConfigHandler;
@@ -45,10 +32,6 @@ public class UserFilter implements Filter {
 
     public void setUserDAO(UserDAO userDAO) {
         this.userDAO = userDAO;
-    }
-
-    public void setConfigCenter(ConfigCenter configCenter) {
-        this.configCenter = configCenter;
     }
 
     public void destroy() {
@@ -108,36 +91,8 @@ public class UserFilter implements Filter {
     }
 
     public void init(FilterConfig config) throws ServletException {
-        if (cookieUtils == null) {
-            WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
-            setCookieUtils((CookieUtils) context.getBean("cookieUtils"));
-            setPersonConfigHandler((PersonConfigHandler) context.getBean("personConfigHandler"));
-            setUserDAO((UserDAO) context.getBean("userDAO"));
-            setConfigCenter((ConfigCenter) context.getBean("configCenter"));
-        }
-    }
-
-    private String getGuid() {
-        return RandomString.getRandomString(30);
-    }
-
-    //Í¬²½ip
-    private boolean syncRemoteHost(UserDO personInfo, String newRemoteHost, Map<String, UserDO> userCache, boolean afterLocalCombo) {
-        if(newRemoteHost.equals("127.0.0.1") && afterLocalCombo) {
-            return true;
-        }
-
-        if (newRemoteHost.equals(personInfo.getHostName())) {
-            return true;
-        }
-
-        if (this.userDAO.updateHostName(personInfo.getId(), newRemoteHost, personInfo.getHostName())) {
-            System.out.println("remoteHost changed, update ip to " + newRemoteHost);
-            personInfo.setHostName(newRemoteHost);
-
-            userCache.put(personInfo.getGuid(), personInfo);
-            return true;
-        }
-        return false;
+        WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
+        setPersonConfigHandler((PersonConfigHandler) context.getBean("personConfigHandler"));
+        setUserDAO((UserDAO) context.getBean("userDAO"));
     }
 }
