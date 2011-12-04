@@ -1,15 +1,13 @@
 package web.handler.impl;
 
-import common.tools.HttpTools;
 import common.PersonConfig;
 import dao.entity.RequestInfo;
+import tools.HttpTools;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * @author <a href="mailto:czy88840616@gmail.com">czy</a>
