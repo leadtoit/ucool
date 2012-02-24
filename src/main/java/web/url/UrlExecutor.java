@@ -6,16 +6,11 @@ import biz.url.UrlReader;
 import common.ConfigCenter;
 import common.MyConfig;
 import common.PersonConfig;
-import common.tools.JSONFilter;
-import common.tools.UrlTools;
 import dao.entity.RequestInfo;
+import tools.JSONFilter;
 
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -57,7 +52,6 @@ public class UrlExecutor {
     /**
      * 为debug模式特殊处理url请求，不走cache
      *
-     *
      * @param requestInfo
      * @param personConfig
      * @author zhangting
@@ -87,11 +81,22 @@ public class UrlExecutor {
 
         if(personConfig.isEnableLocalMapping() && curMappingPath != null) {
             // 将ip替换为客户端的，并且将目录映射掉
-            realUrl = realUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            if(realUrl.contains("assets.lp.alibaba.com")) {
+                realUrl = realUrl.replaceAll("assets.lp.alibaba.com", requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            } else {
+                realUrl = realUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            }
+
             realUrl = realUrl.replaceAll(curMappingPath, "");
             requestInfo.setRealUrl(realUrl);
+
             String fullUrl = requestInfo.getFullUrl();
-            fullUrl = fullUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            if(fullUrl.contains("assets.lp.alibaba.com")) {
+                fullUrl = fullUrl.replaceAll("assets.lp.alibaba.com", requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            } else {
+                fullUrl = fullUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            }
+
             fullUrl = fullUrl.replaceAll(curMappingPath, "");
             requestInfo.setFullUrl(fullUrl);
 
@@ -247,7 +252,7 @@ public class UrlExecutor {
             if(whileList != null && !whileList.isEmpty()) {
                 String[] gbkLists = whileList.split(",");
                 for (String gbkList : gbkLists) {
-                    if (requestInfo.getFilePath().indexOf(gbkList) != -1) {
+                    if (requestInfo.getFilePath().contains(gbkList)) {
                         return "gbk";
                     }
                 }
@@ -256,7 +261,7 @@ public class UrlExecutor {
             if(utfFiles != null && !utfFiles.isEmpty()) {
                 String[] utfLists = utfFiles.split(",");
                 for (String utfList : utfLists) {
-                    if (requestInfo.getFilePath().indexOf(utfList) != -1) {
+                    if (requestInfo.getFilePath().contains(utfList)) {
                         return "utf-8";
                     }
                 }

@@ -1,7 +1,7 @@
 package web.handler.impl;
 
 import common.*;
-import common.tools.HttpTools;
+import tools.HttpTools;
 import common.tools.UrlTools;
 import dao.entity.RequestInfo;
 import web.handler.Handler;
@@ -85,7 +85,7 @@ public class AssetsHandler implements Handler {
         realUrl = attachOper(realUrl, request);
         String fullUrl = realUrl;
         boolean isDebugMode = personConfig.isUcoolAssetsDebug() || HttpTools.isReferDebug(request);
-        boolean isOnline = configCenter.getUcoolOnlineDomain().indexOf(request.getServerName()) != -1;
+        boolean isOnline = configCenter.getUcoolOnlineDomain().contains(request.getServerName());
         if (isDebugMode) {
             filePath = urlTools.debugMode(filePath, fullUrl);
             realUrl = urlTools.debugMode(realUrl, fullUrl);
@@ -93,7 +93,7 @@ public class AssetsHandler implements Handler {
         realUrl = urlTools.urlFilter(realUrl, isOnline, personConfig);
         fullUrl = urlTools.urlFilter(fullUrl, isOnline, personConfig);
 
-        if (filePath.indexOf(".css") != -1) {
+        if (filePath.contains(".css")) {
             response.setContentType("text/css");
         } else {
             response.setContentType("application/x-javascript");
@@ -113,7 +113,7 @@ public class AssetsHandler implements Handler {
         String op = (String) request.getAttribute("op");
         boolean referClean = HttpTools.isReferClean(request);
         if ((op != null && !op.isEmpty()) || referClean) {
-            if (fullUrl.indexOf("?") != -1) {
+            if (fullUrl.contains("?")) {
                 fullUrl += "&";
             } else {
                 fullUrl += "?";

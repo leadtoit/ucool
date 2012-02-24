@@ -11,7 +11,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="dao.ConfigDAO" %>
 <%@ page import="dao.entity.ConfigDO" %>
-<%@ page import="common.tools.JSONFilter" %>
+<%@ page import="tools.JSONFilter" %>
 <%
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(this.getServletContext());
     ConfigCenter configCenter = (ConfigCenter) wac.getBean("configCenter");
@@ -52,7 +52,7 @@
             tState = personConfig.isEnableAssets() ? "true" : "false";
         } else if(pid.equalsIgnoreCase("bindPath")) {
             String mappingPath = request.getParameter("mappingPath");
-            JSONFilter filter = (JSONFilter) wac.getBean("jsonFilter");
+            tools.JSONFilter filter = (tools.JSONFilter) wac.getBean("jsonFilter");
             personConfig.getUserDO().setMappingPath(filter.getValidateMapping(mappingPath));
             //update
             boolean op = userDAO.updateMappingPath(personConfig.getUserDO().getId(), personConfig.getUserDO().getMappingPath(), srcMappingPath);

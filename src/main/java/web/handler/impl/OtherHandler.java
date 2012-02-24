@@ -42,7 +42,7 @@ public class OtherHandler implements Handler {
     @Override
     public void doHandler(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
-        if (request.getRequestURI().indexOf(".swf") != -1) {
+        if (request.getRequestURI().contains(".swf")) {
             String fullUrl = (String) request.getAttribute("fullUrl");
             fullUrl = urlTools.urlFilter(fullUrl, true, null);
 
@@ -52,7 +52,7 @@ public class OtherHandler implements Handler {
                 urlReader.pushStream(response.getOutputStream(), url.openStream(), null, true);
             } catch (Exception e) {
             }
-        } else if (request.getRequestURI().indexOf(".xml") != -1) {
+        } else if (request.getRequestURI().contains(".xml")) {
             response.setContentType("text/xml");
             try {
                 URL url = new URL("http://" + configCenter.getUcoolOnlineIp() + request.getRequestURI());

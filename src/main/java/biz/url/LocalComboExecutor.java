@@ -47,7 +47,7 @@ public class LocalComboExecutor {
 
     public Properties getPropertiesByUrl(String propertiesUrl) {
         Properties p = new Properties();
-        URL url = null;
+        URL url;
         try {
             url = new URL(propertiesUrl);
             p.load(url.openStream());
@@ -63,12 +63,12 @@ public class LocalComboExecutor {
             //url replace
             boolean matchUrl = false;
             for (Map.Entry<Object, Object> objectObjectEntry : p.entrySet()) {
-                if (((String) objectObjectEntry.getKey()).indexOf(requestInfo.getFilePath()) != -1) {
+                if (((String) objectObjectEntry.getKey()).contains(requestInfo.getFilePath())) {
                     String newUrl = (String) objectObjectEntry.getValue();
                     newUrl = newUrl.replace("{baseUrl}", "localhost");
                     newUrl = "http://" + newUrl + UrlTools.getParam(requestInfo.getRealUrl());
                     //简单校验，不能同一文件循环请求
-                    if (newUrl.indexOf((String) objectObjectEntry.getKey()) == -1) {
+                    if (!newUrl.contains((String) objectObjectEntry.getKey())) {
                         requestInfo.setRealUrl(newUrl);
                         matchUrl = true;
                         break;

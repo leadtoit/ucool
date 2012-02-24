@@ -1,7 +1,7 @@
 package web.filter;
 
 import common.ConfigCenter;
-import common.tools.HttpTools;
+import tools.HttpTools;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -42,7 +42,7 @@ public class DoorFilter implements Filter {
             }
             request.setAttribute("filePath", request.getRequestURI());
             request.setAttribute("op", request.getParameter("op"));
-            if (fullUrl.indexOf(configCenter.getUcoolComboDecollator()) != -1) {
+            if (fullUrl.contains(configCenter.getUcoolComboDecollator())) {
                 request.setAttribute("realUrl", fullUrl);
                 request.setAttribute("isCombo", true);
             } else {
@@ -100,7 +100,7 @@ public class DoorFilter implements Filter {
      */
     private boolean filterDomain(HttpServletRequest request) {
         String url = request.getRequestURL().toString();
-        if(url.indexOf(this.myIp) != -1) {
+        if(url.contains(this.myIp)) {
             return false;
         }
         return true;

@@ -148,7 +148,7 @@ public class PersonConfig {
     @Deprecated
     public String getConfigString() {
         // get userDO
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(userDO.getId()).append(":");
         sb.append(userDO.getHostName()).append(":");
         sb.append(userDO.getName()).append(":");
