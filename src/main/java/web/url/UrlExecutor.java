@@ -81,11 +81,22 @@ public class UrlExecutor {
 
         if(personConfig.isEnableLocalMapping() && curMappingPath != null) {
             // 将ip替换为客户端的，并且将目录映射掉
-            realUrl = realUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            if(realUrl.contains("assets.lp.alibaba.com")) {
+                realUrl = realUrl.replaceAll("assets.lp.alibaba.com", requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            } else {
+                realUrl = realUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            }
+
             realUrl = realUrl.replaceAll(curMappingPath, "");
             requestInfo.setRealUrl(realUrl);
+
             String fullUrl = requestInfo.getFullUrl();
-            fullUrl = fullUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            if(fullUrl.contains("assets.lp.alibaba.com")) {
+                fullUrl = fullUrl.replaceAll("assets.lp.alibaba.com", requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            } else {
+                fullUrl = fullUrl.replaceAll(configCenter.getUcoolProxyIp(), requestInfo.getClientAddr() + ":" + configCenter.getUcoolProxyClientPort());
+            }
+
             fullUrl = fullUrl.replaceAll(curMappingPath, "");
             requestInfo.setFullUrl(fullUrl);
 

@@ -51,6 +51,7 @@ public class UrlTools {
                     return url.replace(d, configCenter.getUcoolOnlineIp());
                 }
             }
+
             return url;
         }
         /**
