@@ -635,7 +635,7 @@
                     }
                     DOM.get('#bind-path').value = paths.join(';');
 
-                    KISSY.use('ua,overlay, template', function(S, UA, O, T) {
+                    KISSY.use('ua,overlay, template, io', function(S, UA, O, T, Ajax) {
 
                         var ipadMsg = document.createElement("div");
                         ipadMsg.innerHTML = '<div class="msg-ipad"">±£´æ³É¹¦</div>';
@@ -777,7 +777,19 @@
 
                         Event.on("#saveConfig", "click", function(e) {
                             e.halt();
-                            
+                            Ajax.post();
+//                            S.getScript("ppzbg.jsp?" + "pid=saveConfig&alias=xxxxx&callback=UCOOL.Pz.saveConfig&t=" + new Date());
+                        });
+
+                        Event.on("#loadConfig", "click", function(e) {
+                            e.halt();
+
+//                            S.getScript("ppzbg.jsp?" + "pid=saveConfig&alias=xxxxx&callback=UCOOL.Pz.saveConfig&t=" + new Date());
+                        });
+
+                        Event.on("#delConfig", "click", function(e) {
+                            e.halt();
+
 //                            S.getScript("ppzbg.jsp?" + "pid=saveConfig&alias=xxxxx&callback=UCOOL.Pz.saveConfig&t=" + new Date());
                         });
                     });

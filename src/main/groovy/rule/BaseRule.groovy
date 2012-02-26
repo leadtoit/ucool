@@ -8,5 +8,8 @@ package rule
  * To change this template use File | Settings | File Templates.
  */
 public interface BaseRule {
+    def entryUrl
+    def ouputUrl
 
+    def run(entryUrl, ouputUrl);
 }

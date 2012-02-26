@@ -13,7 +13,3 @@ import javax.servlet.http.HttpServletResponse
 interface Action {
     def process(HttpServletRequest request, HttpServletResponse response)
 }
-
-abstract BaseAction implements Action {
-
-}

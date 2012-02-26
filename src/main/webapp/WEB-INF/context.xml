@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
-       default-autowire="byName">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+        default-autowire="byName">
+
+    <context:annotation-config />
     <bean id="suffixDispatcher" class="common.SuffixDispatcher" />
     <bean id="configCenter" class="common.ConfigCenter" />
     <bean id="fileEditor" class="biz.file.FileEditor"/>
@@ -14,7 +20,6 @@
     <bean id="urlReader" class="biz.url.UrlReader"/>
     <bean id="jsonFilter" class="tools.JSONFilter"/>
     <bean id="localComboExecutor" class="biz.url.LocalComboExecutor"/>
-    <bean id="cookieUtils" class="common.tools.CookieUtils"/>
 
     <bean id="dispatchMapping" class="common.DispatchMapping">
         <property name="mappingTable">
@@ -24,6 +29,13 @@
                 <entry key="htm" value-ref="jsonpHandler" />
                 <entry key="combo" value-ref="comboHandler" />
                 <entry key="other" value-ref="xmlHandler" />
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="actionMapping" class="common.ActionMapping">
+        <property name="mappingTable">
+            <map>
             </map>
         </property>
     </bean>
